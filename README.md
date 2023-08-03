@@ -1,5 +1,5 @@
 
-# stringee-react-native
+# stringee
 
 ## Getting started
 
@@ -10,7 +10,7 @@ For Expo project you need to enable and generate the native code in your project
 
 [More detail about Expo prebuild](https://docs.expo.dev/workflow/prebuild/)
 
-Install `stringee-react-native` by running:
+Install `stringee` by running:
 
 `$ npm install stringee --save`
 

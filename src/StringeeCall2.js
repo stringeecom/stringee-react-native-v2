@@ -37,6 +37,9 @@ class StringeeCall2 {
   videoResolution: VideoResolution = VideoResolution.normal;
 
   constructor(props: StringeeCall2Props) {
+    if (props === undefined) {
+      props = {};
+    }
     if (props.stringeeClient) {
       this.clientId = props.stringeeClient.uuid;
     }

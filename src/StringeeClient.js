@@ -38,6 +38,9 @@ class StringeeClient {
   isConnected: boolean;
 
   constructor(props: StringeeClientProps) {
+    if (props === undefined) {
+      props = {};
+    }
     this.baseUrl = props.baseUrl;
     this.stringeeXBaseUrl = props.stringeeXBaseUrl;
     this.serverAddresses = props.serverAddresses;

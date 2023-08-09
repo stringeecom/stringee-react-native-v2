@@ -440,7 +440,7 @@ public class RNStringeeCallModule extends ReactContextBaseJavaModule implements 
 
     @Override
     public void onLocalStream(StringeeCall stringeeCall) {
-        if (contains(jsEvents, "onLocalStream")) {
+        if (contains(jsEvents, "onLocalStream") && stringeeCall.isVideoCall()) {
             WritableMap params = Arguments.createMap();
             params.putString("callId", stringeeCall.getCallId());
             sendEvent(getReactApplicationContext(), "onLocalStream", params);
@@ -449,7 +449,7 @@ public class RNStringeeCallModule extends ReactContextBaseJavaModule implements 
 
     @Override
     public void onRemoteStream(StringeeCall stringeeCall) {
-        if (contains(jsEvents, "onRemoteStream")) {
+        if (contains(jsEvents, "onRemoteStream") && stringeeCall.isVideoCall()) {
             WritableMap params = Arguments.createMap();
             params.putString("callId", stringeeCall.getCallId());
             sendEvent(getReactApplicationContext(), "onRemoteStream", params);

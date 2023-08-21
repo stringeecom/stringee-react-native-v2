@@ -1,4 +1,9 @@
-import {NativeEventEmitter, NativeModules, Platform} from 'react-native';
+import {
+  EmitterSubscription,
+  NativeEventEmitter,
+  NativeModules,
+  Platform,
+} from 'react-native';
 import type {RNStringeeEventCallback} from './helpers/StringeeHelper';
 import {
   callEvents,
@@ -17,14 +22,8 @@ import {
 
 const RNStringeeCall = NativeModules.RNStringeeCall;
 
-class StringeeCallProps {
-  stringeeClient: StringeeClient;
-  from: string;
-  to: string;
-}
-
 class StringeeCall {
-  clientId: string;
+  stringeeClient: StringeeClient;
   callId: string;
   customData: string;
   from: string;
@@ -35,15 +34,22 @@ class StringeeCall {
   isVideoCall: boolean;
   videoResolution: VideoResolution = VideoResolution.normal;
 
-  constructor(props: StringeeCallProps) {
+  /**
+   * Create the StringeeCall.
+   * @param {StringeeClient} props.stringeeClient StringeeClient used to connect to the Stringee server
+   * @param {string} props.from From number
+   * @param {string} props.to To number
+   */
+  constructor(props: {
+    stringeeClient: StringeeClient,
+    from: string,
+    to: string,
+  }) {
     if (props === undefined) {
       props = {};
     }
     if (props.stringeeClient) {
-      this.clientId = props.stringeeClient.uuid;
-    }
-    if (props.clientId) {
-      this.clientId = props.clientId;
+      this.stringeeClient = props.stringeeClient;
     }
     this.from = props.from;
     this.to = props.to;
@@ -52,14 +58,19 @@ class StringeeCall {
     this.eventEmitter = new NativeEventEmitter(RNStringeeCall);
   }
 
-  registerEvents(stringeeCallListener: StringeeCallListener) {
+  /**
+   * Register to listen to events from StringeeCall.
+   * @function registerEvents
+   * @param {StringeeCallListener} listener
+   */
+  registerEvents(listener: StringeeCallListener) {
     if (this.events.length !== 0 && this.subscriptions.length !== 0) {
       return;
     }
-    if (stringeeCallListener) {
+    if (listener) {
       stringeeCallEvents.forEach(event => {
-        if (stringeeCallListener[event]) {
-          this.subscriptions.push(
+        if (listener[event]) {
+          let emitterSubscription: EmitterSubscription =
             this.eventEmitter.addListener(
               callEvents[Platform.OS][event],
               data => {
@@ -70,7 +81,7 @@ class StringeeCall {
                 }
                 switch (event) {
                   case 'onChangeSignalingState':
-                    stringeeCallListener.onChangeSignalingState(
+                    listener.onChangeSignalingState(
                       this,
                       getSignalingState(data.code),
                       data.reason,
@@ -79,41 +90,42 @@ class StringeeCall {
                     );
                     break;
                   case 'onChangeMediaState':
-                    stringeeCallListener.onChangeMediaState(
+                    listener.onChangeMediaState(
                       this,
                       getMediaState(data.code),
                       data.description,
                     );
                     break;
                   case 'onReceiveLocalStream':
-                    stringeeCallListener.onReceiveLocalStream(this);
+                    listener.onReceiveLocalStream(this);
                     break;
                   case 'onReceiveRemoteStream':
-                    stringeeCallListener.onReceiveRemoteStream(this);
+                    listener.onReceiveRemoteStream(this);
                     break;
                   case 'onReceiveDtmfDigit':
-                    stringeeCallListener.onReceiveDtmfDigit(this, data.dtmf);
+                    listener.onReceiveDtmfDigit(this, data.dtmf);
                     break;
                   case 'onReceiveCallInfo':
-                    stringeeCallListener.onReceiveCallInfo(this, data.data);
+                    listener.onReceiveCallInfo(this, data.data);
                     break;
                   case 'onHandleOnAnotherDevice':
-                    stringeeCallListener.onHandleOnAnotherDevice(
+                    listener.onHandleOnAnotherDevice(
                       this,
                       getSignalingState(data.code),
                       data.description,
                     );
                     break;
                   case 'onAudioDeviceChange':
-                    stringeeCallListener.onAudioDeviceChange(
+                    listener.onAudioDeviceChange(
+                      this,
                       getAudioDevice(data.selectedAudioDevice),
                       getListAudioDevice(data.availableAudioDevices),
                     );
                     break;
                 }
               },
-            ),
-          );
+            );
+          this.subscriptions.push(emitterSubscription);
           this.events.push(callEvents[Platform.OS][event]);
           RNStringeeCall.setNativeEvent(callEvents[Platform.OS][event]);
         }
@@ -121,6 +133,10 @@ class StringeeCall {
     }
   }
 
+  /**
+   * Unregister from listening to events from StringeeCall.
+   * @function unregisterEvents
+   */
   unregisterEvents() {
     if (this.events.length === 0 && this.subscriptions.length === 0) {
       return;
@@ -133,6 +149,11 @@ class StringeeCall {
     this.events = [];
   }
 
+  /**
+   * Make a call.
+   * @function makeCall
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   makeCall(callback: RNStringeeEventCallback) {
     const makeCallParam = {
       from: this.from,
@@ -142,7 +163,7 @@ class StringeeCall {
       videoResolution: this.videoResolution,
     };
     RNStringeeCall.makeCall(
-      this.clientId,
+      this.stringeeClient.uuid,
       JSON.stringify(makeCallParam),
       (status, code, message, callId, customData) => {
         this.callId = callId;
@@ -154,13 +175,23 @@ class StringeeCall {
     );
   }
 
+  /**
+   * Initializes an answer. Must be implemented before you can answer a call.
+   * @function initAnswer
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   initAnswer(callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.initAnswer(this.clientId, this.callId, callback);
+    RNStringeeCall.initAnswer(this.stringeeClient.uuid, this.callId, callback);
   }
 
+  /**
+   * Answer a call.
+   * @function answer
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   answer(callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -168,6 +199,11 @@ class StringeeCall {
     RNStringeeCall.answer(this.callId, callback);
   }
 
+  /**
+   * Hangup a call.
+   * @function hangup
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   hangup(callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -175,6 +211,11 @@ class StringeeCall {
     RNStringeeCall.hangup(this.callId, callback);
   }
 
+  /**
+   * Reject a call.
+   * @function reject
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   reject(callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -182,6 +223,12 @@ class StringeeCall {
     RNStringeeCall.reject(this.callId, callback);
   }
 
+  /**
+   * Sends a DTMF.
+   * @function sendDTMF
+   * @param {string} dtmf dtmf code ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", #)
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   sendDTMF(dtmf: string, callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -189,6 +236,12 @@ class StringeeCall {
     RNStringeeCall.sendDTMF(this.callId, dtmf, callback);
   }
 
+  /**
+   * Send info to another client.
+   * @function sendCallInfo
+   * @param {string} callInfo data you want to send, in JSON string
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   sendCallInfo(callInfo: string, callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -196,13 +249,27 @@ class StringeeCall {
     RNStringeeCall.sendCallInfo(this.callId, callInfo, callback);
   }
 
+  /**
+   * Gets the call's statistics.
+   * @function getCallStats
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getCallStats(callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.getCallStats(this.clientId, this.callId, callback);
+    RNStringeeCall.getCallStats(
+      this.stringeeClient.uuid,
+      this.callId,
+      callback,
+    );
   }
 
+  /**
+   * Switches the device's camera.
+   * @function switchCamera
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   switchCamera(callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -210,6 +277,12 @@ class StringeeCall {
     RNStringeeCall.switchCamera(this.callId, callback);
   }
 
+  /**
+   * Enables or disables local video.
+   * @function enableVideo
+   * @param {boolean} enabled true - enables local video, false - disables local video
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   enableVideo(enabled: boolean, callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -217,6 +290,12 @@ class StringeeCall {
     RNStringeeCall.enableVideo(this.callId, enabled, callback);
   }
 
+  /**
+   * Toggles audio on or off.
+   * @function mute
+   * @param {boolean} mute true - toggles audio off, false - toggles audio on
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   mute(mute: boolean, callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -224,6 +303,12 @@ class StringeeCall {
     RNStringeeCall.mute(this.callId, mute, callback);
   }
 
+  /**
+   * Set the audio output mode.
+   * @function setSpeakerphoneOn
+   * @param {boolean} on true - loudspeaker, false - headset speaker
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   setSpeakerphoneOn(on: boolean, callback: RNStringeeEventCallback) {
     if (!callback) {
       callback = () => {};
@@ -231,6 +316,12 @@ class StringeeCall {
     RNStringeeCall.setSpeakerphoneOn(this.callId, on, callback);
   }
 
+  /**
+   * Only for android.
+   * Resume local stream.
+   * @function resumeVideo
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   resumeVideo(callback: RNStringeeEventCallback) {
     const platform = Platform.OS;
     if (platform === 'ios') {

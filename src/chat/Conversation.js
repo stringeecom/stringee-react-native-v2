@@ -2,6 +2,7 @@ import User from './User';
 import Message from './Message';
 import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
 import {RNStringeeClient} from '../helpers/StringeeHelper';
+import type {StringeeClient} from '../StringeeClient';
 
 class Conversation {
   id: string;
@@ -14,8 +15,9 @@ class Conversation {
   participants: Array<User>;
   lastMessage: Message;
   pinMsgId: string;
+  stringeeClient: StringeeClient;
   constructor(props) {
-    this.clientId = props.clientId;
+    this.stringeeClient = props.stringeeClient;
     this.id = props.id;
     this.name = props.name;
     this.isGroup = props.isGroup;
@@ -46,13 +48,28 @@ class Conversation {
     this.pinMsgId = props.pinMsgId != null ? props.pinMsgId : null;
   }
 
+  /**
+   * Delete the conversation
+   * @function deleteConversation
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   deleteConversation(callback: RNStringeeEventCallback) {
-    RNStringeeClient.deleteConversation(this.clientId, this.id, callback);
+    RNStringeeClient.deleteConversation(
+      this.stringeeClient.uuid,
+      this.id,
+      callback,
+    );
   }
 
+  /**
+   * Add participants to the conversation.
+   * @function addParticipants
+   * @param {Array<string>} userIds List of user's ids
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   addParticipants(userIds: Array<string>, callback: RNStringeeEventCallback) {
     RNStringeeClient.addParticipants(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       userIds,
       (status, code, message, users) => {
@@ -67,12 +84,18 @@ class Conversation {
     );
   }
 
+  /**
+   * Remove participants from the conversation.
+   * @function removeParticipants
+   * @param {Array<string>} userIds List of user's ids
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   removeParticipants(
     userIds: Array<string>,
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.removeParticipants(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       userIds,
       (status, code, message, users) => {
@@ -87,52 +110,116 @@ class Conversation {
     );
   }
 
+  /**
+   * Update the conversation's information.
+   * @function updateConversation
+   * @param {Object} params New information of the conversation
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   updateConversation(
     params: {name: string, avatar: string},
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.updateConversation(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       params,
       callback,
     );
   }
 
+  /**
+   * Mark the conversation as read.
+   * @function markConversationAsRead
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   markConversationAsRead(callback: RNStringeeEventCallback) {
-    RNStringeeClient.markConversationAsRead(this.clientId, this.id, callback);
+    RNStringeeClient.markConversationAsRead(
+      this.stringeeClient.uuid,
+      this.id,
+      callback,
+    );
   }
 
+  /**
+   * Send begin typing event to other client.
+   * @function sendBeginTyping
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   sendBeginTyping(callback: RNStringeeEventCallback) {
-    RNStringeeClient.sendBeginTyping(this.clientId, this.id, callback);
+    RNStringeeClient.sendBeginTyping(
+      this.stringeeClient.uuid,
+      this.id,
+      callback,
+    );
   }
 
+  /**
+   * Send end typing event to other client.
+   * @function sendEndTyping
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   sendEndTyping(callback: RNStringeeEventCallback) {
-    RNStringeeClient.sendEndTyping(this.clientId, this.id, callback);
+    RNStringeeClient.sendEndTyping(this.stringeeClient.uuid, this.id, callback);
   }
 
+  /**
+   * Send the message.
+   * @function sendMessage
+   * @param {Object} message Message to send
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   sendMessage(
     message: {convId: string, type: number, message: {}},
     callback: RNStringeeEventCallback,
   ) {
-    RNStringeeClient.sendMessage(this.clientId, message, callback);
+    RNStringeeClient.sendMessage(this.stringeeClient.uuid, message, callback);
   }
 
+  /**
+   * Delete the message.
+   * @function deleteMessage
+   * @param {string} messageId Message's id to delete
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   deleteMessage(messageId: string, callback: RNStringeeEventCallback) {
-    RNStringeeClient.deleteMessage(this.clientId, this.id, messageId, callback);
+    RNStringeeClient.deleteMessage(
+      this.stringeeClient.uuid,
+      this.id,
+      messageId,
+      callback,
+    );
   }
 
+  /**
+   * Revoke the message.
+   * @function revokeMessage
+   * @param {string} messageId Message's id to revoke
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   revokeMessage(messageId: string, callback: RNStringeeEventCallback) {
-    RNStringeeClient.revokeMessage(this.clientId, this.id, messageId, callback);
+    RNStringeeClient.revokeMessage(
+      this.stringeeClient.uuid,
+      this.id,
+      messageId,
+      callback,
+    );
   }
 
+  /**
+   * Get messages of the conversation saved in your local database.
+   * @function getLocalMessages
+   * @param {string} count Number of messages
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getLocalMessages(
     count: number,
     isAscending: boolean,
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getLocalMessages(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       count,
       (status, code, message, messages) => {
@@ -140,12 +227,12 @@ class Conversation {
         if (status) {
           if (isAscending) {
             messages.map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           } else {
             messages.reverse().map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           }
@@ -155,6 +242,15 @@ class Conversation {
     );
   }
 
+  /**
+   * Get the latest message of the conversation from the Stringee server.
+   * @function getLastMessages
+   * @param {string} count Number of messages
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {boolean} loadDeletedMessage Load include deleted message true: Load include deleted message, false: Load not include deleted message
+   * @param {boolean} loadDeletedMessageContent Load include deleted message true: Load include deleted message content, false: Load not include deleted message content
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getLastMessages(
     count: number,
     isAscending: boolean,
@@ -163,7 +259,7 @@ class Conversation {
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getLastMessages(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       count,
       loadDeletedMessage,
@@ -173,12 +269,12 @@ class Conversation {
         if (status) {
           if (isAscending) {
             messages.map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           } else {
             messages.reverse().map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           }
@@ -188,6 +284,15 @@ class Conversation {
     );
   }
 
+  /**
+   * Get the latest message include deleted message of the conversation from the Stringee server.
+   * @function getAllLastMessages
+   * @param {string} count Number of messages
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {boolean} loadDeletedMessage Load include deleted message true: Load include deleted message, false: Load not include deleted message
+   * @param {boolean} loadDeletedMessageContent Load include deleted message true: Load include deleted message content, false: Load not include deleted message content
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getAllLastMessages(
     count: number,
     isAscending: boolean,
@@ -196,7 +301,7 @@ class Conversation {
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getAllLastMessages(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       count,
       loadDeletedMessage,
@@ -206,12 +311,12 @@ class Conversation {
         if (status) {
           if (isAscending) {
             messages.map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           } else {
             messages.reverse().map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           }
@@ -221,6 +326,16 @@ class Conversation {
     );
   }
 
+  /**
+   * Get a list of messages of conversation with sequence greater than 'sequence' from the Stringee server.
+   * @function getMessagesAfter
+   * @param {number} sequence Sequence of message
+   * @param {string} count Number of messages
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {boolean} loadDeletedMessage Load include deleted message true: Load include deleted message, false: Load not include deleted message
+   * @param {boolean} loadDeletedMessageContent Load include deleted message true: Load include deleted message content, false: Load not include deleted message content
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getMessagesAfter(
     sequence: number,
     count: number,
@@ -230,7 +345,7 @@ class Conversation {
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getMessagesAfter(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       sequence,
       count,
@@ -241,12 +356,12 @@ class Conversation {
         if (status) {
           if (isAscending) {
             messages.map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           } else {
             messages.reverse().map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           }
@@ -256,6 +371,16 @@ class Conversation {
     );
   }
 
+  /**
+   * Get a list of messages include deleted message of conversation with sequence greater than 'sequence' from the Stringee server.
+   * @function getAllMessagesAfter
+   * @param {number} sequence Sequence of message
+   * @param {string} count Number of messages
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {boolean} loadDeletedMessage Load include deleted message true: Load include deleted message, false: Load not include deleted message
+   * @param {boolean} loadDeletedMessageContent Load include deleted message true: Load include deleted message content, false: Load not include deleted message content
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getAllMessagesAfter(
     sequence: number,
     count: number,
@@ -265,7 +390,7 @@ class Conversation {
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getAllMessagesAfter(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       sequence,
       count,
@@ -276,12 +401,12 @@ class Conversation {
         if (status) {
           if (isAscending) {
             messages.map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           } else {
             messages.reverse().map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           }
@@ -291,6 +416,16 @@ class Conversation {
     );
   }
 
+  /**
+   * Get a list of messages of conversation with sequence smaller than 'sequence' from the Stringee server.
+   * @function getMessagesBefore
+   * @param {number} sequence Sequence of message
+   * @param {string} count Number of messages
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {boolean} loadDeletedMessage Load include deleted message true: Load include deleted message, false: Load not include deleted message
+   * @param {boolean} loadDeletedMessageContent Load include deleted message true: Load include deleted message content, false: Load not include deleted message content
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getMessagesBefore(
     sequence: number,
     count: number,
@@ -300,7 +435,7 @@ class Conversation {
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getMessagesBefore(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       sequence,
       count,
@@ -311,12 +446,12 @@ class Conversation {
         if (status) {
           if (isAscending) {
             messages.map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           } else {
             messages.reverse().map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           }
@@ -326,6 +461,16 @@ class Conversation {
     );
   }
 
+  /**
+   * Get a list of messages include deleted message of conversation with sequence smaller than 'sequence' from the Stringee server.
+   * @function getAllMessagesBefore
+   * @param {number} sequence Sequence of message
+   * @param {string} count Number of messages
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {boolean} loadDeletedMessage Load include deleted message true: Load include deleted message, false: Load not include deleted message
+   * @param {boolean} loadDeletedMessageContent Load include deleted message true: Load include deleted message content, false: Load not include deleted message content
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getAllMessagesBefore(
     sequence: number,
     count: number,
@@ -335,7 +480,7 @@ class Conversation {
     callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getAllMessagesBefore(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       sequence,
       count,
@@ -346,12 +491,12 @@ class Conversation {
         if (status) {
           if (isAscending) {
             messages.map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           } else {
             messages.reverse().map(msg => {
-              msg.clientId = this.clientId;
+              msg.stringeeClient = this.stringeeClient.uuid;
               returnMessages.push(new Message(msg));
             });
           }
@@ -361,20 +506,31 @@ class Conversation {
     );
   }
 
+  /**
+   * Get the existing message with given id.
+   * @function getMessageById
+   * @param {string} messageId Message's id
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getMessageById(messageId: string, callback: RNStringeeEventCallback) {
     RNStringeeClient.getMessageById(
-      this.clientId,
+      this.stringeeClient.uuid,
       this.id,
       messageId,
       (status, code, message, msg) => {
-        msg.clientId = this.clientId;
+        msg.clientId = this.stringeeClient.uuid;
         return callback(status, code, message, new Message(msg));
       },
     );
   }
 
+  /**
+   * End the support conversation
+   * @function endChat
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   endChat(callback: RNStringeeEventCallback) {
-    RNStringeeClient.endChat(this.clientId, this.id, callback);
+    RNStringeeClient.endChat(this.stringeeClient.uuid, this.id, callback);
   }
 }
 

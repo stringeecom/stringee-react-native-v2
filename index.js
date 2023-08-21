@@ -7,8 +7,6 @@ import Conversation from './src/chat/Conversation';
 import Message from './src/chat/Message';
 import User from './src/chat/User';
 import ChatRequest from './src/chat/ChatRequest';
-import UserInfoParam from './src/helpers/UserInfoParam';
-import LiveChatTicketParam from './src/helpers/LiveChatTicketParam';
 import {
   StringeeVideoScalingType,
   ChangeType,
@@ -34,8 +32,6 @@ export {
   Message,
   User,
   ChatRequest,
-  UserInfoParam,
-  LiveChatTicketParam,
   StringeeVideoScalingType,
   ChangeType,
   ObjectType,

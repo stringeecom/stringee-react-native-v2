@@ -1,33 +1,25 @@
-import {NativeEventEmitter, NativeModules, Platform, View} from 'react-native';
+import {EmitterSubscription, NativeEventEmitter, Platform} from 'react-native';
+import type {RNStringeeEventCallback} from './helpers/StringeeHelper';
 import {
+  CallType,
   clientEvents,
   RNStringeeClient,
   stringeeClientEvents,
 } from './helpers/StringeeHelper';
-import type {RNStringeeEventCallback} from './helpers/StringeeHelper';
 import {
+  ChangeType,
   ChatRequest,
   Conversation,
-  LiveChatTicketParam,
   Message,
+  ObjectType,
   StringeeCall,
   StringeeCall2,
+  StringeeClientListener,
   StringeeServerAddress,
   User,
-  UserInfoParam,
-  StringeeClientListener,
-  ObjectType,
-  ChangeType,
-  CallType,
 } from '../index';
 
 const iOS = Platform.OS === 'ios';
-
-class StringeeClientProps {
-  baseUrl: string;
-  stringeeXBaseUrl: string;
-  serverAddresses: Array<StringeeServerAddress>;
-}
 
 class StringeeClient {
   userId: string;
@@ -37,7 +29,17 @@ class StringeeClient {
   serverAddresses: Array<StringeeServerAddress>;
   isConnected: boolean;
 
-  constructor(props: StringeeClientProps) {
+  /**
+   * Create the StringeeClient.
+   * @param {Array<StringeeServerAddress>} props.serverAddresses List of server addresses
+   * @param {string} props.baseUrl base url
+   * @param {string} props.stringeeXBaseUrl base url for live chat
+   */
+  constructor(props: {
+    baseUrl: string,
+    stringeeXBaseUrl: string,
+    serverAddresses: Array<StringeeServerAddress>,
+  }) {
     if (props === undefined) {
       props = {};
     }
@@ -63,158 +65,129 @@ class StringeeClient {
     );
   }
 
-  registerEvents(stringeeClientListener: StringeeClientListener) {
+  /**
+   * Register to listen to events from StringeeClient.
+   * @function registerEvents
+   * @param {StringeeClientListener} listener
+   */
+  registerEvents(listener: StringeeClientListener) {
     if (this.events.length !== 0 && this.subscriptions.length !== 0) {
       return;
     }
-    if (stringeeClientListener) {
+    if (listener) {
       stringeeClientEvents.forEach(event => {
-        if (stringeeClientListener[event]) {
-          this.eventEmitter.addListener(
-            clientEvents[Platform.OS][event],
-            ({uuid, data}) => {
-              if (this.uuid !== uuid) {
-                return;
-              }
-              switch (event) {
-                case 'onConnect':
-                  this.isConnected = true;
-                  this.userId = data.userId;
-                  stringeeClientListener.onConnect(this.userId);
-                  break;
-                case 'onDisConnect':
-                  this.isConnected = false;
-                  stringeeClientListener.onDisConnect();
-                  break;
-                case 'onFailWithError':
-                  this.isConnected = false;
-                  stringeeClientListener.onFailWithError(
-                    data.code,
-                    data.message,
-                  );
-                  break;
-                case 'onRequestAccessToken':
-                  stringeeClientListener.onRequestAccessToken();
-                  break;
-                case 'onIncomingCall':
-                  let stringeeCall = new StringeeCall({
-                    stringeeClient: this,
-                    from: data.from,
-                    to: data.to,
-                  });
-                  stringeeCall.callId = data.callId;
-                  stringeeCall.customData = data.customDataFromYourServer;
-                  stringeeCall.fromAlias = data.fromAlias;
-                  stringeeCall.toAlias = data.toAlias;
-                  switch (data.callType) {
-                    case 1:
-                    default:
-                      stringeeCall.callType = CallType.appToAppIncoming;
-                      break;
-                    case 2:
-                      stringeeCall.callType = CallType.appToPhone;
-                      break;
-                    case 3:
-                      stringeeCall.callType = CallType.phoneToApp;
-                      break;
-                  }
-                  stringeeCall.isVideoCall = data.isVideoCall;
-                  stringeeClientListener.onIncomingCall(stringeeCall);
-                  break;
-                case 'onIncomingCall2':
-                  let stringeeCall2 = new StringeeCall2({
-                    stringeeClient: this,
-                    from: data.from,
-                    to: data.to,
-                  });
-                  stringeeCall2.callId = data.callId;
-                  stringeeCall2.customData = data.customDataFromYourServer;
-                  stringeeCall2.fromAlias = data.fromAlias;
-                  stringeeCall2.toAlias = data.toAlias;
-                  stringeeCall2.callType = CallType.appToAppIncoming;
-                  stringeeCall2.isVideoCall = data.isVideoCall;
-                  data.clientId = this.uuid;
-                  stringeeClientListener.onIncomingCall2(stringeeCall2);
-                  break;
-                case 'onCustomMessage':
-                  stringeeClientListener.onCustomMessage(data.from, data.data);
-                  break;
-                case 'onObjectChange':
-                  const objectType =
-                    data.objectType === 0
-                      ? ObjectType.conversation
-                      : ObjectType.message;
-                  const objects = data.objects;
-                  let changeType = ChangeType.insert;
-                  if (data.changeType === 1) {
-                    changeType = ChangeType.update;
-                  } else if (data.changeType === 2) {
-                    changeType = ChangeType.delete;
-                  }
-
-                  let objectChanges = [];
-                  objects.map(object => {
-                    object.clientId = this.uuid;
-                    objectChanges.push(
-                      objectType === ObjectType.conversation
-                        ? new Conversation(object)
-                        : new Message(object),
+        if (listener[event]) {
+          let emitterSubscription: EmitterSubscription =
+            this.eventEmitter.addListener(
+              clientEvents[Platform.OS][event],
+              ({uuid, data}) => {
+                if (this.uuid !== uuid) {
+                  return;
+                }
+                switch (event) {
+                  case 'onConnect':
+                    this.isConnected = true;
+                    this.userId = data.userId;
+                    listener.onConnect(this, this.userId);
+                    break;
+                  case 'onDisConnect':
+                    this.isConnected = false;
+                    listener.onDisConnect(this);
+                    break;
+                  case 'onFailWithError':
+                    this.isConnected = false;
+                    listener.onFailWithError(this, data.code, data.message);
+                    break;
+                  case 'onRequestAccessToken':
+                    listener.onRequestAccessToken(this);
+                    break;
+                  case 'onIncomingCall':
+                    listener.onIncomingCall(this, getStringeeCall(this, data));
+                    break;
+                  case 'onIncomingCall2':
+                    listener.onIncomingCall2(
+                      this,
+                      getStringeeCall2(this, data),
                     );
-                  });
-                  stringeeClientListener.onObjectChange(
-                    objectType,
-                    objectChanges,
-                    changeType,
-                  );
-                  break;
-                case 'onReceiveChatRequest':
-                  data.request.clientId = this.uuid;
-                  stringeeClientListener.onReceiveChatRequest(
-                    new ChatRequest(data.request),
-                  );
-                  break;
-                case 'onReceiveTransferChatRequest':
-                  data.request.clientId = this.uuid;
-                  stringeeClientListener.onReceiveTransferChatRequest(
-                    new ChatRequest(data.request),
-                  );
-                  break;
-                case 'onTimeoutAnswerChat':
-                  data.request.clientId = this.uuid;
-                  stringeeClientListener.onTimeoutAnswerChat(
-                    new ChatRequest(data.request),
-                  );
-                  break;
-                case 'onTimeoutInQueue':
-                  stringeeClientListener.onTimeoutInQueue(
-                    data.convId,
-                    data.customerId,
-                    data.customerName,
-                  );
-                  break;
-                case 'onConversationEnded':
-                  stringeeClientListener.onConversationEnded(
-                    data.convId,
-                    data.endedby,
-                  );
-                  break;
-                case 'onUserBeginTyping':
-                  stringeeClientListener.onUserBeginTyping(
-                    data.convId,
-                    data.userId,
-                    data.displayName,
-                  );
-                  break;
-                case 'onUserEndTyping':
-                  stringeeClientListener.onUserEndTyping(
-                    data.convId,
-                    data.userId,
-                    data.displayName,
-                  );
-                  break;
-              }
-            },
-          );
+                    break;
+                  case 'onCustomMessage':
+                    listener.onCustomMessage(this, data.from, data.data);
+                    break;
+                  case 'onObjectChange':
+                    const objectType = getObjectType(data.objectType);
+                    let objectChanges = [];
+                    data.objects.map(object => {
+                      object.stringeeClient = this;
+                      objectChanges.push(
+                        objectType === ObjectType.conversation
+                          ? new Conversation(object)
+                          : new Message(object),
+                      );
+                    });
+                    listener.onObjectChange(
+                      this,
+                      objectType,
+                      objectChanges,
+                      getChangeType(data.changeType),
+                    );
+                    break;
+                  case 'onReceiveChatRequest':
+                    data.request.stringeeClient = this;
+                    listener.onReceiveChatRequest(
+                      this,
+                      new ChatRequest(data.request),
+                    );
+                    break;
+                  case 'onReceiveTransferChatRequest':
+                    data.request.stringeeClient = this;
+                    listener.onReceiveTransferChatRequest(
+                      this,
+                      new ChatRequest(data.request),
+                    );
+                    break;
+                  case 'onTimeoutAnswerChat':
+                    data.request.stringeeClient = this;
+                    listener.onTimeoutAnswerChat(
+                      this,
+                      new ChatRequest(data.request),
+                    );
+                    break;
+                  case 'onTimeoutInQueue':
+                    listener.onTimeoutInQueue(
+                      this,
+                      data.convId,
+                      data.customerId,
+                      data.customerName,
+                    );
+                    break;
+                  case 'onConversationEnded':
+                    listener.onConversationEnded(
+                      this,
+                      data.convId,
+                      data.endedby,
+                    );
+                    break;
+                  case 'onUserBeginTyping':
+                    listener.onUserBeginTyping(
+                      this,
+                      data.convId,
+                      data.userId,
+                      data.displayName,
+                    );
+                    break;
+                  case 'onUserEndTyping':
+                    listener.onUserEndTyping(
+                      this,
+                      data.convId,
+                      data.userId,
+                      data.displayName,
+                    );
+                    break;
+                }
+              },
+            );
+          this.subscriptions.push(emitterSubscription);
+          this.events.push(clientEvents[Platform.OS][event]);
           RNStringeeClient.setNativeEvent(
             this.uuid,
             clientEvents[Platform.OS][event],
@@ -224,6 +197,10 @@ class StringeeClient {
     }
   }
 
+  /**
+   * Unregister from listening to events from StringeeClient.
+   * @function unregisterEvents
+   */
   unregisterEvents() {
     if (this.events.length === 0 && this.subscriptions.length === 0) {
       return;
@@ -235,14 +212,32 @@ class StringeeClient {
     this.events = [];
   }
 
+  /**
+   * Connects to Stringee server, using provided access token.
+   * @function connect
+   * @param {string} token The access token generated by your server
+   */
   connect(token: string) {
     RNStringeeClient.connect(this.uuid, token);
   }
 
+  /**
+   * Disconnects from Stringee server.
+   * @function disconnect
+   */
   disconnect() {
     RNStringeeClient.disconnect(this.uuid);
   }
 
+  /**
+   * Register the device token to receive push notifications.
+   * When you have an incoming call, you receive a notification from the Stringee server.
+   * @function registerPush
+   * @param {string} deviceToken The registration token
+   * @param {boolean} isProduction (Ios) true: For production environment, false: For development environment
+   * @param {boolean} isVoip (Ios) true: To receive voip push notification, false: To receive remote push notification
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   registerPush(
     deviceToken: string,
     isProduction: boolean,
@@ -262,6 +257,16 @@ class StringeeClient {
     }
   }
 
+  /**
+   * Register the device token to receive push notifications and remove other devices with the package name from the list of receiving notification
+   * When you have an incoming call, you receive a notification from the Stringee server
+   * @function registerPushAndDeleteOthers
+   * @param {string} deviceToken The registration token
+   * @param {boolean} isProduction (Ios) true: For production environment, false: For development environment
+   * @param {boolean} isVoip (Ios) true: To receive voip push notification, false: To receive remote push notification
+   * @param {Array<string>} packageNames List of project's package names
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   registerPushAndDeleteOthers(
     deviceToken: string,
     isProduction: boolean,
@@ -288,10 +293,24 @@ class StringeeClient {
     }
   }
 
+  /**
+   * Remove your device token from Stringee server
+   * Your device will not receive push notification when you have an incoming call.
+   * @function unregisterPush
+   * @param {string} deviceToken The registration token
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   unregisterPush(deviceToken: string, callback: RNStringeeEventCallback) {
     RNStringeeClient.unregisterPushToken(this.uuid, deviceToken, callback);
   }
 
+  /**
+   * Send a custom message to a user.
+   * @function sendCustomMessage
+   * @param {string} toUserId User id to send a custom message to
+   * @param {string} message Message to send
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   sendCustomMessage(
     toUserId: string,
     message: string,
@@ -300,11 +319,25 @@ class StringeeClient {
     RNStringeeClient.sendCustomMessage(this.uuid, toUserId, message, callback);
   }
 
+  /**
+   * Construct a new conversation with the provided participants and options.
+   * @function createConversation
+   * @param {string} userIds User's id of participants
+   * @param {Object} options Conversation options to use when constructing this conversation
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   createConversation(
     userIds: string,
-    options,
+    options: {
+      name: string,
+      isDistinct: boolean,
+      isGroup: boolean,
+    },
     callback: RNStringeeEventCallback,
   ) {
+    if (options === undefined) {
+      options = {isDistinct: true, isGroup: false};
+    }
     RNStringeeClient.createConversation(
       this.uuid,
       userIds,
@@ -312,7 +345,7 @@ class StringeeClient {
       (status, code, message, conversation) => {
         let returnConversation;
         if (status) {
-          conversation.clientId = this.uuid;
+          conversation.stringeeClient = this;
           returnConversation = new Conversation(conversation);
         }
         return callback(status, code, message, returnConversation);
@@ -320,6 +353,12 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get the existing conversation with given id.
+   * @function getConversationById
+   * @param {string} convId Conversation's id
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getConversationById(convId: string, callback: RNStringeeEventCallback) {
     RNStringeeClient.getConversationById(
       this.uuid,
@@ -327,7 +366,7 @@ class StringeeClient {
       (status, code, message, conversation) => {
         let returnConversation;
         if (status) {
-          conversation.clientId = this.uuid;
+          conversation.stringeeClient = this;
           returnConversation = new Conversation(conversation);
         }
         return callback(status, code, message, returnConversation);
@@ -335,6 +374,14 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get conversations saved in your local database.
+   * @function getLocalConversations
+   * @param {string} userId Other user's id
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getLocalConversations(
     userId: string,
     count: number,
@@ -352,12 +399,12 @@ class StringeeClient {
           if (status) {
             if (isAscending) {
               conversations.reverse().map(conversation => {
-                conversation.clientId = this.uuid;
+                conversation.stringeeClient = this;
                 returnConversations.push(new Conversation(conversation));
               });
             } else {
               conversations.map(conversation => {
-                conversation.clientId = this.uuid;
+                conversation.stringeeClient = this;
                 returnConversations.push(new Conversation(conversation));
               });
             }
@@ -375,12 +422,12 @@ class StringeeClient {
           if (status) {
             if (isAscending) {
               conversations.reverse().map(conversation => {
-                conversation.clientId = this.uuid;
+                conversation.stringeeClient = this;
                 returnConversations.push(new Conversation(conversation));
               });
             } else {
               conversations.map(conversation => {
-                conversation.clientId = this.uuid;
+                conversation.stringeeClient = this;
                 returnConversations.push(new Conversation(conversation));
               });
             }
@@ -391,6 +438,13 @@ class StringeeClient {
     }
   }
 
+  /**
+   * Get the latest conversations from the Stringee server.
+   * @function getLastConversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getLastConversations(
     count: number,
     isAscending: boolean,
@@ -404,12 +458,12 @@ class StringeeClient {
         if (status) {
           if (isAscending) {
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -419,6 +473,13 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get the latest conversations including deleted conversations from the Stringee server.
+   * @function getAllLastConversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getAllLastConversations(
     count: number,
     isAscending: boolean,
@@ -433,12 +494,12 @@ class StringeeClient {
           if (isAscending) {
             // Tăng dần -> Cần đảo mảng
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -448,6 +509,14 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get a list of conversations with updated times greater than 'datetime' from the Stringee server.
+   * @function getConversationsAfter
+   * @param {number} datetime Number of conversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getConversationsAfter(
     datetime: number,
     count: number,
@@ -463,12 +532,12 @@ class StringeeClient {
         if (status) {
           if (isAscending) {
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -478,6 +547,14 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get a list of conversations including deleted conversations with updated times greater than 'datetime' from the Stringee server.
+   * @function getAllConversationsAfter
+   * @param {number} datetime Number of conversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getAllConversationsAfter(
     datetime: number,
     count: number,
@@ -493,12 +570,12 @@ class StringeeClient {
         if (status) {
           if (isAscending) {
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -508,6 +585,14 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get a list of conversations with updated times smaller than 'datetime' from the Stringee server.
+   * @function getConversationsBefore
+   * @param {number} datetime Number of conversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getConversationsBefore(
     datetime: number,
     count: number,
@@ -523,12 +608,12 @@ class StringeeClient {
         if (status) {
           if (isAscending) {
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -538,6 +623,14 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get a list of conversations including deleted conversations with updated times smaller than 'datetime' from the Stringee server.
+   * @function getAllConversationsBefore
+   * @param {number} datetime Number of conversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getAllConversationsBefore(
     datetime: number,
     count: number,
@@ -553,12 +646,12 @@ class StringeeClient {
         if (status) {
           if (isAscending) {
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -568,6 +661,13 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get the latest unread conversations from the Stringee server.
+   * @function getLastUnreadConversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getLastUnreadConversations(
     count: number,
     isAscending: boolean,
@@ -582,12 +682,12 @@ class StringeeClient {
           if (isAscending) {
             // Tăng dần -> Cần đảo mảng
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -597,6 +697,14 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get a list of unread conversations with updated times greater than 'datetime' from the Stringee server.
+   * @function getUnreadConversationsAfter
+   * @param {number} datetime Number of conversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getUnreadConversationsAfter(
     datetime: number,
     count: number,
@@ -612,12 +720,12 @@ class StringeeClient {
         if (status) {
           if (isAscending) {
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -627,6 +735,14 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get a list of unread conversations with updated times smaller than 'datetime' from the Stringee server.
+   * @function getUnreadConversationsBefore
+   * @param {number} datetime Number of conversations
+   * @param {string} count Number of conversations
+   * @param {boolean} isAscending Sort order true: ascending, false: descending
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getUnreadConversationsBefore(
     datetime: number,
     count: number,
@@ -642,12 +758,12 @@ class StringeeClient {
         if (status) {
           if (isAscending) {
             conversations.reverse().map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           } else {
             conversations.map(conversation => {
-              conversation.clientId = this.uuid;
+              conversation.stringeeClient = this;
               returnConversations.push(new Conversation(conversation));
             });
           }
@@ -657,6 +773,12 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get a list of existing conversations with given id of user.
+   * @function getConversationWithUser
+   * @param {string} userId other user's id
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getConversationWithUser(userId: string, callback: RNStringeeEventCallback) {
     RNStringeeClient.getConversationWithUser(
       this.uuid,
@@ -664,7 +786,7 @@ class StringeeClient {
       (status, code, message, conversation) => {
         let returnConversation;
         if (status) {
-          conversation.clientId = this.uuid;
+          conversation.stringeeClient = this;
           returnConversation = new Conversation(conversation);
         }
         return callback(status, code, message, returnConversation);
@@ -672,14 +794,30 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Get the number of unread conversations.
+   * @function getUnreadConversationCount
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getUnreadConversationCount(callback: RNStringeeEventCallback) {
     RNStringeeClient.getUnreadConversationCount(this.uuid, callback);
   }
 
+  /**
+   * Clear the local database.
+   * @function clearDb
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   clearDb(callback: RNStringeeEventCallback) {
     RNStringeeClient.clearDb(this.uuid, callback);
   }
 
+  /**
+   * Get the list of user's information with a given list of user's ids.
+   * @function getUserInfo
+   * @param {Array<string>} userIds List of user's ids.
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getUserInfo(userIds: Array<string>, callback: RNStringeeEventCallback) {
     RNStringeeClient.getUserInfo(
       this.uuid,
@@ -698,10 +836,24 @@ class StringeeClient {
 
   // ============================== LIVE-CHAT ================================
 
+  /**
+   * Get the portal's chat profile containing a list of queues.
+   * @function getChatProfile
+   * @param {string} widgetKey Portal's widgetKey
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getChatProfile(widgetKey: string, callback: RNStringeeEventCallback) {
     RNStringeeClient.getChatProfile(this.uuid, widgetKey, callback);
   }
 
+  /**
+   * Get live chat token for customer.
+   * @function getLiveChatToken
+   * @param {string} widgetKey Portal's widgetKey
+   * @param {string} name Customer's name
+   * @param {string} email Customer's email
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   getLiveChatToken(
     widgetKey: string,
     name: string,
@@ -717,27 +869,31 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Update the user information.
+   * @function updateUserInfo
+   * @param {Object} param
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   updateUserInfo(
-    name: string,
-    email: string,
-    avatar: string,
-    phone: string,
+    param: {
+      name: string,
+      email: string,
+      avatar: string,
+      phone: string,
+      location: string,
+      browser: string,
+      platform: string,
+      device: string,
+      ipAddress: string,
+      hostName: string,
+      userAgent: string,
+    },
     callback: RNStringeeEventCallback,
   ) {
-    RNStringeeClient.updateUserInfo(
-      this.uuid,
-      name,
-      email,
-      avatar,
-      phone,
-      callback,
-    );
-  }
-
-  updateUserInfoWithParam(
-    param: UserInfoParam,
-    callback: RNStringeeEventCallback,
-  ) {
+    if (param === undefined) {
+      param = {};
+    }
     RNStringeeClient.updateUserInfo2(
       this.uuid,
       JSON.stringify(param),
@@ -745,6 +901,12 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Create a live chat conversation.
+   * @function createLiveChatConversation
+   * @param {string} queueId Queue's id
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   createLiveChatConversation(
     queueId: string,
     callback: RNStringeeEventCallback,
@@ -755,7 +917,7 @@ class StringeeClient {
       (status, code, message, data) => {
         let returnConversation;
         if (status) {
-          data.clientId = this.uuid;
+          data.stringeeClient = this;
           returnConversation = new Conversation(data);
         }
         return callback(status, code, message, returnConversation);
@@ -763,6 +925,15 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Create a ticket if not during business hours.
+   * @function createLiveChatTicket
+   * @param {string} widgetKey Portal's widgetKey
+   * @param {string} name Customer's name
+   * @param {string} email Customer's email
+   * @param {string} note Note for ticket
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   createLiveChatTicket(
     widgetKey: string,
     name: string,
@@ -781,11 +952,26 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Create a ticket if not during business hours.
+   * @function createLiveChatTicketWithParam
+   * @param {string} widgetKey Portal's widgetKey
+   * @param {Object} param Param contain name, email, phone, note
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   createLiveChatTicketWithParam(
     widgetKey: string,
-    param: LiveChatTicketParam,
+    param: {
+      name: string,
+      email: string,
+      phone: string,
+      note: string,
+    },
     callback: RNStringeeEventCallback,
   ) {
+    if (param === undefined) {
+      param = {};
+    }
     RNStringeeClient.createLiveChatTicket(
       this.uuid,
       widgetKey,
@@ -797,6 +983,14 @@ class StringeeClient {
     );
   }
 
+  /**
+   * Send chat's content to an email at any time.
+   * @function sendChatTranscript
+   * @param {string} email Email receive
+   * @param {string} convId Conversation's id
+   * @param {string} domain Stringee will send an email with "stringee" domain for default, you can change this by pass domain parameter with any string that you want.
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
   sendChatTranscript(
     email: string,
     convId: string,
@@ -812,4 +1006,72 @@ class StringeeClient {
     );
   }
 }
+
+function getStringeeCall(stringeeClient: StringeeClient, data): StringeeCall {
+  let stringeeCall = new StringeeCall({
+    stringeeClient: stringeeClient,
+    from: data.from,
+    to: data.to,
+  });
+  stringeeCall.callId = data.callId;
+  stringeeCall.customData = data.customDataFromYourServer;
+  stringeeCall.fromAlias = data.fromAlias;
+  stringeeCall.toAlias = data.toAlias;
+  stringeeCall.callType = getCallType(data.callType);
+  stringeeCall.isVideoCall = data.isVideoCall;
+}
+
+function getStringeeCall2(stringeeClient: StringeeClient, data): StringeeCall2 {
+  let stringeeCall2 = new StringeeCall2({
+    stringeeClient: stringeeClient,
+    from: data.from,
+    to: data.to,
+  });
+  stringeeCall2.callId = data.callId;
+  stringeeCall2.customData = data.customDataFromYourServer;
+  stringeeCall2.fromAlias = data.fromAlias;
+  stringeeCall2.toAlias = data.toAlias;
+  stringeeCall2.callType = getCallType(data.callType);
+  stringeeCall2.isVideoCall = data.isVideoCall;
+}
+
+function getCallType(nativeType: number): CallType {
+  switch (nativeType) {
+    case 0:
+      return CallType.appToAppOutgoing;
+    case 1:
+      return CallType.appToAppIncoming;
+    case 2:
+      return CallType.appToPhone;
+    case 3:
+      return CallType.phoneToApp;
+    default:
+      return CallType.appToAppOutgoing;
+  }
+}
+
+function getObjectType(nativeType: number): ObjectType {
+  switch (nativeType) {
+    case 0:
+      return ObjectType.conversation;
+    case 1:
+      return ObjectType.message;
+    default:
+      return ObjectType.conversation;
+  }
+}
+
+function getChangeType(nativeType: number): ChangeType {
+  switch (nativeType) {
+    case 0:
+      return ChangeType.insert;
+    case 1:
+      return ChangeType.update;
+    case 2:
+      return ChangeType.delete;
+    default:
+      return ChangeType.insert;
+  }
+}
+
 export {StringeeClient};

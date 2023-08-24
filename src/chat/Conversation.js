@@ -3,6 +3,8 @@ import Message from './Message';
 import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
 import {RNStringeeClient} from '../helpers/StringeeHelper';
 import type {StringeeClient} from '../StringeeClient';
+import type {ConversationInfo} from '../helpers/ConversationInfo';
+import {NewMessageInfo} from '../helpers/NewMessageInfo';
 
 class Conversation {
   id: string;
@@ -113,17 +115,21 @@ class Conversation {
   /**
    * Update the conversation's information.
    * @function updateConversation
-   * @param {Object} params New information of the conversation
+   * @param {ConversationInfo} conversationInfo New information of the conversation
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   updateConversation(
-    params: {name: string, avatar: string},
+    conversationInfo: ConversationInfo,
     callback: RNStringeeEventCallback,
   ) {
+    if (conversationInfo === undefined) {
+      callback(false, -1, 'conversationInfo is undefined');
+      return;
+    }
     RNStringeeClient.updateConversation(
       this.stringeeClient.uuid,
       this.id,
-      params,
+      conversationInfo,
       callback,
     );
   }
@@ -166,13 +172,10 @@ class Conversation {
   /**
    * Send the message.
    * @function sendMessage
-   * @param {Object} message Message to send
+   * @param {NewMessageInfo} message Message to send
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  sendMessage(
-    message: {convId: string, type: number, message: {}},
-    callback: RNStringeeEventCallback,
-  ) {
+  sendMessage(message: NewMessageInfo, callback: RNStringeeEventCallback) {
     RNStringeeClient.sendMessage(this.stringeeClient.uuid, message, callback);
   }
 

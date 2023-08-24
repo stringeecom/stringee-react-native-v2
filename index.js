@@ -21,6 +21,10 @@ import {
 import {StringeeClientListener} from './src/helpers/StringeeClientListener';
 import {StringeeCallListener} from './src/helpers/StringeeCallListener';
 import {StringeeCall2Listener} from './src/helpers/StringeeCall2Listener';
+import {ConversationOption} from './src/helpers/ConversationOption';
+import {UserInfo} from './src/helpers/UserInfo';
+import {ConversationInfo} from './src/helpers/ConversationInfo';
+import {NewMessageInfo} from './src/helpers/NewMessageInfo';
 
 export {
   StringeeClient,
@@ -44,4 +48,8 @@ export {
   MediaType,
   VideoResolution,
   CallType,
+  ConversationOption,
+  UserInfo,
+  ConversationInfo,
+  NewMessageInfo,
 };

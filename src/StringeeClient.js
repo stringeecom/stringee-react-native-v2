@@ -10,6 +10,7 @@ import {
   ChangeType,
   ChatRequest,
   Conversation,
+  ConversationOption,
   Message,
   ObjectType,
   StringeeCall,
@@ -17,7 +18,9 @@ import {
   StringeeClientListener,
   StringeeServerAddress,
   User,
+  UserInfo,
 } from '../index';
+import {LiveChatTicketParam} from './helpers/LiveChatTicketParam';
 
 const iOS = Platform.OS === 'ios';
 
@@ -323,20 +326,16 @@ class StringeeClient {
    * Construct a new conversation with the provided participants and options.
    * @function createConversation
    * @param {string} userIds User's id of participants
-   * @param {Object} options Conversation options to use when constructing this conversation
+   * @param {ConversationOption} options Conversation options to use when constructing this conversation
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   createConversation(
     userIds: string,
-    options: {
-      name: string,
-      isDistinct: boolean,
-      isGroup: boolean,
-    },
+    options: ConversationOption,
     callback: RNStringeeEventCallback,
   ) {
     if (options === undefined) {
-      options = {isDistinct: true, isGroup: false};
+      options = new ConversationOption();
     }
     RNStringeeClient.createConversation(
       this.uuid,
@@ -872,31 +871,13 @@ class StringeeClient {
   /**
    * Update the user information.
    * @function updateUserInfo
-   * @param {Object} param
+   * @param {UserInfo} userInfo
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  updateUserInfo(
-    param: {
-      name: string,
-      email: string,
-      avatar: string,
-      phone: string,
-      location: string,
-      browser: string,
-      platform: string,
-      device: string,
-      ipAddress: string,
-      hostName: string,
-      userAgent: string,
-    },
-    callback: RNStringeeEventCallback,
-  ) {
-    if (param === undefined) {
-      param = {};
-    }
+  updateUserInfo(userInfo: UserInfo, callback: RNStringeeEventCallback) {
     RNStringeeClient.updateUserInfo2(
       this.uuid,
-      JSON.stringify(param),
+      JSON.stringify(userInfo),
       callback,
     );
   }
@@ -929,56 +910,25 @@ class StringeeClient {
    * Create a ticket if not during business hours.
    * @function createLiveChatTicket
    * @param {string} widgetKey Portal's widgetKey
-   * @param {string} name Customer's name
-   * @param {string} email Customer's email
-   * @param {string} note Note for ticket
+   * @param {LiveChatTicketParam} liveChatTicketParam Param contain name, email, phone, note
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   createLiveChatTicket(
     widgetKey: string,
-    name: string,
-    email: string,
-    note: string,
+    liveChatTicketParam: LiveChatTicketParam,
     callback: RNStringeeEventCallback,
   ) {
-    RNStringeeClient.createLiveChatTicket(
-      this.uuid,
-      widgetKey,
-      name,
-      email,
-      '',
-      note,
-      callback,
-    );
-  }
-
-  /**
-   * Create a ticket if not during business hours.
-   * @function createLiveChatTicketWithParam
-   * @param {string} widgetKey Portal's widgetKey
-   * @param {Object} param Param contain name, email, phone, note
-   * @param {RNStringeeEventCallback} callback Return the result of function
-   */
-  createLiveChatTicketWithParam(
-    widgetKey: string,
-    param: {
-      name: string,
-      email: string,
-      phone: string,
-      note: string,
-    },
-    callback: RNStringeeEventCallback,
-  ) {
-    if (param === undefined) {
-      param = {};
+    if (liveChatTicketParam === undefined) {
+      callback(false, -1, 'liveChatTicketParam is undefined');
+      return;
     }
     RNStringeeClient.createLiveChatTicket(
       this.uuid,
       widgetKey,
-      param.name,
-      param.email,
-      param.phone,
-      param.note,
+      liveChatTicketParam.name,
+      liveChatTicketParam.email,
+      liveChatTicketParam.phone,
+      liveChatTicketParam.note,
       callback,
     );
   }

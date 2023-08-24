@@ -105,3 +105,7 @@ The Stringee Android SDK requires some permissions from your AndroidManifest
     ...
     }
     ```
+
+### Version 1.0.0
+##### Features:
+- Publish new sdk for react native

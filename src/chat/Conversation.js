@@ -57,9 +57,9 @@ class Conversation {
    */
   deleteConversation(callback: RNStringeeEventCallback) {
     RNStringeeClient.deleteConversation(
-      this.stringeeClient.uuid,
-      this.id,
-      callback,
+        this.stringeeClient.uuid,
+        this.id,
+        callback,
     );
   }
 
@@ -71,18 +71,18 @@ class Conversation {
    */
   addParticipants(userIds: Array<string>, callback: RNStringeeEventCallback) {
     RNStringeeClient.addParticipants(
-      this.stringeeClient.uuid,
-      this.id,
-      userIds,
-      (status, code, message, users) => {
-        let returnUsers = [];
-        if (status) {
-          users.map(user => {
-            returnUsers.push(new User(user));
-          });
-        }
-        return callback(status, code, message, returnUsers);
-      },
+        this.stringeeClient.uuid,
+        this.id,
+        userIds,
+        (status, code, message, users) => {
+          let returnUsers = [];
+          if (status) {
+            users.map(user => {
+              returnUsers.push(new User(user));
+            });
+          }
+          return callback(status, code, message, returnUsers);
+        },
     );
   }
 
@@ -93,22 +93,22 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   removeParticipants(
-    userIds: Array<string>,
-    callback: RNStringeeEventCallback,
+      userIds: Array<string>,
+      callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.removeParticipants(
-      this.stringeeClient.uuid,
-      this.id,
-      userIds,
-      (status, code, message, users) => {
-        let returnUsers = [];
-        if (status) {
-          users.map(user => {
-            returnUsers.push(new User(user));
-          });
-        }
-        return callback(status, code, message, returnUsers);
-      },
+        this.stringeeClient.uuid,
+        this.id,
+        userIds,
+        (status, code, message, users) => {
+          let returnUsers = [];
+          if (status) {
+            users.map(user => {
+              returnUsers.push(new User(user));
+            });
+          }
+          return callback(status, code, message, returnUsers);
+        },
     );
   }
 
@@ -119,18 +119,18 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   updateConversation(
-    conversationInfo: ConversationInfo,
-    callback: RNStringeeEventCallback,
+      conversationInfo: ConversationInfo,
+      callback: RNStringeeEventCallback,
   ) {
     if (conversationInfo === undefined) {
       callback(false, -1, 'conversationInfo is undefined');
       return;
     }
     RNStringeeClient.updateConversation(
-      this.stringeeClient.uuid,
-      this.id,
-      conversationInfo,
-      callback,
+        this.stringeeClient.uuid,
+        this.id,
+        conversationInfo,
+        callback,
     );
   }
 
@@ -141,9 +141,9 @@ class Conversation {
    */
   markConversationAsRead(callback: RNStringeeEventCallback) {
     RNStringeeClient.markConversationAsRead(
-      this.stringeeClient.uuid,
-      this.id,
-      callback,
+        this.stringeeClient.uuid,
+        this.id,
+        callback,
     );
   }
 
@@ -154,9 +154,9 @@ class Conversation {
    */
   sendBeginTyping(callback: RNStringeeEventCallback) {
     RNStringeeClient.sendBeginTyping(
-      this.stringeeClient.uuid,
-      this.id,
-      callback,
+        this.stringeeClient.uuid,
+        this.id,
+        callback,
     );
   }
 
@@ -187,10 +187,10 @@ class Conversation {
    */
   deleteMessage(messageId: string, callback: RNStringeeEventCallback) {
     RNStringeeClient.deleteMessage(
-      this.stringeeClient.uuid,
-      this.id,
-      messageId,
-      callback,
+        this.stringeeClient.uuid,
+        this.id,
+        messageId,
+        callback,
     );
   }
 
@@ -202,10 +202,10 @@ class Conversation {
    */
   revokeMessage(messageId: string, callback: RNStringeeEventCallback) {
     RNStringeeClient.revokeMessage(
-      this.stringeeClient.uuid,
-      this.id,
-      messageId,
-      callback,
+        this.stringeeClient.uuid,
+        this.id,
+        messageId,
+        callback,
     );
   }
 
@@ -217,31 +217,31 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getLocalMessages(
-    count: number,
-    isAscending: boolean,
-    callback: RNStringeeEventCallback,
+      count: number,
+      isAscending: boolean,
+      callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getLocalMessages(
-      this.stringeeClient.uuid,
-      this.id,
-      count,
-      (status, code, message, messages) => {
-        let returnMessages = [];
-        if (status) {
-          if (isAscending) {
-            messages.map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
-          } else {
-            messages.reverse().map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
+        this.stringeeClient.uuid,
+        this.id,
+        count,
+        (status, code, message, messages) => {
+          let returnMessages = [];
+          if (status) {
+            if (isAscending) {
+              messages.map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            } else {
+              messages.reverse().map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            }
           }
-        }
-        return callback(status, code, message, returnMessages);
-      },
+          return callback(status, code, message, returnMessages);
+        },
     );
   }
 
@@ -255,35 +255,35 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getLastMessages(
-    count: number,
-    isAscending: boolean,
-    loadDeletedMessage: boolean,
-    loadDeletedMessageContent: boolean,
-    callback: RNStringeeEventCallback,
+      count: number,
+      isAscending: boolean,
+      loadDeletedMessage: boolean,
+      loadDeletedMessageContent: boolean,
+      callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getLastMessages(
-      this.stringeeClient.uuid,
-      this.id,
-      count,
-      loadDeletedMessage,
-      loadDeletedMessageContent,
-      (status, code, message, messages) => {
-        let returnMessages = [];
-        if (status) {
-          if (isAscending) {
-            messages.map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
-          } else {
-            messages.reverse().map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
+        this.stringeeClient.uuid,
+        this.id,
+        count,
+        loadDeletedMessage,
+        loadDeletedMessageContent,
+        (status, code, message, messages) => {
+          let returnMessages = [];
+          if (status) {
+            if (isAscending) {
+              messages.map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            } else {
+              messages.reverse().map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            }
           }
-        }
-        return callback(status, code, message, returnMessages);
-      },
+          return callback(status, code, message, returnMessages);
+        },
     );
   }
 
@@ -297,35 +297,35 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getAllLastMessages(
-    count: number,
-    isAscending: boolean,
-    loadDeletedMessage: boolean,
-    loadDeletedMessageContent: boolean,
-    callback: RNStringeeEventCallback,
+      count: number,
+      isAscending: boolean,
+      loadDeletedMessage: boolean,
+      loadDeletedMessageContent: boolean,
+      callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getAllLastMessages(
-      this.stringeeClient.uuid,
-      this.id,
-      count,
-      loadDeletedMessage,
-      loadDeletedMessageContent,
-      (status, code, message, messages) => {
-        let returnMessages = [];
-        if (status) {
-          if (isAscending) {
-            messages.map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
-          } else {
-            messages.reverse().map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
+        this.stringeeClient.uuid,
+        this.id,
+        count,
+        loadDeletedMessage,
+        loadDeletedMessageContent,
+        (status, code, message, messages) => {
+          let returnMessages = [];
+          if (status) {
+            if (isAscending) {
+              messages.map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            } else {
+              messages.reverse().map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            }
           }
-        }
-        return callback(status, code, message, returnMessages);
-      },
+          return callback(status, code, message, returnMessages);
+        },
     );
   }
 
@@ -340,37 +340,37 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getMessagesAfter(
-    sequence: number,
-    count: number,
-    isAscending: boolean,
-    loadDeletedMessage: boolean,
-    loadDeletedMessageContent: boolean,
-    callback: RNStringeeEventCallback,
+      sequence: number,
+      count: number,
+      isAscending: boolean,
+      loadDeletedMessage: boolean,
+      loadDeletedMessageContent: boolean,
+      callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getMessagesAfter(
-      this.stringeeClient.uuid,
-      this.id,
-      sequence,
-      count,
-      loadDeletedMessage,
-      loadDeletedMessageContent,
-      (status, code, message, messages) => {
-        let returnMessages = [];
-        if (status) {
-          if (isAscending) {
-            messages.map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
-          } else {
-            messages.reverse().map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
+        this.stringeeClient.uuid,
+        this.id,
+        sequence,
+        count,
+        loadDeletedMessage,
+        loadDeletedMessageContent,
+        (status, code, message, messages) => {
+          let returnMessages = [];
+          if (status) {
+            if (isAscending) {
+              messages.map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            } else {
+              messages.reverse().map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            }
           }
-        }
-        return callback(status, code, message, returnMessages);
-      },
+          return callback(status, code, message, returnMessages);
+        },
     );
   }
 
@@ -385,37 +385,37 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getAllMessagesAfter(
-    sequence: number,
-    count: number,
-    isAscending: boolean,
-    loadDeletedMessage: boolean,
-    loadDeletedMessageContent: boolean,
-    callback: RNStringeeEventCallback,
+      sequence: number,
+      count: number,
+      isAscending: boolean,
+      loadDeletedMessage: boolean,
+      loadDeletedMessageContent: boolean,
+      callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getAllMessagesAfter(
-      this.stringeeClient.uuid,
-      this.id,
-      sequence,
-      count,
-      loadDeletedMessage,
-      loadDeletedMessageContent,
-      (status, code, message, messages) => {
-        let returnMessages = [];
-        if (status) {
-          if (isAscending) {
-            messages.map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
-          } else {
-            messages.reverse().map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
+        this.stringeeClient.uuid,
+        this.id,
+        sequence,
+        count,
+        loadDeletedMessage,
+        loadDeletedMessageContent,
+        (status, code, message, messages) => {
+          let returnMessages = [];
+          if (status) {
+            if (isAscending) {
+              messages.map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            } else {
+              messages.reverse().map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            }
           }
-        }
-        return callback(status, code, message, returnMessages);
-      },
+          return callback(status, code, message, returnMessages);
+        },
     );
   }
 
@@ -430,37 +430,37 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getMessagesBefore(
-    sequence: number,
-    count: number,
-    isAscending: boolean,
-    loadDeletedMessage: boolean,
-    loadDeletedMessageContent: boolean,
-    callback: RNStringeeEventCallback,
+      sequence: number,
+      count: number,
+      isAscending: boolean,
+      loadDeletedMessage: boolean,
+      loadDeletedMessageContent: boolean,
+      callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getMessagesBefore(
-      this.stringeeClient.uuid,
-      this.id,
-      sequence,
-      count,
-      loadDeletedMessage,
-      loadDeletedMessageContent,
-      (status, code, message, messages) => {
-        let returnMessages = [];
-        if (status) {
-          if (isAscending) {
-            messages.map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
-          } else {
-            messages.reverse().map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
+        this.stringeeClient.uuid,
+        this.id,
+        sequence,
+        count,
+        loadDeletedMessage,
+        loadDeletedMessageContent,
+        (status, code, message, messages) => {
+          let returnMessages = [];
+          if (status) {
+            if (isAscending) {
+              messages.map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            } else {
+              messages.reverse().map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            }
           }
-        }
-        return callback(status, code, message, returnMessages);
-      },
+          return callback(status, code, message, returnMessages);
+        },
     );
   }
 
@@ -475,37 +475,37 @@ class Conversation {
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getAllMessagesBefore(
-    sequence: number,
-    count: number,
-    isAscending: boolean,
-    loadDeletedMessage: boolean,
-    loadDeletedMessageContent: boolean,
-    callback: RNStringeeEventCallback,
+      sequence: number,
+      count: number,
+      isAscending: boolean,
+      loadDeletedMessage: boolean,
+      loadDeletedMessageContent: boolean,
+      callback: RNStringeeEventCallback,
   ) {
     RNStringeeClient.getAllMessagesBefore(
-      this.stringeeClient.uuid,
-      this.id,
-      sequence,
-      count,
-      loadDeletedMessage,
-      loadDeletedMessageContent,
-      (status, code, message, messages) => {
-        let returnMessages = [];
-        if (status) {
-          if (isAscending) {
-            messages.map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
-          } else {
-            messages.reverse().map(msg => {
-              msg.stringeeClient = this.stringeeClient.uuid;
-              returnMessages.push(new Message(msg));
-            });
+        this.stringeeClient.uuid,
+        this.id,
+        sequence,
+        count,
+        loadDeletedMessage,
+        loadDeletedMessageContent,
+        (status, code, message, messages) => {
+          let returnMessages = [];
+          if (status) {
+            if (isAscending) {
+              messages.map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            } else {
+              messages.reverse().map(msg => {
+                msg.stringeeClient = this.stringeeClient.uuid;
+                returnMessages.push(new Message(msg));
+              });
+            }
           }
-        }
-        return callback(status, code, message, returnMessages);
-      },
+          return callback(status, code, message, returnMessages);
+        },
     );
   }
 
@@ -517,13 +517,13 @@ class Conversation {
    */
   getMessageById(messageId: string, callback: RNStringeeEventCallback) {
     RNStringeeClient.getMessageById(
-      this.stringeeClient.uuid,
-      this.id,
-      messageId,
-      (status, code, message, msg) => {
-        msg.clientId = this.stringeeClient.uuid;
-        return callback(status, code, message, new Message(msg));
-      },
+        this.stringeeClient.uuid,
+        this.id,
+        messageId,
+        (status, code, message, msg) => {
+          msg.clientId = this.stringeeClient.uuid;
+          return callback(status, code, message, new Message(msg));
+        },
     );
   }
 
@@ -534,6 +534,27 @@ class Conversation {
    */
   endChat(callback: RNStringeeEventCallback) {
     RNStringeeClient.endChat(this.stringeeClient.uuid, this.id, callback);
+  }
+
+  /**
+   * Send chat's content to an email at any time.
+   * @function sendChatTranscript
+   * @param {string} email Email receive
+   * @param {string} domain Stringee will send an email with "stringee" domain for default, you can change this by pass domain parameter with any string that you want.
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
+  sendChatTranscript(
+      email: string,
+      domain: string,
+      callback: RNStringeeEventCallback,
+  ) {
+    RNStringeeClient.sendChatTranscript(
+        this.stringeeClient.uuid,
+        email,
+        this.id,
+        domain,
+        callback,
+    );
   }
 }
 

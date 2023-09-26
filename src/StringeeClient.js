@@ -932,29 +932,6 @@ class StringeeClient {
       callback,
     );
   }
-
-  /**
-   * Send chat's content to an email at any time.
-   * @function sendChatTranscript
-   * @param {string} email Email receive
-   * @param {string} convId Conversation's id
-   * @param {string} domain Stringee will send an email with "stringee" domain for default, you can change this by pass domain parameter with any string that you want.
-   * @param {RNStringeeEventCallback} callback Return the result of function
-   */
-  sendChatTranscript(
-    email: string,
-    convId: string,
-    domain: string,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.sendChatTranscript(
-      this.uuid,
-      email,
-      convId,
-      domain,
-      callback,
-    );
-  }
 }
 
 function getStringeeCall(stringeeClient: StringeeClient, data): StringeeCall {

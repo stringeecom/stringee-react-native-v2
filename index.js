@@ -1,6 +1,6 @@
 import {StringeeClient} from './src/StringeeClient';
-import {StringeeCall} from './src/StringeeCall';
-import {StringeeCall2} from './src/StringeeCall2';
+import {StringeeCall} from './src/ call/StringeeCall';
+import {StringeeCall2} from './src/ call/StringeeCall2';
 import {StringeeVideoView} from './src/StringeeVideoView';
 import StringeeServerAddress from './src/helpers/StringeeServerAddress';
 import Conversation from './src/chat/Conversation';
@@ -18,9 +18,9 @@ import {
   VideoResolution,
   CallType,
 } from './src/helpers/StringeeHelper';
-import {StringeeClientListener} from './src/helpers/StringeeClientListener';
-import {StringeeCallListener} from './src/helpers/StringeeCallListener';
-import {StringeeCall2Listener} from './src/helpers/StringeeCall2Listener';
+import {StringeeClientListener} from './src/listener/StringeeClientListener';
+import {StringeeCallListener} from './src/listener/StringeeCallListener';
+import {StringeeCall2Listener} from './src/listener/StringeeCall2Listener';
 import {ConversationOption} from './src/helpers/ConversationOption';
 import {UserInfo} from './src/helpers/UserInfo';
 import {ConversationInfo} from './src/helpers/ConversationInfo';

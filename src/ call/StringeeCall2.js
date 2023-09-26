@@ -4,25 +4,26 @@ import {
   NativeModules,
   Platform,
 } from 'react-native';
-import type {RNStringeeEventCallback} from './helpers/StringeeHelper';
+import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
 import {
   callEvents,
   getAudioDevice,
   getListAudioDevice,
   getMediaState,
+  getMediaType,
   getSignalingState,
-  stringeeCallEvents,
-} from './helpers/StringeeHelper';
+  stringeeCall2Events,
+} from '../helpers/StringeeHelper';
 import {
   CallType,
-  StringeeCallListener,
+  StringeeCall2Listener,
   StringeeClient,
   VideoResolution,
-} from '../index';
+} from '../../index';
 
-const RNStringeeCall = NativeModules.RNStringeeCall;
+const RNStringeeCall2 = NativeModules.RNStringeeCall2;
 
-class StringeeCall {
+class StringeeCall2 {
   stringeeClient: StringeeClient;
   callId: string;
   customData: string;
@@ -35,7 +36,7 @@ class StringeeCall {
   videoResolution: VideoResolution = VideoResolution.normal;
 
   /**
-   * Create the StringeeCall.
+   * Create the StringeeCall2.
    * @param {StringeeClient} props.stringeeClient StringeeClient used to connect to the Stringee server
    * @param {string} props.from From number
    * @param {string} props.to To number
@@ -55,20 +56,20 @@ class StringeeCall {
     this.to = props.to;
     this.events = [];
     this.subscriptions = [];
-    this.eventEmitter = new NativeEventEmitter(RNStringeeCall);
+    this.eventEmitter = new NativeEventEmitter(RNStringeeCall2);
   }
 
   /**
-   * Register to listen to events from StringeeCall.
+   * Register to listen to events from StringeeCall2.
    * @function registerEvents
-   * @param {StringeeCallListener} listener
+   * @param {StringeeCall2Listener} listener
    */
-  registerEvents(listener: StringeeCallListener) {
+  registerEvents(listener: StringeeCall2Listener) {
     if (this.events.length !== 0 && this.subscriptions.length !== 0) {
       return;
     }
     if (listener) {
-      stringeeCallEvents.forEach(event => {
+      stringeeCall2Events.forEach(event => {
         if (listener[event]) {
           let emitterSubscription: EmitterSubscription =
             this.eventEmitter.addListener(
@@ -122,19 +123,27 @@ class StringeeCall {
                       getListAudioDevice(data.availableAudioDevices),
                     );
                     break;
+                  case 'onTrackMediaStateChange':
+                    listener.onTrackMediaStateChange(
+                      this,
+                      data.from,
+                      getMediaType(data.mediaType),
+                      data.enable,
+                    );
+                    break;
                 }
               },
             );
           this.subscriptions.push(emitterSubscription);
           this.events.push(callEvents[Platform.OS][event]);
-          RNStringeeCall.setNativeEvent(callEvents[Platform.OS][event]);
+          RNStringeeCall2.setNativeEvent(callEvents[Platform.OS][event]);
         }
       });
     }
   }
 
   /**
-   * Unregister from listening to events from StringeeCall.
+   * Unregister from listening to events from StringeeCall2.
    * @function unregisterEvents
    */
   unregisterEvents() {
@@ -145,7 +154,7 @@ class StringeeCall {
     this.subscriptions.forEach(e => e.remove());
     this.subscriptions = [];
 
-    this.events.forEach(e => RNStringeeCall.removeNativeEvent(e));
+    this.events.forEach(e => RNStringeeCall2.removeNativeEvent(e));
     this.events = [];
   }
 
@@ -162,7 +171,7 @@ class StringeeCall {
       customData: this.customData,
       videoResolution: this.videoResolution,
     };
-    RNStringeeCall.makeCall(
+    RNStringeeCall2.makeCall(
       this.stringeeClient.uuid,
       JSON.stringify(makeCallParam),
       (status, code, message, callId, customData) => {
@@ -184,7 +193,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.initAnswer(this.stringeeClient.uuid, this.callId, callback);
+    RNStringeeCall2.initAnswer(this.stringeeClient.uuid, this.callId, callback);
   }
 
   /**
@@ -196,7 +205,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.answer(this.callId, callback);
+    RNStringeeCall2.answer(this.callId, callback);
   }
 
   /**
@@ -208,7 +217,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.hangup(this.callId, callback);
+    RNStringeeCall2.hangup(this.callId, callback);
   }
 
   /**
@@ -220,7 +229,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.reject(this.callId, callback);
+    RNStringeeCall2.reject(this.callId, callback);
   }
 
   /**
@@ -233,20 +242,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.sendDTMF(this.callId, dtmf, callback);
-  }
-
-  /**
-   * Send info to another client.
-   * @function sendCallInfo
-   * @param {string} callInfo data you want to send, in JSON string
-   * @param {RNStringeeEventCallback} callback Return the result of function
-   */
-  sendCallInfo(callInfo: string, callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall.sendCallInfo(this.callId, callInfo, callback);
+    RNStringeeCall2.sendDTMF(this.callId, dtmf, callback);
   }
 
   /**
@@ -258,7 +254,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.getCallStats(
+    RNStringeeCall2.getCallStats(
       this.stringeeClient.uuid,
       this.callId,
       callback,
@@ -274,7 +270,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.switchCamera(this.callId, callback);
+    RNStringeeCall2.switchCamera(this.callId, callback);
   }
 
   /**
@@ -287,7 +283,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.enableVideo(this.callId, enabled, callback);
+    RNStringeeCall2.enableVideo(this.callId, enabled, callback);
   }
 
   /**
@@ -300,7 +296,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.mute(this.callId, mute, callback);
+    RNStringeeCall2.mute(this.callId, mute, callback);
   }
 
   /**
@@ -313,7 +309,7 @@ class StringeeCall {
     if (!callback) {
       callback = () => {};
     }
-    RNStringeeCall.setSpeakerphoneOn(this.callId, on, callback);
+    RNStringeeCall2.setSpeakerphoneOn(this.callId, on, callback);
   }
 
   /**
@@ -330,8 +326,41 @@ class StringeeCall {
       if (!callback) {
         callback = () => {};
       }
-      RNStringeeCall.resumeVideo(this.callId, callback);
+      RNStringeeCall2.resumeVideo(this.callId, callback);
     }
   }
+
+  /**
+   * Send info to another client.
+   * @function sendCallInfo
+   * @param {string} callInfo data you want to send, in JSON string
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
+  sendCallInfo(callInfo: string, callback: RNStringeeEventCallback) {
+    if (!callback) {
+      callback = () => {};
+    }
+    RNStringeeCall2.sendCallInfo(this.callId, callInfo, callback);
+  }
+
+  /**
+   * Set auto send track media state change to another client.
+   * @function setAutoSendTrackMediaStateChangeEvent
+   * @param {boolean} autoSendTrackMediaStateChangeEvent true - auto send, false - not auto send
+   * @param {RNStringeeEventCallback} callback Return the result of function
+   */
+  setAutoSendTrackMediaStateChangeEvent(
+    autoSendTrackMediaStateChangeEvent: boolean,
+    callback: RNStringeeEventCallback,
+  ) {
+    if (!callback) {
+      callback = () => {};
+    }
+    RNStringeeCall2.setAutoSendTrackMediaStateChangeEvent(
+      this.callId,
+      autoSendTrackMediaStateChangeEvent,
+      callback,
+    );
+  }
 }
-export {StringeeCall};
+export {StringeeCall2};

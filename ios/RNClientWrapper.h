@@ -1,0 +1,27 @@
+//
+//  RNClientWrapper.h
+//  RNStringee
+//
+//  Created by HoangDuoc on 5/20/20.
+//
+
+#import <Foundation/Foundation.h>
+#import <Stringee/Stringee.h>
+
+@interface RNClientWrapper : NSObject <StringeeConnectionDelegate, StringeeIncomingCallDelegate>
+
+@property (nonatomic) NSString *identifier;
+@property (nonatomic) StringeeClient *client;
+@property (assign, nonatomic) BOOL isConnecting;
+@property (nonatomic) NSMutableDictionary *messages;
+
+- (instancetype)initWithIdentifier:(NSString *)identifier baseUrl:(NSString *)baseUrl serverAddresses:(NSArray<StringeeServerAddress *> *)serverAddresses stringeeXBaseUrl:(NSString *)stringeeXBaseUrl;
+
+- (void)setNativeEvent:(NSString *)event;
+
+- (void)removeNativeEvent:(NSString *)event;
+
+- (void)createClientIfNeed;
+
+@end
+

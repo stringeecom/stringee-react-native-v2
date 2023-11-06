@@ -381,7 +381,8 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)callId dtmf:(NSString *)dtmf callback:(RC
 }
 
 RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
-    callback(@[RNStringeeInstanceManager.instance generateUUID:callId serial:serial]);
+    NSString *uuid = [RNStringeeInstanceManager.instance generateUUID:callId serial:serial];
+    callback(@[uuid]);
 }
 
 - (void)didChangeSignalingState2:(StringeeCall2 *)stringeeCall2 signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {

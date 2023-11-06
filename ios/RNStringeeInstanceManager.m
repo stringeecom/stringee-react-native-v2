@@ -31,7 +31,7 @@
 
 -(NSString *)generateUUID:(NSString *)callID serial:(NSNumber *)serial {
     if (serial == NULL) {
-        serial = @(0);
+        serial = @(1);
     }
     NSString *key = [[NSString alloc]initWithFormat:@"%@-%@", callID, serial];
     NSString *value = [uuids objectForKey:key];

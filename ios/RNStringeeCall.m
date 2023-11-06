@@ -388,6 +388,9 @@ RCT_EXPORT_METHOD(enableVideo:(NSString *)callId enableVideo:(BOOL)enableVideo c
     [call enableLocalVideo:enableVideo];
     callback(@[@(YES), @(0), @"Success"]);
 }
+RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
+    callback(@[RNStringeeInstanceManager.instance generateUUID:callId serial:serial]);
+}
 
 - (void)didChangeSignalingState:(StringeeCall *)stringeeCall signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
     
@@ -476,6 +479,4 @@ RCT_EXPORT_METHOD(enableVideo:(NSString *)callId enableVideo:(BOOL)enableVideo c
         }
     }
 }
-
-
 @end

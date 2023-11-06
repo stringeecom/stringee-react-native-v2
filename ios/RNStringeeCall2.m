@@ -380,6 +380,10 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)callId dtmf:(NSString *)dtmf callback:(RC
     }
 }
 
+RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
+    callback(@[RNStringeeInstanceManager.instance generateUUID:callId serial:serial]);
+}
+
 - (void)didChangeSignalingState2:(StringeeCall2 *)stringeeCall2 signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
     if ([jsEvents containsObject:didChangeSignalingState]) {
         [self sendEventWithName:didChangeSignalingState body:@{ @"callId" : stringeeCall2.callId, @"code" : @(signalingState), @"reason" : reason, @"sipCode" : @(sipCode), @"sipReason" : sipReason,  @"serial": @(stringeeCall2.serial) }];

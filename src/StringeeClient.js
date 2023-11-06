@@ -946,6 +946,7 @@ function getStringeeCall(stringeeClient: StringeeClient, data): StringeeCall {
   stringeeCall.toAlias = data.toAlias;
   stringeeCall.callType = getCallType(data.callType);
   stringeeCall.isVideoCall = data.isVideoCall;
+  stringeeCall.serial = data.serial;
   return stringeeCall;
 }
 
@@ -961,6 +962,7 @@ function getStringeeCall2(stringeeClient: StringeeClient, data): StringeeCall2 {
   stringeeCall2.toAlias = data.toAlias;
   stringeeCall2.callType = getCallType(data.callType);
   stringeeCall2.isVideoCall = data.isVideoCall;
+  stringeeCall2.serial = data.serial;
   return stringeeCall2;
 }
 

@@ -4,8 +4,9 @@
 #import "RNStringeeCall.h"
 #import "RNStringeeCall2.h"
 #import "RNClientWrapper.h"
+#import <CallKit/CallKit.h>
 
-@interface RNStringeeInstanceManager : NSObject
+@interface RNStringeeInstanceManager : NSObject<CXCallObserverDelegate>
 
 + (RNStringeeInstanceManager*)instance;
 
@@ -19,5 +20,7 @@
 
 // For multi client
 @property(strong, nonatomic) NSMutableDictionary<NSString *, RNClientWrapper *> *clientWrappers;
+// For callKeep
+-(NSString *)generateUUID:(NSString *)callID serial:(NSNumber *)serial;
 
 @end

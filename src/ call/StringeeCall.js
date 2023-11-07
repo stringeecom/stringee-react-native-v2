@@ -33,6 +33,7 @@ class StringeeCall {
   callType: CallType;
   isVideoCall: boolean;
   videoResolution: VideoResolution = VideoResolution.normal;
+  serial: number;
 
   /**
    * Create the StringeeCall.
@@ -333,5 +334,17 @@ class StringeeCall {
       RNStringeeCall.resumeVideo(this.callId, callback);
     }
   }
+
+  generateUUID(callback) {
+    if (!callback) {
+      callback = () => {};
+    }
+    const platform = Platform.OS;
+    if (platform !== 'ios') {
+      console.warn('generateUUID only for ios');
+    }
+    RNStringeeCall.generateUUID(this.callId, this.serial, callback);
+  }
+
 }
 export {StringeeCall};

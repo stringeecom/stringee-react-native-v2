@@ -47,7 +47,7 @@ class StringeeCallListener {
    */
   onReceiveRemoteStream: (stringeeCall: StringeeCall) => void;
   /**
-   * Invoked when the client receives a DTMF.
+   * Invoked when the call receives a DTMF.
    * @function onReceiveDtmfDigit
    * @param {StringeeCall} stringeeCall
    * @param {string} dtmf DTMF code ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", #)

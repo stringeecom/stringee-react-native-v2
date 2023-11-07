@@ -364,7 +364,7 @@ class StringeeCall2 {
   }
 
   generateUUID(): Promise<string> {
-    return Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const platform = Platform.OS;
       if (platform !== 'ios') {
         reject('generateUUID only for ios')

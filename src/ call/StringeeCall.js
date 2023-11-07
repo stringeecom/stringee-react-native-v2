@@ -335,15 +335,17 @@ class StringeeCall {
     }
   }
 
-  generateUUID(callback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    const platform = Platform.OS;
-    if (platform !== 'ios') {
-      console.warn('generateUUID only for ios');
-    }
-    RNStringeeCall.generateUUID(this.callId, this.serial, callback);
+  generateUUID(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const platform = Platform.OS;
+      if (platform !== 'ios') {
+        reject('generateUUID only for ios')
+      }else {
+        RNStringeeCall.generateUUID(this.callId, this.serial, (uuid => {
+          resolve(uuid);
+        }));
+      }
+    })
   }
 
 }

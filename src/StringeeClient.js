@@ -325,12 +325,12 @@ class StringeeClient {
   /**
    * Construct a new conversation with the provided participants and options.
    * @function createConversation
-   * @param {string} userIds User's id of participants
+   * @param {Array<string>} userIds User's id of participants
    * @param {ConversationOption} options Conversation options to use when constructing this conversation
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
   createConversation(
-    userIds: string,
+    userIds: Array<string>,
     options: ConversationOption,
     callback: RNStringeeEventCallback,
   ) {
@@ -773,7 +773,7 @@ class StringeeClient {
   }
 
   /**
-   * Get a list of existing conversations with given id of user.
+   * Get an existing conversations with given id of user.
    * @function getConversationWithUser
    * @param {string} userId other user's id
    * @param {RNStringeeEventCallback} callback Return the result of function

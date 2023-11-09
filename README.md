@@ -1,5 +1,4 @@
-
-# stringee
+# stringee-react-native-v2
 
 ## Getting started
 
@@ -10,9 +9,9 @@ For Expo project you need to enable and generate the native code in your project
 
 [More detail about Expo prebuild](https://docs.expo.dev/workflow/prebuild/)
 
-Install `stringee` by running:
+Install `stringee-react-native-v2` by running:
 
-`$ npm install stringee --save`
+`$ npm install stringee-react-native-v2 --save`
 
 #### iOS
 
@@ -106,6 +105,11 @@ The Stringee Android SDK requires some permissions from your AndroidManifest
     }
     ```
 
+## Migrate to stringee-react-native-v2
+
+To migrate an existing app to stringee-react-native-v2, follow [Migrate to stringee-react-native-v2](https://github.com/stringeecom/stringee-react-native-v2/blob/master/MIGRATEGUIDE.md).
+
+## Version
 ### Version 1.0.0
 ##### Features:
 - Publish new sdk for react native

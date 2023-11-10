@@ -5,6 +5,7 @@ import {
   clientEvents,
   RNStringeeClient,
   stringeeClientEvents,
+  iOS
 } from './helpers/StringeeHelper';
 import {
   ChangeType,
@@ -19,10 +20,8 @@ import {
   StringeeServerAddress,
   User,
   UserInfo,
+  LiveChatTicketParam
 } from '../index';
-import {LiveChatTicketParam} from './helpers/LiveChatTicketParam';
-
-const iOS = Platform.OS === 'ios';
 
 class StringeeClient {
   userId: string;

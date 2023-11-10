@@ -70,7 +70,7 @@ class StringeeCall2 {
     }
     if (listener) {
       stringeeCall2Events.forEach(event => {
-        if (listener[event] && callEvents[Platform.OS][event] !== null) {
+        if (listener[event] && callEvents[Platform.OS][event]) {
           let emitterSubscription: EmitterSubscription =
             this.eventEmitter.addListener(
               callEvents[Platform.OS][event],

@@ -1,6 +1,9 @@
 import {NativeModules} from 'react-native';
 
 const RNStringeeClient = NativeModules.RNStringeeClient;
+
+const iOS = Platform.OS === 'ios';
+
 const clientEvents = {
   ios: {
     onConnect: 'didConnect',
@@ -243,4 +246,5 @@ export {
   VideoResolution,
   CallType,
   RNStringeeClient,
+  iOS
 };

@@ -70,7 +70,7 @@ class StringeeCall2 {
     }
     if (listener) {
       stringeeCall2Events.forEach(event => {
-        if (listener[event]) {
+        if (listener[event] && callEvents[Platform.OS][event] !== null) {
           let emitterSubscription: EmitterSubscription =
             this.eventEmitter.addListener(
               callEvents[Platform.OS][event],
@@ -369,7 +369,7 @@ class StringeeCall2 {
       if (platform !== 'ios') {
         reject('generateUUID only for ios')
       }else {
-        RNStringeeCall.generateUUID(this.callId, this.serial, (uuid => {
+        RNStringeeCall2.generateUUID(this.callId, this.serial, (uuid => {
           resolve(uuid);
         }));
       }

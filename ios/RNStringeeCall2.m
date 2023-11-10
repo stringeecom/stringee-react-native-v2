@@ -380,7 +380,7 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)callId dtmf:(NSString *)dtmf callback:(RC
     }
 }
 
-RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(nonnull NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
     NSString *uuid = [RNStringeeInstanceManager.instance generateUUID:callId serial:serial];
     callback(@[uuid]);
 }

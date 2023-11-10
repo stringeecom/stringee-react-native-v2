@@ -369,7 +369,7 @@ class StringeeCall2 {
       if (platform !== 'ios') {
         reject('generateUUID only for ios')
       }else {
-        RNStringeeCall2.generateUUID(this.callId, this.serial, (uuid => {
+        RNStringeeCall2.generateUUID(this.callId, this.serial ?? 1, (uuid => {
           resolve(uuid);
         }));
       }

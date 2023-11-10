@@ -388,7 +388,7 @@ RCT_EXPORT_METHOD(enableVideo:(NSString *)callId enableVideo:(BOOL)enableVideo c
     [call enableLocalVideo:enableVideo];
     callback(@[@(YES), @(0), @"Success"]);
 }
-RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(nonnull NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
     NSString *uuid = [RNStringeeInstanceManager.instance generateUUID:callId serial:serial];
     callback(@[uuid]);
 }

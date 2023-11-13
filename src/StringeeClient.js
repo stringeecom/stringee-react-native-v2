@@ -4,8 +4,7 @@ import {
   clientEvents,
   RNStringeeClient,
   stringeeClientEvents,
-  iOS,
-  StringeeError,
+  isIOS,
 } from './helpers/StringeeHelper';
 import {
   ChangeType,
@@ -21,6 +20,7 @@ import {
   User,
   UserInfo,
   LiveChatTicketParam,
+  StringeeError,
 } from '../index';
 
 class StringeeClient {
@@ -78,7 +78,7 @@ class StringeeClient {
     }
     if (listener) {
       stringeeClientEvents.forEach(event => {
-        if (listener[event]) {
+        if (listener[event] && clientEvents[Platform.OS][event]) {
           let emitterSubscription: EmitterSubscription =
             this.eventEmitter.addListener(
               clientEvents[Platform.OS][event],
@@ -252,7 +252,7 @@ class StringeeClient {
           reject(new StringeeError(code, message));
         }
       };
-      if (iOS) {
+      if (isIOS) {
         RNStringeeClient.registerPushForDeviceToken(
           this.uuid,
           deviceToken,
@@ -289,7 +289,7 @@ class StringeeClient {
           reject(new StringeeError(code, message));
         }
       };
-      if (iOS) {
+      if (isIOS) {
         RNStringeeClient.registerPushAndDeleteOthers(
           this.uuid,
           deviceToken,
@@ -336,7 +336,6 @@ class StringeeClient {
    * @function sendCustomMessage
    * @param {string} toUserId User id to send a custom message to
    * @param {string} message Message to send
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   sendCustomMessage(toUserId: string, message: string): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -427,7 +426,7 @@ class StringeeClient {
           reject(new StringeeError(code, message));
         }
       };
-      if (iOS) {
+      if (isIOS) {
         // iOS su dung ca 2 tham so
         RNStringeeClient.getLocalConversations(
           this.uuid,

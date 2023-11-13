@@ -2,6 +2,47 @@
 
 In `stringee-react-native-v2`, class `StringeeClient`, `StringeeCall`, and `StringeeCall2` will no longer extend from `Component` and we move some chat function from `StringeeClient` to other class.
 Following this guide to migrate them from Component to the normal Class:
+### Convert callBack functions to Promise functions
+In `stringee-react-native-v2`, we convert all callBack functions to promise functions.
+If the function fails, you will get the `StringeeError`, which contains an error message and error code.
+
+E.g value return:
+```flow js
+// Old
+stringeeClient.getConversationById('conversationId',(status, code, message, conversation) => {
+    if (status){
+        // getConversationById success and you receive the conversation.
+    } else {
+        // getConversationById fails and you receive an error message and error code.
+    }
+});
+// New 
+stringeeClient.getConversationById('conversationId')
+    .then(conversation => {
+        // getConversationById success and you receive the conversation.
+    }).catch(error => {
+        // getConversationById fails and you receive an error: StringeeError.
+    });
+```
+
+E.g non value return:
+```flow js
+// Old
+stringeeClient.unregisterPush('deviceToken',(status, code, message) => {
+    if (status){
+        // unregisterPush success.
+    } else {
+        // unregisterPush fails and you receive an error message and error code.
+    }
+});
+// New 
+stringeeClient.unregisterPush('conversationId')
+    .then(() => {
+        // unregisterPush success.
+    }).catch(error => {
+        // unregisterPush fails and you receive an error: StringeeError.
+    });
+```
 
 #### StringeeClient
 
@@ -57,7 +98,13 @@ stringeeCall.registerEvents(stringeeCallListener);
 - function `makeCall` no longer need to put parameters to make a call:
 
 ```flow js
-stringeeCall.makeCall((status, code, message) => {});
+stringeeCall.makeCall()
+    .then(() => {
+        console.log('makeCall success');
+    })
+    .catch(error => {
+        console.log('makeCall', error.code, error.message);
+    });
 ```
 
 #### StringeeCall2
@@ -87,7 +134,13 @@ stringeeCall2.registerEvents(stringeeCall2Listener);
 - function `makeCall` no longer needs to put parameters to make a call:
 
 ```flow js
-stringeeCall2.makeCall((status, code, message) => {});
+stringeeCall2.makeCall()
+    .then(() => {
+        console.log('makeCall success');
+    })
+    .catch(error => {
+        console.log('makeCall', error.code, error.message);
+    });
 ```
 #### Chat
 

@@ -1,6 +1,5 @@
-import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
-import {RNStringeeClient, StringeeError} from '../helpers/StringeeHelper';
-import type {StringeeClient} from '../StringeeClient';
+import {RNStringeeClient} from '../helpers/StringeeHelper';
+import {StringeeClient, StringeeError} from '../../index';
 
 class Message {
   localId: string;

@@ -1,9 +1,8 @@
-import {NativeModules} from 'react-native';
-import StringeeError from './StringeeError';
+import {NativeModules, Platform} from 'react-native';
 
 const RNStringeeClient = NativeModules.RNStringeeClient;
-
-const iOS = Platform.OS === 'ios';
+const isIOS = Platform.OS === 'ios';
+const isAndroid = Platform.OS === 'android';
 
 const clientEvents = {
   ios: {
@@ -225,12 +224,6 @@ export function getMediaType(code: number): MediaType {
   }
 }
 
-export type RNStringeeEventCallback = (
-  status: boolean,
-  code: number,
-  message: string,
-) => void;
-
 export {
   clientEvents,
   callEvents,
@@ -247,6 +240,6 @@ export {
   VideoResolution,
   CallType,
   RNStringeeClient,
-  iOS,
-  StringeeError
+  isIOS,
+  isAndroid,
 };

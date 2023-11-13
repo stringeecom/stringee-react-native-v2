@@ -10,14 +10,16 @@ import {
   getListAudioDevice,
   getMediaState,
   getSignalingState,
+  isAndroid,
+  isIOS,
   stringeeCallEvents,
-  StringeeError,
 } from '../helpers/StringeeHelper';
 import {
   CallType,
   StringeeCallListener,
   StringeeClient,
   VideoResolution,
+  StringeeError,
 } from '../../index';
 
 const RNStringeeCall = NativeModules.RNStringeeCall;
@@ -386,8 +388,7 @@ class StringeeCall {
    */
   resumeVideo(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const platform = Platform.OS;
-      if (platform === 'ios') {
+      if (!isAndroid) {
         resolve(new StringeeError(-10, 'This function only for android'));
       } else {
         RNStringeeCall.resumeVideo(this.callId, (status, code, message) => {
@@ -403,8 +404,7 @@ class StringeeCall {
 
   generateUUID(): Promise<string> {
     return new Promise((resolve, reject) => {
-      const platform = Platform.OS;
-      if (platform !== 'ios') {
+      if (!isIOS) {
         reject(new StringeeError(-10, 'This function only for ios'));
       } else {
         RNStringeeCall.generateUUID(this.callId, this.serial ?? 1, uuid => {

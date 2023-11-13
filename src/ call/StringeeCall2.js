@@ -4,21 +4,22 @@ import {
   NativeModules,
   Platform,
 } from 'react-native';
-import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
 import {
-  StringeeError,
   callEvents,
   getAudioDevice,
   getListAudioDevice,
   getMediaState,
   getMediaType,
   getSignalingState,
+  isAndroid,
+  isIOS,
   stringeeCall2Events,
 } from '../helpers/StringeeHelper';
 import {
   CallType,
   StringeeCall2Listener,
   StringeeClient,
+  StringeeError,
   VideoResolution,
 } from '../../index';
 
@@ -372,12 +373,10 @@ class StringeeCall2 {
    * Only for android.
    * Resume local stream.
    * @function resumeVideo
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   resumeVideo(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const platform = Platform.OS;
-      if (platform === 'ios') {
+      if (!isAndroid) {
         reject(new StringeeError(-10, 'This function only for android'));
       } else {
         RNStringeeCall2.resumeVideo(this.callId, (status, code, message) => {
@@ -437,8 +436,7 @@ class StringeeCall2 {
 
   generateUUID(): Promise<string> {
     return new Promise((resolve, reject) => {
-      const platform = Platform.OS;
-      if (platform !== 'ios') {
+      if (!isIOS) {
         reject(new StringeeError(-10, 'This function only for ios'));
       } else {
         RNStringeeCall2.generateUUID(this.callId, this.serial ?? 1, uuid => {

@@ -26,6 +26,7 @@ import {UserInfo} from './src/helpers/UserInfo';
 import {ConversationInfo} from './src/helpers/ConversationInfo';
 import {NewMessageInfo} from './src/helpers/NewMessageInfo';
 import {LiveChatTicketParam} from './src/helpers/LiveChatTicketParam';
+import StringeeError from './src/helpers/StringeeError';
 
 export {
   StringeeClient,
@@ -53,5 +54,6 @@ export {
   UserInfo,
   ConversationInfo,
   NewMessageInfo,
-  LiveChatTicketParam
+  LiveChatTicketParam,
+  StringeeError,
 };

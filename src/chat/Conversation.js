@@ -1,11 +1,12 @@
-import User from './User';
-import Message from './Message';
-import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
-import {RNStringeeClient, StringeeError} from '../helpers/StringeeHelper';
-import type {StringeeClient} from '../StringeeClient';
-import type {ConversationInfo} from '../helpers/ConversationInfo';
-import {NewMessageInfo} from '../helpers/NewMessageInfo';
-import {reject} from 'underscore';
+import {RNStringeeClient} from '../helpers/StringeeHelper';
+import {
+  ConversationInfo,
+  Message,
+  NewMessageInfo,
+  StringeeClient,
+  User,
+  StringeeError,
+} from '../../index';
 
 class Conversation {
   id: string;
@@ -362,7 +363,6 @@ class Conversation {
    * @param {boolean} isAscending Sort order true: ascending, false: descending
    * @param {boolean} loadDeletedMessage Load include deleted message true: Load include deleted message, false: Load not include deleted message
    * @param {boolean} loadDeletedMessageContent Load include deleted message true: Load include deleted message content, false: Load not include deleted message content
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getAllLastMessages(
     count: number,

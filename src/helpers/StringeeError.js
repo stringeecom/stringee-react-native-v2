@@ -15,7 +15,7 @@ class StringeeError extends Error {
   }
 
   toString(): string {
-    return `Stringee  ${this.name} - ${this.code} - ${this.message}`
+    return `Stringee Error: ${this.name} - ${this.code} - ${this.message}`
   }
 }
 

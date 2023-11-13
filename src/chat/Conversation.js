@@ -65,7 +65,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'deleteConversation'));
           }
         },
       );
@@ -91,7 +91,7 @@ class Conversation {
             });
             resolve(returnUsers);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'addParticipants'));
           }
         },
       );
@@ -117,7 +117,7 @@ class Conversation {
             });
             resolve(returnUsers);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'removeParticipants'));
           }
         },
       );
@@ -132,7 +132,7 @@ class Conversation {
   updateConversation(conversationInfo: ConversationInfo): Promise<void> {
     return new Promise((resolve, reject) => {
       if (conversationInfo === undefined) {
-        reject(new StringeeError(-1, 'conversationInfo is undefined'));
+        reject(new StringeeError(-1, 'conversationInfo is undefined', 'updateConversation'));
       }
       RNStringeeClient.updateConversation(
         this.stringeeClient.uuid,
@@ -142,7 +142,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'updateConversation'));
           }
         },
       );
@@ -162,7 +162,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'markConversationAsRead'));
           }
         },
       );
@@ -182,7 +182,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'sendBeginTyping'));
           }
         },
       );
@@ -202,7 +202,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'sendEndTyping'));
           }
         },
       );
@@ -223,7 +223,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'sendMessage'));
           }
         },
       );
@@ -245,7 +245,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'deleteMessage'));
           }
         },
       );
@@ -267,7 +267,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'revokeMessage'));
           }
         },
       );
@@ -305,7 +305,7 @@ class Conversation {
             }
             resolve(returnMessages);
           } else {
-            reject(new StringeeError(status, message));
+            reject(new StringeeError(status, message, 'getLocalMessages'));
           }
         },
       );
@@ -349,7 +349,7 @@ class Conversation {
             }
             resolve(returnMessages);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'getLastMessages'));
           }
         },
       );
@@ -393,7 +393,7 @@ class Conversation {
             }
             resolve(returnMessages);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'getAllLastMessages'));
           }
         },
       );
@@ -440,7 +440,7 @@ class Conversation {
             }
             resolve(returnMessages);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'getMessagesAfter'));
           }
         },
       );
@@ -487,7 +487,7 @@ class Conversation {
             }
             resolve(returnMessages);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'getAllMessagesAfter'));
           }
         },
       );
@@ -534,7 +534,7 @@ class Conversation {
             }
             resolve(returnMessages);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'getMessagesBefore'));
           }
         },
       );
@@ -581,7 +581,7 @@ class Conversation {
             }
             resolve(returnMessages);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'getAllMessagesBefore'));
           }
         },
       );
@@ -604,7 +604,7 @@ class Conversation {
             msg.stringeeClient = this.stringeeClient;
             resolve(new Message(msg));
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'getMessageById'));
           }
         },
       );
@@ -624,7 +624,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'endChat'));
           }
         },
       );
@@ -648,7 +648,7 @@ class Conversation {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'sendChatTranscript'));
           }
         },
       );

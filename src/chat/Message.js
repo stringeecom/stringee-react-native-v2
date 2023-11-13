@@ -41,7 +41,7 @@ class Message {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'pinMessage'));
           }
         },
       );
@@ -64,7 +64,7 @@ class Message {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'editMessage'));
           }
         },
       );

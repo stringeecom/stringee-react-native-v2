@@ -173,7 +173,7 @@ class StringeeCall {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'makeCall'));
           }
         },
       );
@@ -193,7 +193,7 @@ class StringeeCall {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'initAnswer'));
           }
         },
       );
@@ -210,7 +210,7 @@ class StringeeCall {
         if (status) {
           resolve();
         } else {
-          reject(new StringeeError(code, message));
+          reject(new StringeeError(code, message, 'answer'));
         }
       });
     });
@@ -226,7 +226,7 @@ class StringeeCall {
         if (status) {
           resolve();
         } else {
-          reject(new StringeeError(code, message));
+          reject(new StringeeError(code, message, 'hangup'));
         }
       });
     });
@@ -242,7 +242,7 @@ class StringeeCall {
         if (status) {
           resolve();
         } else {
-          reject(new StringeeError(code, message));
+          reject(new StringeeError(code, message, 'reject'));
         }
       });
     });
@@ -259,7 +259,7 @@ class StringeeCall {
         if (status) {
           resolve();
         } else {
-          reject(new StringeeError(code, message));
+          reject(new StringeeError(code, message, 'sendDTMF'));
         }
       });
     });
@@ -279,7 +279,7 @@ class StringeeCall {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'sendCallInfo'));
           }
         },
       );
@@ -299,7 +299,7 @@ class StringeeCall {
           if (status) {
             resolve(callStats);
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'getCallStats'));
           }
         },
       );
@@ -316,7 +316,7 @@ class StringeeCall {
         if (status) {
           resolve();
         } else {
-          reject(new StringeeError(code, message));
+          reject(new StringeeError(code, message, 'switchCamera'));
         }
       });
     });
@@ -336,7 +336,7 @@ class StringeeCall {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'enableVideo'));
           }
         },
       );
@@ -354,7 +354,7 @@ class StringeeCall {
         if (status) {
           resolve();
         } else {
-          reject(new StringeeError(code, message));
+          reject(new StringeeError(code, message, 'mute'));
         }
       });
     });
@@ -374,7 +374,7 @@ class StringeeCall {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, messgae));
+            reject(new StringeeError(code, messgae, 'setSpeakerphoneOn'));
           }
         },
       );
@@ -389,13 +389,13 @@ class StringeeCall {
   resumeVideo(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!isAndroid) {
-        resolve(new StringeeError(-10, 'This function only for android'));
+        resolve(new StringeeError(-10, 'This function only for android', 'resumeVideo'));
       } else {
         RNStringeeCall.resumeVideo(this.callId, (status, code, message) => {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'resumeVideo'));
           }
         });
       }
@@ -405,7 +405,7 @@ class StringeeCall {
   generateUUID(): Promise<string> {
     return new Promise((resolve, reject) => {
       if (!isIOS) {
-        reject(new StringeeError(-10, 'This function only for ios'));
+        reject(new StringeeError(-10, 'This function only for ios', 'generateUUID'));
       } else {
         RNStringeeCall.generateUUID(this.callId, this.serial ?? 1, uuid => {
           resolve(uuid);

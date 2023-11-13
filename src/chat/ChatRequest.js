@@ -33,7 +33,7 @@ class ChatRequest {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'acceptChatRequest'));
           }
         },
       );
@@ -53,7 +53,7 @@ class ChatRequest {
           if (status) {
             resolve();
           } else {
-            reject(new StringeeError(code, message));
+            reject(new StringeeError(code, message, 'rejectChatRequest'));
           }
         },
       );

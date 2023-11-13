@@ -8,10 +8,14 @@
  */
 class StringeeError extends Error {
   code: number;
-  constructor(code, message) {
+  constructor(code, message, name) {
     super(message);
-    this.name = 'Stringee Error';
+    this.name = name;
     this.code = code;
+  }
+
+  toString(): string {
+    return `Stringee  ${this.name} - ${this.code} - ${this.message}`
   }
 }
 

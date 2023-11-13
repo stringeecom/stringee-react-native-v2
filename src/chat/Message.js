@@ -1,5 +1,5 @@
 import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
-import {RNStringeeClient} from '../helpers/StringeeHelper';
+import {RNStringeeClient, StringeeError} from '../helpers/StringeeHelper';
 import type {StringeeClient} from '../StringeeClient';
 
 class Message {
@@ -30,32 +30,47 @@ class Message {
    * Pin or unpin the message.
    * @function pinMessage
    * @param {boolean} pin true - pin, false - unpin
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  pinMessage(pin: boolean, callback: RNStringeeEventCallback) {
-    RNStringeeClient.pinMessage(
-      this.stringeeClient.uuid,
-      this.conversationId,
-      this.id,
-      pin,
-      callback,
-    );
+  pinMessage(pin: boolean): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.pinMessage(
+        this.stringeeClient.uuid,
+        this.conversationId,
+        this.id,
+        pin,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          }else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    })
+    
   }
 
   /**
    * Edit the message.
    * @function editMessage
    * @param {string} newContent New content of message
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  editMessage(newContent: string, callback: RNStringeeEventCallback) {
-    RNStringeeClient.editMessage(
-      this.stringeeClient.uuid,
-      this.conversationId,
-      this.id,
-      newContent,
-      callback,
-    );
+  editMessage(newContent: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.editMessage(
+        this.stringeeClient.uuid,
+        this.conversationId,
+        this.id,
+        newContent,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    })
   }
 }
 

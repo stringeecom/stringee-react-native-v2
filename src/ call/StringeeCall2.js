@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
 import {
+  StringeeError,
   callEvents,
   getAudioDevice,
   getListAudioDevice,
@@ -161,9 +162,8 @@ class StringeeCall2 {
   /**
    * Make a call.
    * @function makeCall
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  makeCall(callback: RNStringeeEventCallback) {
+  makeCall(): Promise<void> {
     const makeCallParam = {
       from: this.from,
       to: this.to,
@@ -171,145 +171,188 @@ class StringeeCall2 {
       customData: this.customData,
       videoResolution: this.videoResolution,
     };
-    RNStringeeCall2.makeCall(
-      this.stringeeClient.uuid,
-      JSON.stringify(makeCallParam),
-      (status, code, message, callId, customData) => {
-        this.callId = callId;
-        if (!callback) {
-          callback = () => {};
-        }
-        return callback(status, code, message, callId, customData);
-      },
-    );
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.makeCall(
+        this.stringeeClient.uuid,
+        JSON.stringify(makeCallParam),
+        (status, code, message, callId, customData) => {
+          this.callId = callId;
+          if (status) {
+            resolve();
+          }else {
+            reject(new StringeeError(code, message));
+          };
+        },
+      );
+    })
   }
 
   /**
    * Initializes an answer. Must be implemented before you can answer a call.
    * @function initAnswer
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  initAnswer(callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.initAnswer(this.stringeeClient.uuid, this.callId, callback);
+  initAnswer(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.initAnswer(this.stringeeClient.uuid, this.callId, (status, code, message) => {
+        if (status) {
+          resolve();
+        }else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Answer a call.
    * @function answer
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  answer(callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.answer(this.callId, callback);
+  answer(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.answer(this.callId, (status, code, message) => {
+        if (status) {
+          resolve();
+        } else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Hangup a call.
    * @function hangup
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  hangup(callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.hangup(this.callId, callback);
+  hangup(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.hangup(this.callId, (status, code, message) => {
+        if (status) {
+          resolve();
+        } else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Reject a call.
    * @function reject
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  reject(callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.reject(this.callId, callback);
+  reject(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.reject(this.callId, (status, code, message) => {
+        if (status) {
+          resolve();
+        } else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Sends a DTMF.
    * @function sendDTMF
    * @param {string} dtmf dtmf code ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", #)
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  sendDTMF(dtmf: string, callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.sendDTMF(this.callId, dtmf, callback);
+  sendDTMF(dtmf: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.sendDTMF(this.callId, dtmf, (status, code, message) => {
+        if (status) {
+          resolve();
+        } else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Gets the call's statistics.
    * @function getCallStats
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  getCallStats(callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.getCallStats(
-      this.stringeeClient.uuid,
-      this.callId,
-      callback,
-    );
+  getCallStats(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.getCallStats(
+        this.stringeeClient.uuid,
+        this.callId,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    })
   }
 
   /**
    * Switches the device's camera.
    * @function switchCamera
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  switchCamera(callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.switchCamera(this.callId, callback);
+  switchCamera(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.switchCamera(this.callId, (status, code, message) => {
+        if (status) {
+          resolve();
+        } else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Enables or disables local video.
    * @function enableVideo
    * @param {boolean} enabled true - enables local video, false - disables local video
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  enableVideo(enabled: boolean, callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.enableVideo(this.callId, enabled, callback);
+  enableVideo(enabled: boolean): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.enableVideo(this.callId, enabled, (status, code, message) => {
+        if (status) {
+          resolve();
+        }else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Toggles audio on or off.
    * @function mute
    * @param {boolean} mute true - toggles audio off, false - toggles audio on
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  mute(mute: boolean, callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.mute(this.callId, mute, callback);
+  mute(mute: boolean): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.mute(this.callId, mute, (status, code, message) => {
+        if (status) {
+          resolve();
+        } else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Set the audio output mode.
    * @function setSpeakerphoneOn
    * @param {boolean} on true - loudspeaker, false - headset speaker
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  setSpeakerphoneOn(on: boolean, callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.setSpeakerphoneOn(this.callId, on, callback);
+  setSpeakerphoneOn(on: boolean): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.setSpeakerphoneOn(this.callId, on, (status, code, message) => {
+        if (status) {
+          resolve();
+        } else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
@@ -318,56 +361,69 @@ class StringeeCall2 {
    * @function resumeVideo
    * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  resumeVideo(callback: RNStringeeEventCallback) {
-    const platform = Platform.OS;
-    if (platform === 'ios') {
-      console.warn('this function only for android');
-    } else {
-      if (!callback) {
-        callback = () => {};
+  resumeVideo(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const platform = Platform.OS;
+      if (platform === 'ios') {
+        reject(new StringeeError(-10, 'this function only for android'))
+      } else {
+        RNStringeeCall2.resumeVideo(this.callId, (status, code, message) => {
+          if (status) {
+            resolve();
+          }else {
+            reject(new StringeeError(code, message));
+          }
+        });
       }
-      RNStringeeCall2.resumeVideo(this.callId, callback);
-    }
+    })
   }
 
   /**
    * Send info to another client.
    * @function sendCallInfo
    * @param {string} callInfo data you want to send, in JSON string
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  sendCallInfo(callInfo: string, callback: RNStringeeEventCallback) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.sendCallInfo(this.callId, callInfo, callback);
+  sendCallInfo(callInfo: string): Promise<void>  {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.sendCallInfo(this.callId, callInfo, (status, code, message) => {
+        if (status) {
+          resolve();
+        } else {
+          reject(new StringeeError(code, message));
+        }
+      });
+    })
   }
 
   /**
    * Set auto send track media state change to another client.
    * @function setAutoSendTrackMediaStateChangeEvent
    * @param {boolean} autoSendTrackMediaStateChangeEvent true - auto send, false - not auto send
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   setAutoSendTrackMediaStateChangeEvent(
     autoSendTrackMediaStateChangeEvent: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    if (!callback) {
-      callback = () => {};
-    }
-    RNStringeeCall2.setAutoSendTrackMediaStateChangeEvent(
-      this.callId,
-      autoSendTrackMediaStateChangeEvent,
-      callback,
-    );
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.setAutoSendTrackMediaStateChangeEvent(
+        this.callId,
+        autoSendTrackMediaStateChangeEvent,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    })
+    
   }
 
   generateUUID(): Promise<string> {
     return new Promise((resolve, reject) => {
       const platform = Platform.OS;
       if (platform !== 'ios') {
-        reject('generateUUID only for ios')
+        reject(new StringeeError(-10, 'this function only for ios'));
       }else {
         RNStringeeCall2.generateUUID(this.callId, this.serial ?? 1, (uuid => {
           resolve(uuid);

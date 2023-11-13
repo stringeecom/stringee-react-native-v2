@@ -1,4 +1,5 @@
 import {NativeModules} from 'react-native';
+import StringeeError from './StringeeError';
 
 const RNStringeeClient = NativeModules.RNStringeeClient;
 
@@ -246,5 +247,6 @@ export {
   VideoResolution,
   CallType,
   RNStringeeClient,
-  iOS
+  iOS,
+  StringeeError
 };

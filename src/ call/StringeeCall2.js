@@ -35,6 +35,7 @@ class StringeeCall2 {
   callType: CallType;
   isVideoCall: boolean;
   videoResolution: VideoResolution = VideoResolution.normal;
+  serial: number;
 
   /**
    * Create the StringeeCall2.
@@ -179,12 +180,12 @@ class StringeeCall2 {
           this.callId = callId;
           if (status) {
             resolve();
-          }else {
+          } else {
             reject(new StringeeError(code, message));
-          };
+          }
         },
       );
-    })
+    });
   }
 
   /**
@@ -193,14 +194,18 @@ class StringeeCall2 {
    */
   initAnswer(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.initAnswer(this.stringeeClient.uuid, this.callId, (status, code, message) => {
-        if (status) {
-          resolve();
-        }else {
-          reject(new StringeeError(code, message));
-        }
-      });
-    })
+      RNStringeeCall2.initAnswer(
+        this.stringeeClient.uuid,
+        this.callId,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -216,7 +221,7 @@ class StringeeCall2 {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -232,7 +237,7 @@ class StringeeCall2 {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -248,7 +253,7 @@ class StringeeCall2 {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -265,7 +270,7 @@ class StringeeCall2 {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -285,7 +290,7 @@ class StringeeCall2 {
           }
         },
       );
-    })
+    });
   }
 
   /**
@@ -301,7 +306,7 @@ class StringeeCall2 {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -311,14 +316,18 @@ class StringeeCall2 {
    */
   enableVideo(enabled: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.enableVideo(this.callId, enabled, (status, code, message) => {
-        if (status) {
-          resolve();
-        }else {
-          reject(new StringeeError(code, message));
-        }
-      });
-    })
+      RNStringeeCall2.enableVideo(
+        this.callId,
+        enabled,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -335,7 +344,7 @@ class StringeeCall2 {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -345,14 +354,18 @@ class StringeeCall2 {
    */
   setSpeakerphoneOn(on: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.setSpeakerphoneOn(this.callId, on, (status, code, message) => {
-        if (status) {
-          resolve();
-        } else {
-          reject(new StringeeError(code, message));
-        }
-      });
-    })
+      RNStringeeCall2.setSpeakerphoneOn(
+        this.callId,
+        on,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -365,17 +378,17 @@ class StringeeCall2 {
     return new Promise((resolve, reject) => {
       const platform = Platform.OS;
       if (platform === 'ios') {
-        reject(new StringeeError(-10, 'this function only for android'))
+        reject(new StringeeError(-10, 'This function only for android'));
       } else {
         RNStringeeCall2.resumeVideo(this.callId, (status, code, message) => {
           if (status) {
             resolve();
-          }else {
+          } else {
             reject(new StringeeError(code, message));
           }
         });
       }
-    })
+    });
   }
 
   /**
@@ -383,16 +396,20 @@ class StringeeCall2 {
    * @function sendCallInfo
    * @param {string} callInfo data you want to send, in JSON string
    */
-  sendCallInfo(callInfo: string): Promise<void>  {
+  sendCallInfo(callInfo: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.sendCallInfo(this.callId, callInfo, (status, code, message) => {
-        if (status) {
-          resolve();
-        } else {
-          reject(new StringeeError(code, message));
-        }
-      });
-    })
+      RNStringeeCall2.sendCallInfo(
+        this.callId,
+        callInfo,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -415,21 +432,20 @@ class StringeeCall2 {
           }
         },
       );
-    })
-    
+    });
   }
 
   generateUUID(): Promise<string> {
     return new Promise((resolve, reject) => {
       const platform = Platform.OS;
       if (platform !== 'ios') {
-        reject(new StringeeError(-10, 'this function only for ios'));
-      }else {
-        RNStringeeCall2.generateUUID(this.callId, this.serial ?? 1, (uuid => {
+        reject(new StringeeError(-10, 'This function only for ios'));
+      } else {
+        RNStringeeCall2.generateUUID(this.callId, this.serial ?? 1, uuid => {
           resolve(uuid);
-        }));
+        });
       }
-    })
+    });
   }
 }
 export {StringeeCall2};

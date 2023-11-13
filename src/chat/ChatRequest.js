@@ -38,7 +38,7 @@ class ChatRequest {
           }
         },
       );
-    })
+    });
   }
 
   /**
@@ -58,7 +58,7 @@ class ChatRequest {
           }
         },
       );
-    })
+    });
   }
 }
 

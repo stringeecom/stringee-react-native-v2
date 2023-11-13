@@ -4,7 +4,6 @@ import {
   NativeModules,
   Platform,
 } from 'react-native';
-import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
 import {
   callEvents,
   getAudioDevice,
@@ -12,7 +11,7 @@ import {
   getMediaState,
   getSignalingState,
   stringeeCallEvents,
-  StringeeError
+  StringeeError,
 } from '../helpers/StringeeHelper';
 import {
   CallType,
@@ -171,13 +170,12 @@ class StringeeCall {
           this.callId = callId;
           if (status) {
             resolve();
-          }else {
+          } else {
             reject(new StringeeError(code, message));
           }
         },
       );
-    })
-    
+    });
   }
 
   /**
@@ -186,14 +184,18 @@ class StringeeCall {
    */
   initAnswer(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall.initAnswer(this.stringeeClient.uuid, this.callId, ((status, code, message) => {
-        if (status) {
-          resolve();
-        } else {
-          reject(new StringeeError(code, message));
-        }
-      }));
-    })
+      RNStringeeCall.initAnswer(
+        this.stringeeClient.uuid,
+        this.callId,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -209,7 +211,7 @@ class StringeeCall {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -225,7 +227,7 @@ class StringeeCall {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -237,11 +239,11 @@ class StringeeCall {
       RNStringeeCall.reject(this.callId, (status, code, message) => {
         if (status) {
           resolve();
-        }else {
+        } else {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -258,7 +260,7 @@ class StringeeCall {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -268,14 +270,18 @@ class StringeeCall {
    */
   sendCallInfo(callInfo: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall.sendCallInfo(this.callId, callInfo, (status, code, message) => {
-        if (status) {
-          resolve();
-        } else {
-          reject(new StringeeError(code, message));
-        }
-      });
-    })
+      RNStringeeCall.sendCallInfo(
+        this.callId,
+        callInfo,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -287,15 +293,15 @@ class StringeeCall {
       RNStringeeCall.getCallStats(
         this.stringeeClient.uuid,
         this.callId,
-        (status, code, message, data) => {
+        (status, code, message, callStats) => {
           if (status) {
-            resolve(data);
-          }else {
+            resolve(callStats);
+          } else {
             reject(new StringeeError(code, message));
           }
         },
       );
-    })
+    });
   }
 
   /**
@@ -307,11 +313,11 @@ class StringeeCall {
       RNStringeeCall.switchCamera(this.callId, (status, code, message) => {
         if (status) {
           resolve();
-        }else {
+        } else {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -321,14 +327,18 @@ class StringeeCall {
    */
   enableVideo(enabled: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall.enableVideo(this.callId, enabled, (status, code, message) => {
-        if (status) {
-          resolve();
-        }else {
-          reject(new StringeeError(code, message));
-        }
-      });
-    })
+      RNStringeeCall.enableVideo(
+        this.callId,
+        enabled,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -345,7 +355,7 @@ class StringeeCall {
           reject(new StringeeError(code, message));
         }
       });
-    })
+    });
   }
 
   /**
@@ -355,14 +365,18 @@ class StringeeCall {
    */
   setSpeakerphoneOn(on: boolean) {
     return new Promise((resolve, reject) => {
-      RNStringeeCall.setSpeakerphoneOn(this.callId, on, (status, code, messgae) => {
-        if (status) {
-          resolve();
-        }else {
-          reject(new StringeeError(code, messgae));
-        }
-      });
-    })
+      RNStringeeCall.setSpeakerphoneOn(
+        this.callId,
+        on,
+        (status, code, messgae) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, messgae));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -371,34 +385,33 @@ class StringeeCall {
    * @function resumeVideo
    */
   resumeVideo(): Promise<void> {
-    return new Promive((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const platform = Platform.OS;
       if (platform === 'ios') {
-        resolve(new StringeeError(-10,'this function only for android'));
+        resolve(new StringeeError(-10, 'This function only for android'));
       } else {
         RNStringeeCall.resumeVideo(this.callId, (status, code, message) => {
           if (status) {
             resolve();
-          }else {
+          } else {
             reject(new StringeeError(code, message));
           }
         });
       }
-    })
+    });
   }
 
   generateUUID(): Promise<string> {
     return new Promise((resolve, reject) => {
       const platform = Platform.OS;
       if (platform !== 'ios') {
-        reject( new StringeeError(-10, 'this function only for ios'));
-      }else {
-        RNStringeeCall.generateUUID(this.callId, this.serial ?? 1, (uuid => {
+        reject(new StringeeError(-10, 'This function only for ios'));
+      } else {
+        RNStringeeCall.generateUUID(this.callId, this.serial ?? 1, uuid => {
           resolve(uuid);
-        }));
+        });
       }
-    })
+    });
   }
-
 }
 export {StringeeCall};

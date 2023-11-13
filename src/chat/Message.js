@@ -41,13 +41,12 @@ class Message {
         (status, code, message) => {
           if (status) {
             resolve();
-          }else {
+          } else {
             reject(new StringeeError(code, message));
           }
         },
       );
-    })
-    
+    });
   }
 
   /**
@@ -70,7 +69,7 @@ class Message {
           }
         },
       );
-    })
+    });
   }
 }
 

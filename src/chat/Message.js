@@ -1,4 +1,4 @@
-import {RNStringeeClient} from '../helpers/StringeeHelper';
+import {RNStringeeClient, normalCallbackHandle} from '../helpers/StringeeHelper';
 import {StringeeClient, StringeeError} from '../../index';
 
 class Message {
@@ -37,13 +37,7 @@ class Message {
         this.conversationId,
         this.id,
         pin,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'pinMessage'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'pinMessage')
       );
     });
   }
@@ -60,13 +54,7 @@ class Message {
         this.conversationId,
         this.id,
         newContent,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'editMessage'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'editMessage')
       );
     });
   }

@@ -5,6 +5,7 @@ import {
   RNStringeeClient,
   stringeeClientEvents,
   isIOS,
+  normalCallbackHandle,
 } from './helpers/StringeeHelper';
 import {
   ChangeType,
@@ -245,13 +246,7 @@ class StringeeClient {
     isVoip: boolean,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      const callback = (status, code, message) => {
-        if (status) {
-          resolve();
-        } else {
-          reject(new StringeeError(code, message, 'registerPush'));
-        }
-      };
+      const callback = normalCallbackHandle(resolve, reject, 'registerPush');
       if (isIOS) {
         RNStringeeClient.registerPushForDeviceToken(
           this.uuid,
@@ -282,13 +277,7 @@ class StringeeClient {
     packageNames: Array<string>,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      const callback = (status, code, message) => {
-        if (status) {
-          resolve();
-        } else {
-          reject(new StringeeError(code, message, 'registerPushAndDeleteOthers'));
-        }
-      };
+      const callback = normalCallbackHandle(resolve, reject, 'registerPushAndDeleteOthers')
       if (isIOS) {
         RNStringeeClient.registerPushAndDeleteOthers(
           this.uuid,
@@ -320,13 +309,7 @@ class StringeeClient {
       RNStringeeClient.unregisterPushToken(
         this.uuid,
         deviceToken,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'unregisterPush'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'unregisterPush')
       );
     });
   }
@@ -343,13 +326,7 @@ class StringeeClient {
         this.uuid,
         toUserId,
         message,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'sendCustomMessage'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'sendCustomMessage')
       );
     });
   }
@@ -877,13 +854,7 @@ class StringeeClient {
    */
   clearDb(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeClient.clearDb(this.uuid, (status, code, message) => {
-        if (status) {
-          resolve();
-        } else {
-          reject(new StringeeError(code, message, 'clearDb'));
-        }
-      });
+      RNStringeeClient.clearDb(this.uuid, normalCallbackHandle(resolve, reject, 'clearDb'))
     });
   }
 
@@ -974,13 +945,7 @@ class StringeeClient {
       RNStringeeClient.updateUserInfo2(
         this.uuid,
         JSON.stringify(userInfo),
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'updateUserInfo'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'updateUserInfo')
       );
     });
   }

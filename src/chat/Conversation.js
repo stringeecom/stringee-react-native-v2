@@ -1,4 +1,4 @@
-import {RNStringeeClient} from '../helpers/StringeeHelper';
+import {RNStringeeClient, normalCallbackHandle} from '../helpers/StringeeHelper';
 import {
   ConversationInfo,
   Message,
@@ -61,13 +61,7 @@ class Conversation {
       RNStringeeClient.deleteConversation(
         this.stringeeClient.uuid,
         this.id,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'deleteConversation'));
-          }
-        },
+        normalCallbackHandle(resolve, reject),
       );
     });
   }
@@ -138,13 +132,7 @@ class Conversation {
         this.stringeeClient.uuid,
         this.id,
         conversationInfo,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'updateConversation'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'updateConversation')
       );
     });
   }
@@ -158,13 +146,7 @@ class Conversation {
       RNStringeeClient.markConversationAsRead(
         this.stringeeClient.uuid,
         this.id,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'markConversationAsRead'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'markConversationAsRead')
       );
     });
   }
@@ -178,13 +160,7 @@ class Conversation {
       RNStringeeClient.sendBeginTyping(
         this.stringeeClient.uuid,
         this.id,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'sendBeginTyping'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'sendBeginTyping'),
       );
     });
   }
@@ -198,13 +174,7 @@ class Conversation {
       RNStringeeClient.sendEndTyping(
         this.stringeeClient.uuid,
         this.id,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'sendEndTyping'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'sendEndTyping'),
       );
     });
   }
@@ -219,13 +189,7 @@ class Conversation {
       RNStringeeClient.sendMessage(
         this.stringeeClient.uuid,
         newMessageInfo,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'sendMessage'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'sendMessage'),
       );
     });
   }
@@ -241,13 +205,7 @@ class Conversation {
         this.stringeeClient.uuid,
         this.id,
         messageId,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'deleteMessage'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'deleteMessage'),
       );
     });
   }
@@ -263,13 +221,7 @@ class Conversation {
         this.stringeeClient.uuid,
         this.id,
         messageId,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'revokeMessage'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'revokeMessage'),
       );
     });
   }
@@ -620,13 +572,7 @@ class Conversation {
       RNStringeeClient.endChat(
         this.stringeeClient.uuid,
         this.id,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'endChat'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'endChat')
       );
     });
   }
@@ -644,13 +590,7 @@ class Conversation {
         email,
         this.id,
         domain,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'sendChatTranscript'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'sendChatTranscript')
       );
     });
   }

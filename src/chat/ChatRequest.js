@@ -1,4 +1,4 @@
-import {RNStringeeClient} from '../helpers/StringeeHelper';
+import {RNStringeeClient, normalCallbackHandle} from '../helpers/StringeeHelper';
 import {StringeeClient, StringeeError} from '../../index';
 
 class ChatRequest {
@@ -29,13 +29,7 @@ class ChatRequest {
       RNStringeeClient.acceptChatRequest(
         this.stringeeClient.uuid,
         this.convId,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'acceptChatRequest'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'acceptChatRequest'),
       );
     });
   }
@@ -49,13 +43,7 @@ class ChatRequest {
       RNStringeeClient.rejectChatRequest(
         this.stringeeClient.uuid,
         this.convId,
-        (status, code, message) => {
-          if (status) {
-            resolve();
-          } else {
-            reject(new StringeeError(code, message, 'rejectChatRequest'));
-          }
-        },
+        normalCallbackHandle(resolve, reject, 'rejectChatRequest'),
       );
     });
   }

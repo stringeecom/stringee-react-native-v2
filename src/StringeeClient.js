@@ -559,8 +559,8 @@ class StringeeClient {
                 conversation.stringeeClient = this;
                 returnConversations.push(new Conversation(conversation));
               });
-              resolve(returnConversations);
             }
+            resolve(returnConversations);
           } else {
             reject(new StringeeError(code, message, 'getConversationsAfter'));
           }
@@ -820,7 +820,7 @@ class StringeeClient {
         (status, code, message, conversation) => {
           if (status) {
             conversation.stringeeClient = this;
-            return resolve(new Conversation(conversation));
+            resolve(new Conversation(conversation));
           } else {
             reject(new StringeeError(code, message, 'getConversationWithUser'));
           }

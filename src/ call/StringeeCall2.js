@@ -249,12 +249,18 @@ class StringeeCall2 {
    * Gets the call's statistics.
    * @function getCallStats
    */
-  getCallStats(): Promise<void> {
+  getCallStats(): Promise<string> {
     return new Promise((resolve, reject) => {
       RNStringeeCall2.getCallStats(
         this.stringeeClient.uuid,
         this.callId,
-        normalCallbackHandle(resolve, reject, 'getCallStats')
+        (status, code, message, data) => {
+          if (status) {
+            resolve(data);
+          } else {
+            reject(new StringeeError(code, message, 'getCallStats'));
+          }
+        }
       );
     });
   }

@@ -260,7 +260,13 @@ class StringeeCall {
       RNStringeeCall.getCallStats(
         this.stringeeClient.uuid,
         this.callId,
-        normalCallbackHandle(resolve, reject, 'getCallStats'),
+        (status, code, message, data) => {
+          if (status) {
+            resolve(data);
+          }else {
+            reject(new StringeeError(code, message, 'getCallStats'));
+          }
+        }
       );
     });
   }

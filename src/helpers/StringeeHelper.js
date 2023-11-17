@@ -1,5 +1,5 @@
 import {NativeModules, Platform} from 'react-native';
-import StringeeError from './StringeeError';
+import {StringeeError} from './StringeeError';
 
 const RNStringeeClient = NativeModules.RNStringeeClient;
 const isIOS = Platform.OS === 'ios';
@@ -253,5 +253,9 @@ export {
   RNStringeeClient,
   isIOS,
   isAndroid,
-  normalCallbackHandle
+  normalCallbackHandle,
+  getSignalingState,
+  getMediaState,
+  getMediaType,
+  getListAudioDevice
 };

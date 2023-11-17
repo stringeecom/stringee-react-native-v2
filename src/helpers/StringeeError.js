@@ -19,4 +19,4 @@ class StringeeError extends Error {
   }
 }
 
-export default {StringeeError};
+export {StringeeError};

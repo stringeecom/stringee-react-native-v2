@@ -69,14 +69,13 @@ class StringeeClient {
   }
 
   /**
-   * Register to listen to events from StringeeClient.
-   * @function registerEvents
+   * Set listener for StringeeClient.
+   * @function setListener
    * @param {StringeeClientListener} listener
    */
-  registerEvents(listener: StringeeClientListener) {
-    if (this.events.length !== 0 && this.subscriptions.length !== 0) {
-      return;
-    }
+  setListener(listener: StringeeClientListener) {
+    this.unregisterEvents();
+
     if (listener) {
       stringeeClientEvents.forEach(event => {
         if (listener[event] && clientEvents[Platform.OS][event]) {

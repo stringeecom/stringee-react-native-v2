@@ -200,7 +200,22 @@
         wrapper.call = stringeeCall;
         stringeeCall.delegate = wrapper;
 
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : returnUserId, @"callId" : returnCallId, @"from" : returnFrom, @"to" : returnTo, @"fromAlias" : returnFromAlias, @"toAlias" : returnToAlias, @"callType" : @(index), @"isVideoCall" : @(stringeeCall.isVideoCall), @"customDataFromYourServer" : returnCustomData, @"serial" : @(stringeeCall.serial)}}];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall body: @{
+            @"uuid" : _identifier,
+            @"data" : @{
+                @"userId" : returnUserId,
+                @"callId" : returnCallId,
+                @"from" : returnFrom,
+                @"to" : returnTo,
+                @"fromAlias" : returnFromAlias,
+                @"toAlias" : returnToAlias,
+                @"callType" : @(index),
+                @"isVideoCall" : @(stringeeCall.isVideoCall),
+                @"customDataFromYourServer" : returnCustomData,
+                @"serial" : @(stringeeCall.serial),
+                @"uuid"   : uuid
+            }
+        }];
         
         
     }
@@ -243,7 +258,21 @@
         wrapper.call = stringeeCall2;
         stringeeCall2.delegate = wrapper;
 
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall2 body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : returnUserId, @"callId" : returnCallId, @"from" : returnFrom, @"to" : returnTo, @"fromAlias" : returnFromAlias, @"toAlias" : returnToAlias, @"callType" : @(index), @"isVideoCall" : @(stringeeCall2.isVideoCall), @"customDataFromYourServer" : returnCustomData, @"serial" : @(stringeeCall2.serial)}}];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall2 body: @{
+            @"uuid" : _identifier,
+            @"data" : @{ @"userId" : returnUserId,
+                         @"callId" : returnCallId,
+                         @"from" : returnFrom,
+                         @"to" : returnTo,
+                         @"fromAlias" : returnFromAlias,
+                         @"toAlias" : returnToAlias,
+                         @"callType" : @(index),
+                         @"isVideoCall" : @(stringeeCall2.isVideoCall),
+                         @"customDataFromYourServer" : returnCustomData,
+                         @"serial" : @(stringeeCall2.serial),
+                         @"uuid"   : uuid
+            }
+        }];
     }
 }
 

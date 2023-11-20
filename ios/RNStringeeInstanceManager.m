@@ -23,6 +23,8 @@
         _call2s = [[NSMutableDictionary alloc] init];
         _call2VideoTracks = [[NSMutableDictionary alloc] init];
         _clientWrappers = [[NSMutableDictionary alloc] init];
+        _callWrappers = [[NSMutableDictionary alloc] init];
+        _call2Wrappers = [[NSMutableDictionary alloc] init];
         uuids = [[NSMutableDictionary alloc] init];
         callObs = [[CXCallObserver alloc] init];
         [callObs setDelegate:self queue:nil];

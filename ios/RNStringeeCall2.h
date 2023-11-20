@@ -16,9 +16,9 @@
 
 #import <Stringee/Stringee.h>
 
-@interface RNStringeeCall2 : RCTEventEmitter <RCTBridgeModule, StringeeCall2Delegate>
+@interface RNStringeeCall2 : RCTEventEmitter <RCTBridgeModule>
 
 // Render video
-- addRenderToView:(UIView *)view callId:(NSString *)callId isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode;
+-(void) addRenderToView:(UIView *)view callId:(NSString *)callId isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode;
 
 @end

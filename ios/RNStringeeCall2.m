@@ -1,6 +1,7 @@
 
 #import "RNStringeeCall2.h"
 #import "RNStringeeInstanceManager.h"
+#import "RNCall2Wrapper.h"
 #import <React/RCTLog.h>
 
 static NSString *didChangeSignalingState    = @"didChangeSignalingState";
@@ -15,10 +16,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
 static NSString *trackMediaStateChange      = @"trackMediaStateChange";
 
 
-@implementation RNStringeeCall2 {
-    NSMutableArray<NSString *> *jsEvents;
-}
-
+@implementation RNStringeeCall2
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
@@ -27,7 +25,6 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self) {
         [RNStringeeInstanceManager instance].rnCall2 = self;
-        jsEvents = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -50,16 +47,31 @@ RCT_EXPORT_MODULE();
 
 // TODO: - Publish Functions
 
-RCT_EXPORT_METHOD(setNativeEvent:(NSString *)event) {
-    [jsEvents addObject:event];
+RCT_EXPORT_METHOD(createWrapper:(NSString *)uuid clientUUID:(NSString *)clientUUID) {
+    RNCall2Wrapper *wrapper = [[RNCall2Wrapper alloc] initWithIdentifier:uuid clientUUID:clientUUID];
+    [RNStringeeInstanceManager.instance.call2Wrappers setObject:wrapper forKey:uuid];
 }
 
-RCT_EXPORT_METHOD(removeNativeEvent:(NSString *)event) {
-    int index = -1;
-    index = (int)[jsEvents indexOfObject:event];
-    if (index >= 0) {
-        [jsEvents removeObjectAtIndex:index];
+RCT_EXPORT_METHOD(clean:(NSString *)uuid) {
+    RNStringeeInstanceManager.instance.call2Wrappers[uuid] = nil;
+}
+
+RCT_EXPORT_METHOD(setNativeEvent:(NSString *)uuid event:(NSString *)event) {
+    RNCall2Wrapper *callWrapper = [RNStringeeInstanceManager.instance.call2Wrappers objectForKey:uuid];
+    if (callWrapper == nil) {
+        NSLog(@"setNativeEvent: -1 wrapper not found");
+        return;
     }
+    [callWrapper setNativeEvent:event];
+}
+
+RCT_EXPORT_METHOD(removeNativeEvent:(NSString *)uuid event:(NSString *)event) {
+    RNCall2Wrapper *callWrapper = [RNStringeeInstanceManager.instance.call2Wrappers objectForKey:uuid];
+    if (callWrapper == nil) {
+        NSLog(@"removeNativeEvent: -1 wrapper not found");
+        return;
+    }
+    [callWrapper removeNativeEvent:event];
 }
 
 RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters callback:(RCTResponseSenderBlock)callback) {
@@ -78,19 +90,22 @@ RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters ca
         NSString *customData = data[@"customData"];
         NSString *videoResolution = data[@"videoResolution"];
         
-        RNClientWrapper *wrapper = [RNStringeeInstanceManager.instance.clientWrappers objectForKey:uuid];
+        RNCall2Wrapper *wrapper = [RNStringeeInstanceManager.instance.call2Wrappers objectForKey:uuid];
         if (wrapper == nil) {
             callback(@[@(NO), @(-1), @"Wrapper is not found", [NSNull null], [NSNull null]]);
             return;
         }
         
-        if (!wrapper.client) {
+        StringeeClient *client = [wrapper getClient];
+        
+        if (!client) {
             callback(@[@(NO), @(-1), @"StringeeClient is not initialized", [NSNull null], [NSNull null]]);
             return;
         }
 
-        StringeeCall2 *outgoingCall = [[StringeeCall2 alloc] initWithStringeeClient:wrapper.client from:from to:to];
-        outgoingCall.delegate = self;
+        StringeeCall2 *outgoingCall = [[StringeeCall2 alloc] initWithStringeeClient:client from:from to:to];
+        wrapper.call = outgoingCall;
+        outgoingCall.delegate = wrapper;
         outgoingCall.isVideoCall = [isVideoCall boolValue];
 
         if (customData.length) {
@@ -120,17 +135,18 @@ RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters ca
 }
 
 RCT_EXPORT_METHOD(initAnswer:(NSString *)uuid callId:(NSString *)callId callback:(RCTResponseSenderBlock)callback) {
-    RNClientWrapper *wrapper = [RNStringeeInstanceManager.instance.clientWrappers objectForKey:uuid];
+    RNCall2Wrapper *wrapper = [RNStringeeInstanceManager.instance.call2Wrappers objectForKey:uuid];
     if (wrapper == nil) {
         callback(@[@(NO), @(-1), @"Wrapper is not found", [NSNull null], [NSNull null]]);
         return;
     }
     
-    if (wrapper.client && wrapper.client.hasConnected) {
+    StringeeClient *client = [wrapper getClient];
+    
+    if (client && client.hasConnected) {
         if (callId.length) {
             StringeeCall2 *call = [[RNStringeeInstanceManager instance].call2s objectForKey:callId];
             if (call) {
-                call.delegate = self;
                 [call initAnswerCall];
                 callback(@[@(YES), @(0), @"Init answer call successfully."]);
             } else {
@@ -385,74 +401,6 @@ RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(nonnull NSNumber *)ser
     callback(@[uuid]);
 }
 
-- (void)didChangeSignalingState2:(StringeeCall2 *)stringeeCall2 signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
-    if ([jsEvents containsObject:didChangeSignalingState]) {
-        [self sendEventWithName:didChangeSignalingState body:@{ @"callId" : stringeeCall2.callId, @"code" : @(signalingState), @"reason" : reason, @"sipCode" : @(sipCode), @"sipReason" : sipReason,  @"serial": @(stringeeCall2.serial) }];
-    }
-    
-    // Xoá videoTrack
-    if (signalingState == SignalingStateBusy || signalingState == SignalingStateEnded) {
-        [[RNStringeeInstanceManager instance].call2VideoTracks removeObjectForKey:stringeeCall2.callId];
-    }
-}
-
-- (void)didChangeMediaState2:(StringeeCall2 *)stringeeCall2 mediaState:(MediaState)mediaState {
-
-    if ([jsEvents containsObject:didChangeMediaState]) {
-        switch (mediaState) {
-            case MediaStateConnected:
-                [self sendEventWithName:didChangeMediaState body:@{ @"callId" : stringeeCall2.callId, @"code" : @(0), @"description" : @"Connected" }];
-                break;
-            case MediaStateDisconnected:
-                [self sendEventWithName:didChangeMediaState body:@{ @"callId" : stringeeCall2.callId, @"code" : @(1), @"description" : @"Disconnected" }];
-                break;
-            default:
-                break;
-        }
-    }
-
-}
-
-- (void)didReceiveLocalStream2:(StringeeCall2 *)stringeeCall2 {
-    if ([jsEvents containsObject:didReceiveLocalStream]) {
-        [self sendEventWithName:didReceiveLocalStream body:@{ @"callId" : stringeeCall2.callId }];
-    }    
-}
-
-- (void)didReceiveRemoteStream2:(StringeeCall2 *)stringeeCall2 {
-    if ([jsEvents containsObject:didReceiveRemoteStream]) {
-        [self sendEventWithName:didReceiveRemoteStream body:@{ @"callId" : stringeeCall2.callId }];
-    }
-}
-
-- (void)didAddTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
-    [[RNStringeeInstanceManager instance].call2VideoTracks setObject:track forKey:stringeeCall2.callId];
-    if ([jsEvents containsObject:didReceiveRemoteStream]) {
-        [self sendEventWithName:didReceiveRemoteStream body:@{ @"callId" : stringeeCall2.callId }];
-    }
-}
-
-- (void)didHandleOnAnotherDevice2:(StringeeCall2 *)stringeeCall2 signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
-    if ([jsEvents containsObject:didHandleOnAnotherDevice]) {
-        [self sendEventWithName:didHandleOnAnotherDevice body:@{ @"callId" : stringeeCall2.callId, @"code" : @(signalingState), @"description" : reason }];
-    }
-}
-
-- (void)didReceiveCallInfo2:(StringeeCall2 *)stringeeCall2 info:(NSDictionary *)info {
-    if ([jsEvents containsObject:didReceiveCallInfo]) {
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:info
-                                            options:NSJSONWritingPrettyPrinted
-                                            error:nil];
-        NSString *jsonString = [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@" " withString:@""];
-        [self sendEventWithName:didReceiveCallInfo body:@{ @"callId" : stringeeCall2.callId, @"data" : jsonString }];
-    }
-}
-
-- (void)trackMediaStateChange:(StringeeCall2 *)stringeeCall2 mediaType:(StringeeTrackMediaType)mediaType enable:(BOOL)enable from:(NSString *)from {
-    if ([jsEvents containsObject:trackMediaStateChange]) {
-        [self sendEventWithName:trackMediaStateChange body:@{ @"from" : from, @"mediaType" : @(mediaType), @"enable" : @(enable) }];
-    }
-}
 
 - (void)addRenderToView:(UIView *)view callId:(NSString *)callId isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode {
     if (callId.length) {

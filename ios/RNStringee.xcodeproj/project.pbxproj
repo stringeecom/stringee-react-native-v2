@@ -15,8 +15,8 @@
 		5154054A208C66DF00914AE1 /* RNStringeeInstanceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 51540542208C66DF00914AE1 /* RNStringeeInstanceManager.m */; };
 		51C19815254A6C4B006610F4 /* RCTConvert+StringeeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 51C19812254A6C4B006610F4 /* RCTConvert+StringeeHelper.m */; };
 		51C19816254A6C4B006610F4 /* RNClientWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 51C19813254A6C4B006610F4 /* RNClientWrapper.m */; };
-		93FBBADB2B0B584000B85365 /* RNCallWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FBBAD72B0B584000B85365 /* RNCallWrapper.m */; };
-		93FBBADC2B0B584000B85365 /* RNCall2Wrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FBBAD92B0B584000B85365 /* RNCall2Wrapper.m */; };
+		93FBBAE72B0B6EA300B85365 /* RNCall2Wrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FBBAE52B0B6EA300B85365 /* RNCall2Wrapper.m */; };
+		93FBBAE82B0B6EA300B85365 /* RNCallWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FBBAE62B0B6EA300B85365 /* RNCallWrapper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,10 +49,10 @@
 		51C19812254A6C4B006610F4 /* RCTConvert+StringeeHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+StringeeHelper.m"; sourceTree = "<group>"; };
 		51C19813254A6C4B006610F4 /* RNClientWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNClientWrapper.m; sourceTree = "<group>"; };
 		51C19814254A6C4B006610F4 /* RCTConvert+StringeeHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+StringeeHelper.h"; sourceTree = "<group>"; };
-		93FBBAD72B0B584000B85365 /* RNCallWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCallWrapper.m; sourceTree = "<group>"; };
-		93FBBAD82B0B584000B85365 /* RNCallWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCallWrapper.h; sourceTree = "<group>"; };
-		93FBBAD92B0B584000B85365 /* RNCall2Wrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCall2Wrapper.m; sourceTree = "<group>"; };
-		93FBBADA2B0B584000B85365 /* RNCall2Wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCall2Wrapper.h; sourceTree = "<group>"; };
+		93FBBAE32B0B6EA300B85365 /* RNCallWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCallWrapper.h; sourceTree = "<group>"; };
+		93FBBAE42B0B6EA300B85365 /* RNCall2Wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCall2Wrapper.h; sourceTree = "<group>"; };
+		93FBBAE52B0B6EA300B85365 /* RNCall2Wrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCall2Wrapper.m; sourceTree = "<group>"; };
+		93FBBAE62B0B6EA300B85365 /* RNCallWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCallWrapper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,10 +93,10 @@
 				51491991208EE2D900EF9B47 /* RNStringeeVideoView.m */,
 				5149198F208EE2D900EF9B47 /* RNStringeeVideoViewManager.h */,
 				51491990208EE2D900EF9B47 /* RNStringeeVideoViewManager.m */,
-				93FBBADA2B0B584000B85365 /* RNCall2Wrapper.h */,
-				93FBBAD92B0B584000B85365 /* RNCall2Wrapper.m */,
-				93FBBAD82B0B584000B85365 /* RNCallWrapper.h */,
-				93FBBAD72B0B584000B85365 /* RNCallWrapper.m */,
+				93FBBAE42B0B6EA300B85365 /* RNCall2Wrapper.h */,
+				93FBBAE52B0B6EA300B85365 /* RNCall2Wrapper.m */,
+				93FBBAE32B0B6EA300B85365 /* RNCallWrapper.h */,
+				93FBBAE62B0B6EA300B85365 /* RNCallWrapper.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -159,15 +159,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				51540543208C66DF00914AE1 /* RNStringeeClient.m in Sources */,
+				93FBBAE82B0B6EA300B85365 /* RNCallWrapper.m in Sources */,
 				51C19816254A6C4B006610F4 /* RNClientWrapper.m in Sources */,
-				93FBBADC2B0B584000B85365 /* RNCall2Wrapper.m in Sources */,
 				51491994208EE2DA00EF9B47 /* RNStringeeVideoView.m in Sources */,
 				511CA582254803D200A697B9 /* RNStringeeCall2.m in Sources */,
 				51540547208C66DF00914AE1 /* RNStringeeCall.m in Sources */,
 				51C19815254A6C4B006610F4 /* RCTConvert+StringeeHelper.m in Sources */,
 				5154054A208C66DF00914AE1 /* RNStringeeInstanceManager.m in Sources */,
 				51491993208EE2DA00EF9B47 /* RNStringeeVideoViewManager.m in Sources */,
-				93FBBADB2B0B584000B85365 /* RNCallWrapper.m in Sources */,
+				93FBBAE72B0B6EA300B85365 /* RNCall2Wrapper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

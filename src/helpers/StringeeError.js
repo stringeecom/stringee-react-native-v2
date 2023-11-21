@@ -3,7 +3,7 @@
  * @class StringeeError
  * @property {number} code
  *  + code > 0 => Error received from the server.
-    + code < 0 => Error received from the SDK.
+ + code < 0 => Error received from the SDK.
  * @property {string} message message error
  */
 class StringeeError extends Error {
@@ -15,7 +15,7 @@ class StringeeError extends Error {
   }
 
   toString(): string {
-    return `Stringee Error: ${this.name} - ${this.code} - ${this.message}`
+    return `Stringee Error: ${this.name} - ${this.code} - ${this.message}`;
   }
 }
 

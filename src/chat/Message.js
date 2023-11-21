@@ -1,5 +1,8 @@
-import {RNStringeeClient, normalCallbackHandle} from '../helpers/StringeeHelper';
-import {StringeeClient, StringeeError} from '../../index';
+import {
+  RNStringeeClient,
+  normalCallbackHandle,
+} from '../helpers/StringeeHelper';
+import {StringeeClient} from '../../index';
 
 class Message {
   localId: string;
@@ -37,7 +40,7 @@ class Message {
         this.conversationId,
         this.id,
         pin,
-        normalCallbackHandle(resolve, reject, 'pinMessage')
+        normalCallbackHandle(resolve, reject, 'pinMessage'),
       );
     });
   }
@@ -54,10 +57,10 @@ class Message {
         this.conversationId,
         this.id,
         newContent,
-        normalCallbackHandle(resolve, reject, 'editMessage')
+        normalCallbackHandle(resolve, reject, 'editMessage'),
       );
     });
   }
 }
 
-export default Message;
+export {Message};

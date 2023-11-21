@@ -226,14 +226,14 @@ function getMediaType(code: number): MediaType {
 }
 
 const normalCallbackHandle = (resolve, reject, name) => {
-  return (status, code, message) =>  {
+  return (status, code, message) => {
     if (status) {
       resolve();
     } else {
-      reject(new StringeeError(code, message, name))
+      reject(new StringeeError(code, message, name));
     }
-  }
-}
+  };
+};
 
 export {
   clientEvents,
@@ -257,5 +257,6 @@ export {
   getSignalingState,
   getMediaState,
   getMediaType,
-  getListAudioDevice
+  getListAudioDevice,
+  getAudioDevice,
 };

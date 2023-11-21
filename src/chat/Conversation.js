@@ -1,4 +1,7 @@
-import {RNStringeeClient, normalCallbackHandle} from '../helpers/StringeeHelper';
+import {
+  RNStringeeClient,
+  normalCallbackHandle,
+} from '../helpers/StringeeHelper';
 import {
   ConversationInfo,
   Message,
@@ -126,13 +129,19 @@ class Conversation {
   updateConversation(conversationInfo: ConversationInfo): Promise<void> {
     return new Promise((resolve, reject) => {
       if (conversationInfo === undefined) {
-        reject(new StringeeError(-1, 'conversationInfo is undefined', 'updateConversation'));
+        reject(
+          new StringeeError(
+            -1,
+            'conversationInfo is undefined',
+            'updateConversation',
+          ),
+        );
       }
       RNStringeeClient.updateConversation(
         this.stringeeClient.uuid,
         this.id,
         conversationInfo,
-        normalCallbackHandle(resolve, reject, 'updateConversation')
+        normalCallbackHandle(resolve, reject, 'updateConversation'),
       );
     });
   }
@@ -146,7 +155,7 @@ class Conversation {
       RNStringeeClient.markConversationAsRead(
         this.stringeeClient.uuid,
         this.id,
-        normalCallbackHandle(resolve, reject, 'markConversationAsRead')
+        normalCallbackHandle(resolve, reject, 'markConversationAsRead'),
       );
     });
   }
@@ -572,7 +581,7 @@ class Conversation {
       RNStringeeClient.endChat(
         this.stringeeClient.uuid,
         this.id,
-        normalCallbackHandle(resolve, reject, 'endChat')
+        normalCallbackHandle(resolve, reject, 'endChat'),
       );
     });
   }
@@ -590,10 +599,10 @@ class Conversation {
         email,
         this.id,
         domain,
-        normalCallbackHandle(resolve, reject, 'sendChatTranscript')
+        normalCallbackHandle(resolve, reject, 'sendChatTranscript'),
       );
     });
   }
 }
 
-export default Conversation;
+export {Conversation};

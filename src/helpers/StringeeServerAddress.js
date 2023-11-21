@@ -7,4 +7,4 @@ class StringeeServerAddress {
   }
 }
 
-export default StringeeServerAddress;
+export {StringeeServerAddress};

@@ -7,24 +7,21 @@ import {
   View,
 } from 'react-native';
 import React, {Component} from 'react';
-import {StringeeVideoScalingType} from './helpers/StringeeHelper';
-
+import {StringeeVideoScalingType} from 'index.js';
 class StringeeVideoView extends Component {
-  callId: string;
+  uuid: string;
   local: boolean;
-  overlay: boolean;
   scalingType: StringeeVideoScalingType;
 
   constructor(props) {
     super(props);
     this.ref = React.createRef();
-    this.callId = props.callId;
+    this.uuid = props.uuid;
     this.local = props.local !== undefined ? props.local : false;
-    this.overlay = props.overlay !== undefined ? props.overlay : false;
     this.scalingType =
-      props.scalingType !== undefined
-        ? props.scalingType
-        : StringeeVideoScalingType.fill;
+        props.scalingType !== undefined
+            ? props.scalingType
+            : StringeeVideoScalingType.fill;
   }
 
   componentDidMount() {
@@ -36,32 +33,30 @@ class StringeeVideoView extends Component {
 
   createNativeView = viewId => {
     UIManager.dispatchViewManagerCommand(
-      viewId,
-      UIManager.RNStringeeVideoView.Commands.create.toString(),
-      [],
+        viewId,
+        UIManager.RNStringeeVideoView.Commands.create.toString(),
+        [],
     );
   };
 
   render(): React.ReactNode {
     return (
-      <View style={this.props.style}>
-        <RCTStringeeVideoView
-          {...this.props}
-          callId={this.callId}
-          local={this.local}
-          overLay={this.overlay}
-          scalingType={this.scalingType}
-          ref={this.ref}
-        />
-      </View>
+        <View style={this.props.style}>
+          <RCTStringeeVideoView
+              {...this.props}
+              uuid={this.uuid}
+              local={this.local}
+              scalingType={this.scalingType}
+              ref={this.ref}
+          />
+        </View>
     );
   }
 }
 
 StringeeVideoView.propTypes = {
-  callId: PropTypes.string,
+  uuid: PropTypes.string,
   local: PropTypes.bool,
-  overlay: PropTypes.bool,
   scalingType: PropTypes.oneOf([
     StringeeVideoScalingType.fit,
     StringeeVideoScalingType.fill,

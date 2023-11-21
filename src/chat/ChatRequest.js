@@ -1,5 +1,8 @@
-import {RNStringeeClient, normalCallbackHandle} from '../helpers/StringeeHelper';
-import {StringeeClient, StringeeError} from '../../index';
+import {
+  RNStringeeClient,
+  normalCallbackHandle,
+} from '../helpers/StringeeHelper';
+import {StringeeClient} from '../../index';
 
 class ChatRequest {
   // Request info
@@ -49,4 +52,4 @@ class ChatRequest {
   }
 }
 
-export default ChatRequest;
+export {ChatRequest};

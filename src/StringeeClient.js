@@ -1010,6 +1010,7 @@ function getStringeeCall(stringeeClient: StringeeClient, data): StringeeCall {
     stringeeClient: stringeeClient,
     from: data.from,
     to: data.to,
+    uuid: data.uuid,
   });
   stringeeCall.callId = data.callId;
   stringeeCall.customData = data.customDataFromYourServer;
@@ -1018,7 +1019,6 @@ function getStringeeCall(stringeeClient: StringeeClient, data): StringeeCall {
   stringeeCall.callType = getCallType(data.callType);
   stringeeCall.isVideoCall = data.isVideoCall;
   stringeeCall.serial = data.serial;
-  stringeeCall.uuid = data.uuid;
   return stringeeCall;
 }
 
@@ -1027,6 +1027,7 @@ function getStringeeCall2(stringeeClient: StringeeClient, data): StringeeCall2 {
     stringeeClient: stringeeClient,
     from: data.from,
     to: data.to,
+    uuid: data.uuid,
   });
   stringeeCall2.callId = data.callId;
   stringeeCall2.customData = data.customDataFromYourServer;
@@ -1035,7 +1036,6 @@ function getStringeeCall2(stringeeClient: StringeeClient, data): StringeeCall2 {
   stringeeCall2.callType = getCallType(data.callType);
   stringeeCall2.isVideoCall = data.isVideoCall;
   stringeeCall2.serial = data.serial;
-  stringeeCall2.uuid = data.uuid;
   return stringeeCall2;
 }
 

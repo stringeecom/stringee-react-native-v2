@@ -1,4 +1,4 @@
-package com.stringeereactnative;
+package com.stringeereactnative.view;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,11 +40,7 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
     }
 
     @Override
-    public void receiveCommand(
-            @NonNull RNStringeeVideoView root,
-            String commandId,
-            @Nullable ReadableArray args
-    ) {
+    public void receiveCommand(@NonNull RNStringeeVideoView root, String commandId, @Nullable ReadableArray args) {
         super.receiveCommand(root, commandId, args);
         int commandIdInt = Integer.parseInt(commandId);
 
@@ -65,19 +61,14 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
         view.setHeight(height);
     }
 
-    @ReactProp(name = "callId")
-    public void setCallId(RNStringeeVideoView view, String callId) {
-        view.setCallId(callId);
+    @ReactProp(name = "uuid")
+    public void setUUID(RNStringeeVideoView view, String uuid) {
+        view.setUUID(uuid);
     }
 
-    @ReactProp(name = "local", defaultBoolean = false)
+    @ReactProp(name = "local")
     public void setLocal(RNStringeeVideoView view, boolean isLocal) {
         view.setLocal(isLocal);
-    }
-
-    @ReactProp(name = "overlay", defaultBoolean = false)
-    public void setOverlay(RNStringeeVideoView view, boolean isOverlay) {
-        view.setOverlay(isOverlay);
     }
 
     @ReactProp(name = "scalingType")

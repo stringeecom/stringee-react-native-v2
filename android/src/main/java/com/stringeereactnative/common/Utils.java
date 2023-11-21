@@ -1,4 +1,4 @@
-package com.stringeereactnative;
+package com.stringeereactnative.common;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,9 +9,11 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.stringee.common.StringeeAudioManager;
 import com.stringee.common.StringeeAudioManager.AudioManagerEvents;
 import com.stringee.messaging.ChatProfile;
@@ -31,9 +33,9 @@ public class Utils {
     public static Bundle jsonToBundle(String text) throws JSONException {
         JSONObject jsonObject = new JSONObject(text);
         Bundle bundle = new Bundle();
-        Iterator iter = jsonObject.keys();
-        while (iter.hasNext()) {
-            String key = (String) iter.next();
+        Iterator<String> iterator = jsonObject.keys();
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
             String value = jsonObject.getString(key);
             bundle.putString(key, value);
         }
@@ -210,7 +212,7 @@ public class Utils {
 
         List<Queue> queues = chatProfile.getQueues();
         WritableArray queuesMap = Arguments.createArray();
-        if (!isListEmpty(queues)){
+        if (!isListEmpty(queues)) {
             for (int j = 0; j < queues.size(); j++) {
                 WritableMap queueMap = getQueueMap(queues.get(j));
                 queuesMap.pushMap(queueMap);
@@ -232,7 +234,7 @@ public class Utils {
             if (text.toString().equalsIgnoreCase("null")) {
                 return true;
             } else {
-                return text.toString().trim().length() <= 0;
+                return text.toString().trim().length() == 0;
             }
         } else {
             return true;
@@ -266,7 +268,7 @@ public class Utils {
             public void run() {
                 StringeeAudioManager audioManager = StringeeAudioManager.create(context);
                 audioManager.start(events);
-                StringeeManager.getInstance().setAudioManager(audioManager);
+                AudioManager.getInstance().setAudioManager(audioManager);
             }
         });
     }
@@ -275,10 +277,10 @@ public class Utils {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                StringeeAudioManager audioManager = StringeeManager.getInstance().getAudioManager();
+                StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
                 if (audioManager != null) {
                     audioManager.stop();
-                    StringeeManager.getInstance().setAudioManager(null);
+                    AudioManager.getInstance().setAudioManager(null);
                 }
             }
         });
@@ -288,7 +290,7 @@ public class Utils {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                StringeeAudioManager audioManager = StringeeManager.getInstance().getAudioManager();
+                StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
                 if (audioManager != null) {
                     audioManager.setSpeakerphoneOn(on);
                 }
@@ -299,5 +301,20 @@ public class Utils {
     public static int dpiToPx(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
+    }
+
+    public static boolean containsEvent(List<String> array, String value) {
+        if (!Utils.isListEmpty(array)) {
+            for (int i = 0; i < array.size(); i++) {
+                if (array.get(i).equals(value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap eventData) {
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, eventData);
     }
 }

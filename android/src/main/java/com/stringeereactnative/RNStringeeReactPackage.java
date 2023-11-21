@@ -6,6 +6,10 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.stringeereactnative.module.RNStringeeCall2Module;
+import com.stringeereactnative.module.RNStringeeCallModule;
+import com.stringeereactnative.module.RNStringeeClientModule;
+import com.stringeereactnative.view.RNStringeeVideoViewManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;

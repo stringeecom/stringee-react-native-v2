@@ -26,7 +26,7 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createCallWrapper(String uuid, String clientUUID) {
+    public void createWrapper(String uuid, String clientUUID) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
             call2Wrapper = new StringeeCall2Wrapper(uuid, getReactApplicationContext());

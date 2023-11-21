@@ -171,6 +171,7 @@ public class StringeeCall2Wrapper implements StringeeCall2.StringeeCallListener,
         if (Utils.containsEvent(events, Constant.CALL2_ON_TRACK_MEDIA_STATE_CHANGE)) {
             // Data
             WritableMap data = Arguments.createMap();
+            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
             data.putString(Constant.KEY_FROM, from);
             data.putInt(Constant.KEY_MEDIA_TYPE, mediaType.getValue());
             data.putBoolean(Constant.KEY_ENABLE, enable);

@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "RNCall2Wrapper.h"
-#import "RCTConvert+StringeeHelper.h"
 #import "RNStringeeInstanceManager.h"
 
 static NSString *didChangeSignalingState    = @"didChangeSignalingState";

@@ -24,7 +24,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
 @implementation RNCallWrapper {
     NSMutableArray<NSString *> *jsEvents;
     RNStringeeCall             *rnCall;
-    NSString                   *clientUUID;
+    NSString                   *clientID;
 }
 
 - (instancetype) initWithIdentifier:(NSString *)identifier clientUUID:(NSString *)clientUUID; {
@@ -32,7 +32,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
     if (self) {
         jsEvents = [[NSMutableArray alloc] init];
         rnCall = RNStringeeInstanceManager.instance.rnCall;
-        clientUUID = clientUUID;
+        clientID = clientUUID;
     }
     
     return self;
@@ -173,7 +173,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
 }
 
 - (StringeeClient *)getClient; {
-    return [RNStringeeInstanceManager.instance.clientWrappers objectForKey:clientUUID].client;
+    return [RNStringeeInstanceManager.instance.clientWrappers objectForKey:clientID].client;
 }
 
 @end

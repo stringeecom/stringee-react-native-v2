@@ -1,6 +1,5 @@
 #import <Foundation/Foundation.h>
 #import <Stringee/Stringee.h>
-#import "RNClientWrapper.h"
 
 @interface RNCall2Wrapper : NSObject <StringeeCall2Delegate>
 @property (nonatomic) NSString *identifier;

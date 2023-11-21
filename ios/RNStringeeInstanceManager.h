@@ -6,7 +6,6 @@
 #import "RNClientWrapper.h"
 #import "RNCallWrapper.h"
 #import "RNCall2Wrapper.h"
-#import "RNStringeeCall.h"
 #import <CallKit/CallKit.h>
 
 @interface RNStringeeInstanceManager : NSObject<CXCallObserverDelegate>

@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <Stringee/Stringee.h>
-#import "RNClientWrapper.h"
 
 @interface RNCallWrapper : NSObject <StringeeCallDelegate>
 @property (nonatomic) NSString *identifier;

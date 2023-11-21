@@ -148,16 +148,16 @@
 
 - (void)timeoutInQueue:(StringeeClient *)stringeeClient info:(NSDictionary *)info {
     if ([jsEvents containsObject:timeoutInQueue]) {
-        id rInfo = info != nil ? info : [NSNull null];
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:timeoutInQueue body: @{ @"uuid" : _identifier, @"data" : info}];
+        id Info = info != nil ? info : [NSNull null];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:timeoutInQueue body: @{ @"uuid" : _identifier, @"data" : Info}];
     }
 }
 
 
 - (void)conversationEnded:(StringeeClient *)stringeeClient info:(NSDictionary *)info {
     if ([jsEvents containsObject:conversationEnded]) {
-        id rInfo = info != nil ? info : [NSNull null];
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:conversationEnded body: @{ @"uuid" : _identifier, @"data" : info}];
+        id Info = info != nil ? info : [NSNull null];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:conversationEnded body: @{ @"uuid" : _identifier, @"data" : Info}];
     }
 }
 
@@ -197,7 +197,7 @@
         id returnCustomData = stringeeCall.customDataFromYourServer ? stringeeCall.customDataFromYourServer : [NSNull null];
         
         NSString *uuid = [NSUUID.UUID.UUIDString lowercaseString];
-        RNCallWrapper *wrapper = [[RNCallWrapper alloc] initWithIdentifier:_identifier clientUUID:uuid];
+        RNCallWrapper *wrapper = [[RNCallWrapper alloc] initWithIdentifier:uuid clientUUID:_identifier];
         wrapper.call = stringeeCall;
         stringeeCall.delegate = wrapper;
         RNStringeeInstanceManager.instance.callWrappers[uuid] = wrapper;
@@ -239,7 +239,7 @@
         id returnCustomData = stringeeCall2.customDataFromYourServer ? stringeeCall2.customDataFromYourServer : [NSNull null];
         
         NSString *uuid = [NSUUID.UUID.UUIDString lowercaseString];
-        RNCall2Wrapper *wrapper = [[RNCall2Wrapper alloc] initWithIdentifier:_identifier clientUUID:uuid];
+        RNCall2Wrapper *wrapper = [[RNCall2Wrapper alloc] initWithIdentifier:uuid clientUUID:_identifier];
         wrapper.call = stringeeCall2;
         stringeeCall2.delegate = wrapper;
         RNStringeeInstanceManager.instance.call2Wrappers[uuid] = wrapper;

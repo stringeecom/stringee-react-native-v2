@@ -31,7 +31,7 @@
     if ([_scalingType isEqualToString:@"fit"]) {
         mode = StringeeVideoContentModeScaleAspectFit;
     }
-    
+    NSLog(@"Render videoview with uuid: %@, ", _uuid);
     if (!hasDisplayed) {
         if (_uuid.length) {
             [[RNStringeeInstanceManager instance].rnCall addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];

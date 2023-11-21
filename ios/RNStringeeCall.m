@@ -46,6 +46,7 @@ RCT_EXPORT_MODULE();
 // TODO: - Publish Functions
 
 RCT_EXPORT_METHOD(createWrapper:(NSString *)uuid clientUUID:(NSString *)clientUUID) {
+    NSLog(@"%@ create Wrapper: ", uuid);
     RNCallWrapper *wrapper = [[RNCallWrapper alloc] initWithIdentifier:uuid clientUUID:clientUUID];
     [RNStringeeInstanceManager.instance.callWrappers setObject:wrapper forKey:uuid];
 }

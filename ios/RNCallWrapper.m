@@ -33,6 +33,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
         jsEvents = [[NSMutableArray alloc] init];
         rnCall = RNStringeeInstanceManager.instance.rnCall;
         clientID = clientUUID;
+        _identifier = identifier;
     }
     
     return self;
@@ -60,7 +61,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
                  body:@{
                     @"uuid" : _identifier,
                     @"data" : @{
-                        @"callId" : _call.callId,
+                        @"callId" : stringeeCall.callId,
                         @"code"   : @(0),
                         @"description" : @"Connected"
                     }
@@ -72,7 +73,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
                  body:@{
                     @"uuid" : _identifier,
                     @"data" : @{
-                        @"callId" : _call.callId,
+                        @"callId" : stringeeCall.callId,
                         @"code"   : @(1),
                         @"description" : @"Disconnected"
                     }
@@ -85,18 +86,19 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
 }
 
 - (void)didChangeSignalingState:(StringeeCall *)stringeeCall signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
+    
     if ([jsEvents containsObject:didChangeSignalingState]) {
         [RNStringeeInstanceManager.instance.rnCall
          sendEventWithName:didChangeSignalingState
          body:@{
             @"uuid" : _identifier,
             @"data" : @{
-                @"callId" : _call.callId,
+                @"callId" : stringeeCall.callId,
                 @"code" : @(signalingState),
                 @"reason" : reason,
                 @"sipCode" : @(sipCode),
                 @"sipReason" : sipReason,
-                @"serial": @(_call.serial)
+                @"serial": @(stringeeCall.serial)
             }
         }];
     }
@@ -107,7 +109,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
         [rnCall sendEventWithName:didReceiveLocalStream body:@{
             @"uuid" : _identifier,
             @"data" : @{
-                @"callId": _call.callId
+                @"callId": stringeeCall.callId
             }
         }];
     }
@@ -118,7 +120,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
         [rnCall sendEventWithName:didReceiveRemoteStream body:@{
             @"uuid" : _identifier,
             @"data" : @{
-                @"callId": _call.callId
+                @"callId": stringeeCall.callId
             }
         }];
     }

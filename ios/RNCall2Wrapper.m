@@ -25,7 +25,7 @@ static NSString *trackMediaStateChange      = @"trackMediaStateChange";
 @implementation RNCall2Wrapper {
     NSMutableArray<NSString *> *jsEvents;
     RNStringeeCall2             *rnCall2;
-    NSString                   *clientUUID;
+    NSString                   *clientID;
 }
 
 - (instancetype) initWithIdentifier:(NSString *)identifier clientUUID:(NSString *)clientUUID; {
@@ -33,7 +33,8 @@ static NSString *trackMediaStateChange      = @"trackMediaStateChange";
     if (self) {
         jsEvents = [[NSMutableArray alloc] init];
         rnCall2 = RNStringeeInstanceManager.instance.rnCall2;
-        clientUUID = clientUUID;
+        clientID = clientUUID;
+        _identifier = identifier;
     }
     
     return self;
@@ -163,7 +164,7 @@ static NSString *trackMediaStateChange      = @"trackMediaStateChange";
 }
 
 - (StringeeClient *)getClient; {
-    return [RNStringeeInstanceManager.instance.clientWrappers objectForKey:clientUUID].client;
+    return [RNStringeeInstanceManager.instance.clientWrappers objectForKey:clientID].client;
 }
 
 

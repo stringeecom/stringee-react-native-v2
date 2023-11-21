@@ -398,9 +398,15 @@ RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(nonnull NSNumber *)ser
 }
 
 
-- (void)addRenderToView:(UIView *)view callId:(NSString *)callId isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode {
-    if (callId.length) {
-        StringeeCall2 *call = [[RNStringeeInstanceManager instance].call2s objectForKey:callId];
+- (void)addRenderToView:(UIView *)view uuid:(NSString *)uuid isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode {
+    if (uuid.length) {
+        StringeeCall2 *call = [[RNStringeeInstanceManager instance].call2Wrappers objectForKey:uuid].call;
+        
+        NSString *callId = call.callId;
+        if (callId == nil || callId.length == 0) {
+            return;
+        }
+        
         if (call) {
             if (isLocal) {
                 call.localVideoView.contentMode = contentMode;

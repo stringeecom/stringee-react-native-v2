@@ -402,9 +402,9 @@ RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(nonnull NSNumber *)ser
     callback(@[uuid]);
 }
 
-- (void)addRenderToView:(UIView *)view callId:(NSString *)callId isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode {
-    if (callId.length) {
-        StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+- (void)addRenderToView:(UIView *)view uuid:(NSString *)uuid isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode {
+    if (uuid.length) {
+        StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
         if (call) {
             if (isLocal) {
                 call.localVideoView.frame = CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height);

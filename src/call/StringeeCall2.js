@@ -38,6 +38,7 @@ class StringeeCall2 {
   isVideoCall: boolean;
   videoResolution: VideoResolution = VideoResolution.normal;
   serial: number;
+  uuid: string;
 
   /**
    * Create the StringeeCall2.

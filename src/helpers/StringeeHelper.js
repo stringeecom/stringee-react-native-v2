@@ -1,5 +1,5 @@
 import {NativeModules, Platform} from 'react-native';
-import {StringeeError} from './StringeeError';
+import {StringeeError} from '../../index';
 
 const RNStringeeClient = NativeModules.RNStringeeClient;
 const isIOS = Platform.OS === 'ios';

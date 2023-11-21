@@ -22,5 +22,6 @@
 - (void)removeNativeEvent:(NSString *)event;
 
 - (void)createClientIfNeed;
+
 @end
 

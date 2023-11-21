@@ -195,29 +195,8 @@
         id returnFromAlias = stringeeCall.fromAlias ? stringeeCall.fromAlias : [NSNull null];
         id returnToAlias = stringeeCall.toAlias ? stringeeCall.toAlias : [NSNull null];
         id returnCustomData = stringeeCall.customDataFromYourServer ? stringeeCall.customDataFromYourServer : [NSNull null];
-        NSString *uuid = [[[NSUUID UUID]UUIDString]lowercaseString];
-        RNCallWrapper *wrapper = [[RNCallWrapper alloc] initWithIdentifier:uuid clientUUID:_identifier];
-        wrapper.call = stringeeCall;
-        stringeeCall.delegate = wrapper;
 
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall body: @{
-            @"uuid" : _identifier,
-            @"data" : @{
-                @"userId" : returnUserId,
-                @"callId" : returnCallId,
-                @"from" : returnFrom,
-                @"to" : returnTo,
-                @"fromAlias" : returnFromAlias,
-                @"toAlias" : returnToAlias,
-                @"callType" : @(index),
-                @"isVideoCall" : @(stringeeCall.isVideoCall),
-                @"customDataFromYourServer" : returnCustomData,
-                @"serial" : @(stringeeCall.serial),
-                @"uuid"   : uuid
-            }
-        }];
-        
-        
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : returnUserId, @"callId" : returnCallId, @"from" : returnFrom, @"to" : returnTo, @"fromAlias" : returnFromAlias, @"toAlias" : returnToAlias, @"callType" : @(index), @"isVideoCall" : @(stringeeCall.isVideoCall), @"customDataFromYourServer" : returnCustomData, @"serial" : @(stringeeCall.serial)}}];
     }
     
 }
@@ -252,27 +231,8 @@
         id returnFromAlias = stringeeCall2.fromAlias ? stringeeCall2.fromAlias : [NSNull null];
         id returnToAlias = stringeeCall2.toAlias ? stringeeCall2.toAlias : [NSNull null];
         id returnCustomData = stringeeCall2.customDataFromYourServer ? stringeeCall2.customDataFromYourServer : [NSNull null];
-        
-        NSString *uuid = [[[NSUUID UUID]UUIDString]lowercaseString];
-        RNCall2Wrapper *wrapper = [[RNCall2Wrapper alloc] initWithIdentifier:uuid clientUUID:_identifier];
-        wrapper.call = stringeeCall2;
-        stringeeCall2.delegate = wrapper;
 
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall2 body: @{
-            @"uuid" : _identifier,
-            @"data" : @{ @"userId" : returnUserId,
-                         @"callId" : returnCallId,
-                         @"from" : returnFrom,
-                         @"to" : returnTo,
-                         @"fromAlias" : returnFromAlias,
-                         @"toAlias" : returnToAlias,
-                         @"callType" : @(index),
-                         @"isVideoCall" : @(stringeeCall2.isVideoCall),
-                         @"customDataFromYourServer" : returnCustomData,
-                         @"serial" : @(stringeeCall2.serial),
-                         @"uuid"   : uuid
-            }
-        }];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall2 body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : returnUserId, @"callId" : returnCallId, @"from" : returnFrom, @"to" : returnTo, @"fromAlias" : returnFromAlias, @"toAlias" : returnToAlias, @"callType" : @(index), @"isVideoCall" : @(stringeeCall2.isVideoCall), @"customDataFromYourServer" : returnCustomData, @"serial" : @(stringeeCall2.serial)}}];
     }
 }
 

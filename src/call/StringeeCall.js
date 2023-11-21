@@ -9,24 +9,23 @@ import {
   getAudioDevice,
   getListAudioDevice,
   getMediaState,
-  getMediaType,
   getSignalingState,
   isAndroid,
   isIOS,
   normalCallbackHandle,
-  stringeeCall2Events,
+  stringeeCallEvents,
 } from '../helpers/StringeeHelper';
 import {
   CallType,
-  StringeeCall2Listener,
+  StringeeCallListener,
   StringeeClient,
-  StringeeError,
   VideoResolution,
+  StringeeError,
 } from '../../index';
 
-const RNStringeeCall2 = NativeModules.RNStringeeCall2;
+const RNStringeeCall = NativeModules.RNStringeeCall;
 
-class StringeeCall2 {
+class StringeeCall {
   stringeeClient: StringeeClient;
   callId: string;
   customData: string;
@@ -38,9 +37,10 @@ class StringeeCall2 {
   isVideoCall: boolean;
   videoResolution: VideoResolution = VideoResolution.normal;
   serial: number;
+  uuid: string;
 
   /**
-   * Create the StringeeCall2.
+   * Create the StringeeCall.
    * @param {StringeeClient} props.stringeeClient StringeeClient used to connect to the Stringee server
    * @param {string} props.from From number
    * @param {string} props.to To number
@@ -56,28 +56,44 @@ class StringeeCall2 {
     if (props.stringeeClient) {
       this.stringeeClient = props.stringeeClient;
     }
+
+    if (props.uuid) {
+      this.uuid = props.uuid;
+    } else {
+      this.uuid =
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
+
+      RNStringeeCall.createWrapper(this.uuid, this.stringeeClient.uuid);
+    }
+
     this.from = props.from;
     this.to = props.to;
     this.events = [];
     this.subscriptions = [];
-    this.eventEmitter = new NativeEventEmitter(RNStringeeCall2);
+    this.eventEmitter = new NativeEventEmitter(RNStringeeCall);
   }
 
   /**
-   * Set listener for StringeeCall2.
+   * Set listener for StringeeCall.
    * @function setListener
-   * @param {StringeeCall2Listener} listener
+   * @param {StringeeCallListener} listener
    */
-  setListener(listener: StringeeCall2Listener) {
+  setListener(listener: StringeeCallListener) {
     this.unregisterEvents();
 
     if (listener) {
-      stringeeCall2Events.forEach(event => {
+      stringeeCallEvents.forEach(event => {
         if (listener[event] && callEvents[Platform.OS][event]) {
           let emitterSubscription: EmitterSubscription =
             this.eventEmitter.addListener(
               callEvents[Platform.OS][event],
-              data => {
+              ({uuid, data}) => {
+                if (uuid !== this.uuid) {
+                  return;
+                }
                 if (data !== undefined) {
                   if (data.callId !== undefined) {
                     this.callId = data.callId;
@@ -126,27 +142,19 @@ class StringeeCall2 {
                       getListAudioDevice(data.availableAudioDevices),
                     );
                     break;
-                  case 'onTrackMediaStateChange':
-                    listener.onTrackMediaStateChange(
-                      this,
-                      data.from,
-                      getMediaType(data.mediaType),
-                      data.enable,
-                    );
-                    break;
                 }
               },
             );
           this.subscriptions.push(emitterSubscription);
           this.events.push(callEvents[Platform.OS][event]);
-          RNStringeeCall2.setNativeEvent(callEvents[Platform.OS][event]);
+          RNStringeeCall.setNativeEvent(this.uuid, callEvents[Platform.OS][event]);
         }
       });
     }
   }
 
   /**
-   * Unregister from listening to events from StringeeCall2.
+   * Unregister from listening to events from StringeeCall.
    * @function unregisterEvents
    */
   unregisterEvents() {
@@ -157,7 +165,7 @@ class StringeeCall2 {
     this.subscriptions.forEach(e => e.remove());
     this.subscriptions = [];
 
-    this.events.forEach(e => RNStringeeCall2.removeNativeEvent(e));
+    this.events.forEach(e => RNStringeeCall.removeNativeEvent(this.uuid, e));
     this.events = [];
   }
 
@@ -174,8 +182,8 @@ class StringeeCall2 {
       videoResolution: this.videoResolution,
     };
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.makeCall(
-        this.stringeeClient.uuid,
+      RNStringeeCall.makeCall(
+        this.uuid,
         JSON.stringify(makeCallParam),
         (status, code, message, callId, customData) => {
           this.callId = callId;
@@ -195,10 +203,9 @@ class StringeeCall2 {
    */
   initAnswer(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.initAnswer(
-        this.stringeeClient.uuid,
-        this.callId,
-        normalCallbackHandle(resolve, reject, 'initAnswer'),
+      RNStringeeCall.initAnswer(
+        this.uuid,
+        normalCallbackHandle(resolve, reject, 'initAnswer')
       );
     });
   }
@@ -209,7 +216,7 @@ class StringeeCall2 {
    */
   answer(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.answer(this.callId, normalCallbackHandle(resolve, reject))
+      RNStringeeCall.answer(this.uuid, normalCallbackHandle(resolve, reject, 'answer'))
     });
   }
 
@@ -217,9 +224,9 @@ class StringeeCall2 {
    * Hangup a call.
    * @function hangup
    */
-  hangup(): Promise<void> {
+  hangup() {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.hangup(this.callId, normalCallbackHandle(resolve, reject, 'hangup'))
+      RNStringeeCall.hangup(this.uuid, normalCallbackHandle(resolve, reject, 'hangup'))
     });
   }
 
@@ -229,7 +236,7 @@ class StringeeCall2 {
    */
   reject(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.reject(this.callId, normalCallbackHandle(resolve, reject, 'reject'));
+      RNStringeeCall.reject(this.uuid, normalCallbackHandle(resolve, reject, 'reject'));
     });
   }
 
@@ -240,7 +247,22 @@ class StringeeCall2 {
    */
   sendDTMF(dtmf: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.sendDTMF(this.callId, dtmf, normalCallbackHandle(resolve, reject, 'sendDTMF'));
+      RNStringeeCall.sendDTMF(this.uuid, dtmf, normalCallbackHandle(resolve, reject, 'sendDTMF'));
+    });
+  }
+
+  /**
+   * Send info to another client.
+   * @function sendCallInfo
+   * @param {string} callInfo data you want to send, in JSON string
+   */
+  sendCallInfo(callInfo: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeCall.sendCallInfo(
+        this.uuid,
+        callInfo,
+        normalCallbackHandle(resolve, reject, 'sendCallInfo'),
+      );
     });
   }
 
@@ -250,13 +272,12 @@ class StringeeCall2 {
    */
   getCallStats(): Promise<string> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.getCallStats(
-        this.stringeeClient.uuid,
-        this.callId,
+      RNStringeeCall.getCallStats(
+        this.uuid,
         (status, code, message, data) => {
           if (status) {
             resolve(data);
-          } else {
+          }else {
             reject(new StringeeError(code, message, 'getCallStats'));
           }
         }
@@ -270,7 +291,7 @@ class StringeeCall2 {
    */
   switchCamera(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.switchCamera(this.callId, normalCallbackHandle(resolve, reject, 'switchCamera'));
+      RNStringeeCall.switchCamera(this.uuid, normalCallbackHandle(resolve, reject, 'switchCamera'));
     });
   }
 
@@ -281,8 +302,8 @@ class StringeeCall2 {
    */
   enableVideo(enabled: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.enableVideo(
-        this.callId,
+      RNStringeeCall.enableVideo(
+        this.uuid,
         enabled,
         normalCallbackHandle(resolve, reject, 'enableVideo'),
       );
@@ -294,9 +315,9 @@ class StringeeCall2 {
    * @function mute
    * @param {boolean} mute true - toggles audio off, false - toggles audio on
    */
-  mute(mute: boolean): Promise<void> {
+  mute(mute: boolean) {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.mute(this.callId, mute, normalCallbackHandle(resolve, reject, 'mute'));
+      RNStringeeCall.mute(this.uuid, mute, normalCallbackHandle(resolve, reject, 'mute'));
     });
   }
 
@@ -305,10 +326,10 @@ class StringeeCall2 {
    * @function setSpeakerphoneOn
    * @param {boolean} on true - loudspeaker, false - headset speaker
    */
-  setSpeakerphoneOn(on: boolean): Promise<void> {
+  setSpeakerphoneOn(on: boolean) {
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.setSpeakerphoneOn(
-        this.callId,
+      RNStringeeCall.setSpeakerphoneOn(
+        this.uuid,
         on,
         normalCallbackHandle(resolve, reject, 'setSpeakerphoneOn')
       );
@@ -323,9 +344,9 @@ class StringeeCall2 {
   resumeVideo(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!isAndroid) {
-        reject(new StringeeError(-10, 'This function only for android', 'resumeVideo'));
+        resolve(new StringeeError(-10, 'This function only for android', 'resumeVideo'));
       } else {
-        RNStringeeCall2.resumeVideo(this.callId, (status, code, message) => {
+        RNStringeeCall.resumeVideo(this.uuid, (status, code, message) => {
           if (status) {
             resolve();
           } else {
@@ -336,48 +357,16 @@ class StringeeCall2 {
     });
   }
 
-  /**
-   * Send info to another client.
-   * @function sendCallInfo
-   * @param {string} callInfo data you want to send, in JSON string
-   */
-  sendCallInfo(callInfo: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      RNStringeeCall2.sendCallInfo(
-        this.callId,
-        callInfo,
-        normalCallbackHandle(resolve, reject, 'sendCallInfo'),
-      );
-    });
-  }
-
-  /**
-   * Set auto send track media state change to another client.
-   * @function setAutoSendTrackMediaStateChangeEvent
-   * @param {boolean} autoSendTrackMediaStateChangeEvent true - auto send, false - not auto send
-   */
-  setAutoSendTrackMediaStateChangeEvent(
-    autoSendTrackMediaStateChangeEvent: boolean,
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      RNStringeeCall2.setAutoSendTrackMediaStateChangeEvent(
-        this.callId,
-        autoSendTrackMediaStateChangeEvent,
-        normalCallbackHandle(resolve, reject, 'setAutoSendTrackMediaStateChangeEvent')
-      );
-    });
-  }
-
   generateUUID(): Promise<string> {
     return new Promise((resolve, reject) => {
       if (!isIOS) {
         reject(new StringeeError(-10, 'This function only for ios', 'generateUUID'));
       } else {
-        RNStringeeCall2.generateUUID(this.callId, this.serial ?? 1, uuid => {
+        RNStringeeCall.generateUUID(this.callId, this.serial ?? 1, uuid => {
           resolve(uuid);
         });
       }
     });
   }
 }
-export {StringeeCall2};
+export {StringeeCall};

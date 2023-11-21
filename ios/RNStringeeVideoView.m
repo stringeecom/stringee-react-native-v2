@@ -33,9 +33,9 @@
     }
     
     if (!hasDisplayed) {
-        if (_callId.length) {
-            [[RNStringeeInstanceManager instance].rnCall addRenderToView:self callId:_callId isLocal:_local contentMode:mode];
-            [[RNStringeeInstanceManager instance].rnCall2 addRenderToView:self callId:_callId isLocal:_local contentMode:mode];
+        if (_uuid.length) {
+            [[RNStringeeInstanceManager instance].rnCall addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];
+            [[RNStringeeInstanceManager instance].rnCall2 addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];
             hasDisplayed = YES;
         }
     }

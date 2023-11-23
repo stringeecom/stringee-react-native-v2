@@ -178,15 +178,17 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
         [rnCall2 sendEventWithName:didAddLocalTrack body:@{
                     @"uuid" : _identifier,
                     @"data" : @{
-                        @"localId": track.localId,
-                        @"serverId": track.serverId,
-                        @"isLocal": @(track.isLocal),
-                        @"audio": @(track.audio),
-                        @"video": @(track.video),
-                        @"screen": @(track.screen),
-                        @"trackType": @(track.trackType),
-                        @"publisher": @{
-                            @"userId" : track.publisher.userId
+                        @"videoTrack": @{
+                            @"localId": track.localId,
+                            @"serverId": track.serverId,
+                            @"isLocal": @(track.isLocal),
+                            @"audio": @(track.audio),
+                            @"video": @(track.video),
+                            @"screen": @(track.screen),
+                            @"trackType": @(track.trackType),
+                            @"publisher": @{
+                                @"userId" : track.publisher.userId
+                            }
                         }
                     }
         }];
@@ -203,19 +205,21 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
     
     if ([ jsEvents containsObject:didAddRemoteTrack]) {
         [rnCall2 sendEventWithName:didAddRemoteTrack body:@{
-                    @"uuid" : _identifier,
-                    @"data" : @{
-                        @"localId": track.localId,
-                        @"serverId": track.serverId,
-                        @"isLocal": @(track.isLocal),
-                        @"audio": @(track.audio),
-                        @"video": @(track.video),
-                        @"screen": @(track.screen),
-                        @"trackType": @(track.trackType),
-                        @"publisher": @{
-                            @"userId" : track.publisher.userId
-                        }
+            @"uuid" : _identifier,
+            @"data" : @{
+                @"videoTrack": @{
+                    @"localId": track.localId,
+                    @"serverId": track.serverId,
+                    @"isLocal": @(track.isLocal),
+                    @"audio": @(track.audio),
+                    @"video": @(track.video),
+                    @"screen": @(track.screen),
+                    @"trackType": @(track.trackType),
+                    @"publisher": @{
+                        @"userId" : track.publisher.userId
                     }
+                }
+            }
         }];
     }
 }

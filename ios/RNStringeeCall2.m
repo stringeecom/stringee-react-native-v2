@@ -40,7 +40,9 @@ RCT_EXPORT_MODULE();
              didReceiveDtmfDigit,
              didReceiveCallInfo,
              didHandleOnAnotherDevice,
-             trackMediaStateChange
+             trackMediaStateChange,
+             didAddLocalTrack,
+             didAddRemoteTrack
              ];
 }
 

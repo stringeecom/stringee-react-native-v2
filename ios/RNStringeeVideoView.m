@@ -33,7 +33,7 @@
     }
     
     if (!hasDisplayed) {
-        if (_uuid.length) {
+        if (_uuid.length && _videoTrack) {
             NSString *localId = [_videoTrack objectForKey:@"localId"];
             NSString *serverId = [_videoTrack objectForKey:@"serverId"];
             RNCall2Wrapper *wrapper = [RNStringeeInstanceManager.instance.call2Wrappers objectForKey:_uuid];

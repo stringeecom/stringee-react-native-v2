@@ -83,6 +83,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             StringeeManager.getInstance().getCallMap().put(callUuid, callWrapper);
             WritableMap data = Arguments.createMap();
             data.putString(Constant.KEY_CALL_ID, stringeeCall.getCallId());
+            data.putString(Constant.KEY_UUID, callUuid);
             data.putString(Constant.KEY_FROM, stringeeCall.getFrom());
             data.putString(Constant.KEY_FROM_ALIAS, stringeeCall.getFromAlias());
             data.putString(Constant.KEY_TO, stringeeCall.getTo());
@@ -110,6 +111,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             StringeeManager.getInstance().getCall2Map().put(callUuid, call2Wrapper);
             WritableMap data = Arguments.createMap();
             data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
+            data.putString(Constant.KEY_UUID, callUuid);
             data.putString(Constant.KEY_FROM, stringeeCall2.getFrom());
             data.putString(Constant.KEY_FROM_ALIAS, stringeeCall2.getFromAlias());
             data.putString(Constant.KEY_TO, stringeeCall2.getTo());

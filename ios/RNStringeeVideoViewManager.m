@@ -18,6 +18,7 @@ RCT_EXPORT_VIEW_PROPERTY(local, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scalingType, NSString)
 RCT_EXPORT_VIEW_PROPERTY(streamId, NSString)
 RCT_EXPORT_VIEW_PROPERTY(uuid, NSString)
+RCT_EXPORT_VIEW_PROPERTY(videoTrack, NSDictionary)
 
 - (UIView *)view {
     // Init native View that will be converted to react-native view

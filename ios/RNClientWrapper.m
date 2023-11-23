@@ -168,7 +168,6 @@
 #pragma mark Call Delelgate
 
 - (void)incomingCallWithStringeeClient:(StringeeClient *)stringeeClient stringeeCall:(StringeeCall *)stringeeCall {
-    [[RNStringeeInstanceManager instance].calls setObject:stringeeCall forKey:stringeeCall.callId];
 
     if ([jsEvents containsObject:incomingCall]) {
 
@@ -208,10 +207,6 @@
 }
 
 - (void)incomingCallWithStringeeClient:(StringeeClient *)stringeeClient stringeeCall2:(StringeeCall2 *)stringeeCall2 {
-    if (stringeeCall2.callId) {
-        [[RNStringeeInstanceManager instance].call2s setObject:stringeeCall2 forKey:stringeeCall2.callId];
-    }
-
     if ([jsEvents containsObject:incomingCall2]) {
 
         int index = 0;

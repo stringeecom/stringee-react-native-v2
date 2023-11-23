@@ -15,6 +15,9 @@ static NSString *didReceiveCallInfo         = @"didReceiveCallInfo";
 static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
 static NSString *trackMediaStateChange      = @"trackMediaStateChange";
 
+static NSString *didAddLocalTrack           = @"didAddLocalTrack";
+static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
+
 
 @implementation RNStringeeCall2
 @synthesize bridge = _bridge;
@@ -118,18 +121,9 @@ RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters ca
             outgoingCall.videoResolution = VideoResolution_HD;
         }
 
-        __weak StringeeCall2 *weakCall = outgoingCall;
-        __weak NSMutableDictionary *weakCalls = [RNStringeeInstanceManager instance].call2s;
-
         [outgoingCall makeCallWithCompletionHandler:^(BOOL status, int code, NSString *message, NSString *data) {
-            StringeeCall2 *strongCall = weakCall;
-            NSMutableDictionary *strongCalls = weakCalls;
-            if (status) {
-                [strongCalls setObject:strongCall forKey:strongCall.callId];
-            }
-            id returnCallId = strongCall.callId ? strongCall.callId : [NSNull null];
             id returnData = data ? data : [NSNull null];
-            callback(@[@(status), @(code), message, returnCallId, returnData]);
+            callback(@[@(status), @(code), message, outgoingCall.callId, returnData]);
         }];
     }
 }

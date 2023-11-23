@@ -19,8 +19,6 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _calls = [[NSMutableDictionary alloc] init];
-        _call2s = [[NSMutableDictionary alloc] init];
         _call2VideoTracks = [[NSMutableDictionary alloc] init];
         _clientWrappers = [[NSMutableDictionary alloc] init];
         _callWrappers = [[NSMutableDictionary alloc] init];

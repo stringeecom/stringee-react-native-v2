@@ -10,4 +10,5 @@
 @property(strong, nonatomic) NSString *streamId; // removed
 @property(assign, nonatomic) CGSize videoSize;
 @property(strong, nonatomic) NSString *scalingType;
+@property(strong, nonatomic) NSDictionary *videoTrack;
 @end

@@ -20,6 +20,8 @@ static NSString *didReceiveCallInfo         = @"didReceiveCallInfo";
 
 static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
 static NSString *trackMediaStateChange      = @"trackMediaStateChange";
+static NSString *didAddLocalTrack           = @"didAddLocalTrack";
+static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 
 
 @implementation RNCall2Wrapper {
@@ -35,6 +37,7 @@ static NSString *trackMediaStateChange      = @"trackMediaStateChange";
         rnCall2 = RNStringeeInstanceManager.instance.rnCall2;
         clientID = clientUUID;
         _identifier = identifier;
+        _videoTrack = [[NSMutableDictionary alloc] init];
     }
     
     return self;
@@ -159,6 +162,60 @@ static NSString *trackMediaStateChange      = @"trackMediaStateChange";
         [rnCall2 sendEventWithName:trackMediaStateChange body:@{
             @"uuid" : _identifier,
             @"data" : @{@"from" : from, @"mediaType" : @(mediaType), @"enable" : @(enable)}
+        }];
+    }
+}
+
+-(void)didAddLocalTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
+    if (track.localId != nil && track.localId.length > 0) {
+        _videoTrack[track.localId] = track;
+    }
+    if (track.serverId != nil && track.serverId.length > 0) {
+        _videoTrack[track.serverId] = track;
+    }
+    
+    if ([ jsEvents containsObject:didAddLocalTrack]) {
+        [rnCall2 sendEventWithName:didAddLocalTrack body:@{
+                    @"uuid" : _identifier,
+                    @"data" : @{
+                        @"localId": track.localId,
+                        @"serverId": track.serverId,
+                        @"isLocal": @(track.isLocal),
+                        @"audio": @(track.audio),
+                        @"video": @(track.video),
+                        @"screen": @(track.screen),
+                        @"trackType": @(track.trackType),
+                        @"publisher": @{
+                            @"userId" : track.publisher.userId
+                        }
+                    }
+        }];
+    }
+}
+
+-(void)didAddRemoteTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
+    if (track.localId != nil && track.localId.length > 0) {
+        _videoTrack[track.localId] = track;
+    }
+    if (track.serverId != nil && track.serverId.length > 0) {
+        _videoTrack[track.serverId] = track;
+    }
+    
+    if ([ jsEvents containsObject:didAddRemoteTrack]) {
+        [rnCall2 sendEventWithName:didAddRemoteTrack body:@{
+                    @"uuid" : _identifier,
+                    @"data" : @{
+                        @"localId": track.localId,
+                        @"serverId": track.serverId,
+                        @"isLocal": @(track.isLocal),
+                        @"audio": @(track.audio),
+                        @"video": @(track.video),
+                        @"screen": @(track.screen),
+                        @"trackType": @(track.trackType),
+                        @"publisher": @{
+                            @"userId" : track.publisher.userId
+                        }
+                    }
         }];
     }
 }

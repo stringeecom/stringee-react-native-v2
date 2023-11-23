@@ -118,18 +118,9 @@ RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters ca
             outgoingCall.videoResolution = VideoResolution_HD;
         }
 
-        __weak StringeeCall *weakCall = outgoingCall;
-        __weak NSMutableDictionary *weakCalls = [RNStringeeInstanceManager instance].calls;
-
         [outgoingCall makeCallWithCompletionHandler:^(BOOL status, int code, NSString *message, NSString *data) {
-            StringeeCall *strongCall = weakCall;
-            NSMutableDictionary *strongCalls = weakCalls;
-            if (status) {
-                [strongCalls setObject:strongCall forKey:strongCall.callId];
-            }
-            id returnCallId = strongCall.callId ? strongCall.callId : [NSNull null];
             id returnData = data ? data : [NSNull null];
-            callback(@[@(status), @(code), message, returnCallId, returnData]);
+            callback(@[@(status), @(code), message, outgoingCall.callId, returnData]);
         }];
     }
 }

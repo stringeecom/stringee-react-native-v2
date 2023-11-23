@@ -31,8 +31,35 @@
     if ([_scalingType isEqualToString:@"fit"]) {
         mode = StringeeVideoContentModeScaleAspectFit;
     }
-    NSLog(@"Render videoview with uuid: %@, ", _uuid);
+    
     if (!hasDisplayed) {
+        if (_uuid.length) {
+            NSString *localId = [_videoTrack objectForKey:@"localId"];
+            NSString *serverId = [_videoTrack objectForKey:@"serverId"];
+            RNCall2Wrapper *wrapper = [RNStringeeInstanceManager.instance.call2Wrappers objectForKey:_uuid];
+            
+            StringeeVideoTrack* track;
+            if (localId != nil && localId.length > 0) {
+                if ([wrapper.videoTrack objectForKey:localId]) {
+                    track = [wrapper.videoTrack objectForKey:localId];
+                }
+            }else if (serverId != nil && serverId.length > 0) {
+                if ([wrapper.videoTrack objectForKey:localId]) {
+                    track = [wrapper.videoTrack objectForKey:localId];
+                }
+            }
+            
+            if (track != nil) {
+                StringeeVideoView *videoView = [track attachWithVideoContentMode:mode];
+                videoView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+                [self addSubview:videoView];
+                hasDisplayed = true;
+            }
+            
+        }
+    }
+    
+    if (!hasDisplayed ) {
         if (_uuid.length) {
             [[RNStringeeInstanceManager instance].rnCall addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];
             [[RNStringeeInstanceManager instance].rnCall2 addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];

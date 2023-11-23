@@ -76,6 +76,8 @@ const callEvents = {
     onReceiveCallInfo: 'didReceiveCallInfo',
     onHandleOnAnotherDevice: 'didHandleOnAnotherDevice',
     onTrackMediaStateChange: 'trackMediaStateChange',
+    onReceiveLocalTrack: 'didAddLocalTrack',
+    onReceiveRemoteTrack: 'didAddRemoteTrack'
   },
   android: {
     onChangeSignalingState: 'onSignalingStateChange',

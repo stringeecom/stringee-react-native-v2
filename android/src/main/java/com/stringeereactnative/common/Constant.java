@@ -9,7 +9,7 @@ public class Constant {
 
     // Key
     public static String KEY_UUID = "uuid";
-    public static String KEY_DATA = "uuid";
+    public static String KEY_DATA = "data";
     public static String KEY_USER_ID = "userId";
     public static String KEY_CALL_ID = "callId";
     public static String KEY_FROM = "from";

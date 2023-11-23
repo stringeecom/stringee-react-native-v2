@@ -12,7 +12,7 @@ class StringeeVideoView extends Component {
   uuid: string;
   local: boolean;
   scalingType: StringeeVideoScalingType;
-  stringeeVideoTrack: StringeeVideoTrack;
+  videoTrack: StringeeVideoTrack;
 
   constructor(props) {
     super(props);
@@ -23,7 +23,7 @@ class StringeeVideoView extends Component {
         props.scalingType !== undefined
             ? props.scalingType
             : StringeeVideoScalingType.fill;
-    this.stringeeVideoTrack = props.stringeeVideoTrack;
+    this.videoTrack = props.videoTrack;
   }
 
   componentDidMount() {
@@ -49,7 +49,7 @@ class StringeeVideoView extends Component {
               uuid={this.uuid}
               local={this.local}
               scalingType={this.scalingType}
-              stringeeVideoTrack={this.stringeeVideoTrack}
+              videoTrack={this.videoTrack}
               ref={this.ref}
           />
         </View>
@@ -64,7 +64,7 @@ StringeeVideoView.propTypes = {
     StringeeVideoScalingType.fit,
     StringeeVideoScalingType.fill,
   ]),
-  stringeeVideoTrack: PropTypes.objectOf(StringeeVideoTrack),
+  videoTrack: PropTypes.objectOf(StringeeVideoTrack),
   ...View.propTypes,
 };
 

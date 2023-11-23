@@ -70,8 +70,6 @@ const callEvents = {
     onChangeMediaState: 'didChangeMediaState',
     onReceiveLocalStream: 'didReceiveLocalStream',
     onReceiveRemoteStream: 'didReceiveRemoteStream',
-    onReceiveLocalTrack: 'didAddLocalTrack2',
-    onReceiveRemoteTrack: 'didAddRemoteTrack2',
     onReceiveDtmfDigit: 'didReceiveDtmfDigit',
     onReceiveCallInfo: 'didReceiveCallInfo',
     onHandleOnAnotherDevice: 'didHandleOnAnotherDevice',

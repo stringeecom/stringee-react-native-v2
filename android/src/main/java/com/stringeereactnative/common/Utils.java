@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -22,6 +23,8 @@ import com.stringee.messaging.Conversation;
 import com.stringee.messaging.Message;
 import com.stringee.messaging.Queue;
 import com.stringee.messaging.User;
+import com.stringee.video.RemoteParticipant;
+import com.stringee.video.StringeeVideoTrack;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -229,6 +232,21 @@ public class Utils {
         return queueMap;
     }
 
+    public static WritableMap getVideoTrackMap(StringeeVideoTrack stringeeVideoTrack) {
+        WritableMap videoTrackMap = Arguments.createMap();
+        videoTrackMap.putString("localId", stringeeVideoTrack.getLocalId());
+        videoTrackMap.putString("serverId", stringeeVideoTrack.getId());
+        videoTrackMap.putBoolean("isLocal", stringeeVideoTrack.isLocal());
+        videoTrackMap.putBoolean("audio", stringeeVideoTrack.audioEnabled());
+        videoTrackMap.putBoolean("video", stringeeVideoTrack.videoEnabled());
+        videoTrackMap.putBoolean("screen", stringeeVideoTrack.isScreenCapture());
+        videoTrackMap.putInt("trackType", stringeeVideoTrack.getTrackType().getValue());
+        WritableMap roomUserMap = Arguments.createMap();
+        roomUserMap.putString("userId", stringeeVideoTrack.getUserId());
+        videoTrackMap.putMap("publisher", roomUserMap);
+        return videoTrackMap;
+    }
+
     public static boolean isStringEmpty(@Nullable CharSequence text) {
         if (text != null) {
             if (text.toString().equalsIgnoreCase("null")) {
@@ -252,6 +270,14 @@ public class Utils {
     public static boolean isListEmpty(@Nullable List list) {
         if (list != null) {
             return list.isEmpty();
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean isMapEmpty(@Nullable ReadableMap readableMap) {
+        if (readableMap != null) {
+            return readableMap.toHashMap().isEmpty();
         } else {
             return true;
         }

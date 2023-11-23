@@ -40,6 +40,7 @@ public class Constant {
     public static String KEY_AVAILABLE_AUDIO_DEVICE = "availableAudioDevices";
     public static String KEY_MEDIA_TYPE = "mediaType";
     public static String KEY_ENABLE = "enable";
+    public static String KEY_VIDEO_TRACK = "videoTrack";
 
     // Client events
     public static String CLIENT_ON_CONNECTED = "onConnectionConnected";
@@ -71,8 +72,8 @@ public class Constant {
     public static String CALL2_ON_SIGNALING_STATE_CHANGE = "onSignalingStateChange";
     public static String CALL2_ON_HANDLE_ON_ANOTHER_DEVICE = "onHandledOnAnotherDevice";
     public static String CALL2_ON_MEDIA_STATE_CHANGE = "onMediaStateChange";
-    public static String CALL2_ON_LOCAL_STREAM = "onLocalStream";
-    public static String CALL2_ON_REMOTE_STREAM = "onRemoteStream";
+    public static String CALL2_ON_LOCAL_TRACK_ADDED = "onLocalTrackAdded";
+    public static String CALL2_ON_REMOTE_TRACK_ADDED = "onRemoteTrackAdded";
     public static String CALL2_ON_CALL_INFO = "onCallInfo";
     public static String CALL2_ON_TRACK_MEDIA_STATE_CHANGE = "onTrackMediaStateChange";
 

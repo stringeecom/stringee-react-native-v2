@@ -10,26 +10,27 @@ import com.stringee.common.StringeeAudioManager;
 import com.stringee.exception.StringeeError;
 import com.stringee.listener.StatusListener;
 import com.stringee.video.StringeeVideoTrack;
-import com.stringee.video.TextureViewRenderer;
 import com.stringeereactnative.common.Constant;
 import com.stringeereactnative.common.Utils;
 import com.stringeereactnative.wrapper.StringeeClientWrapper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webrtc.RendererCommon;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class StringeeCall2Wrapper implements StringeeCall2.StringeeCallListener, StringeeAudioManager.AudioManagerEvents {
+public class StringeeCall2Wrapper extends StringeeCall2.StringeeCallListener implements StringeeAudioManager.AudioManagerEvents {
     private final List<String> events = new ArrayList<>();
     private final ReactContext reactContext;
     private StringeeCall2 stringeeCall2;
     private final String uuid;
     private StringeeClientWrapper clientWrapper;
     private Callback makeCallCallback;
+    private Map<String, StringeeVideoTrack> videoTrackMap = new HashMap<>();
 
     public StringeeCall2Wrapper(String uuid, ReactContext reactContext) {
         this.reactContext = reactContext;
@@ -112,31 +113,45 @@ public class StringeeCall2Wrapper implements StringeeCall2.StringeeCallListener,
 
     @Override
     public void onLocalStream(StringeeCall2 stringeeCall2) {
-        if (Utils.containsEvent(events, Constant.CALL2_ON_LOCAL_STREAM)) {
+
+    }
+
+    @Override
+    public void onLocalTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
+        videoTrackMap.put(stringeeVideoTrack.getLocalId(), stringeeVideoTrack);
+        if (Utils.containsEvent(events, Constant.CALL2_ON_LOCAL_TRACK_ADDED)) {
             // Data
             WritableMap data = Arguments.createMap();
             data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
+            data.putMap(Constant.KEY_VIDEO_TRACK, Utils.getVideoTrackMap(stringeeVideoTrack));
 
             // Event data
             WritableMap eventData = Arguments.createMap();
             eventData.putString(Constant.KEY_UUID, uuid);
             eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_LOCAL_STREAM, eventData);
+            Utils.sendEvent(reactContext, Constant.CALL2_ON_LOCAL_TRACK_ADDED, eventData);
         }
     }
 
     @Override
     public void onRemoteStream(StringeeCall2 stringeeCall2) {
-        if (Utils.containsEvent(events, Constant.CALL2_ON_REMOTE_STREAM)) {
+
+    }
+
+    @Override
+    public void onRemoteTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
+        videoTrackMap.put(stringeeVideoTrack.getId(), stringeeVideoTrack);
+        if (Utils.containsEvent(events, Constant.CALL2_ON_REMOTE_TRACK_ADDED)) {
             // Data
             WritableMap data = Arguments.createMap();
             data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
+            data.putMap(Constant.KEY_VIDEO_TRACK, Utils.getVideoTrackMap(stringeeVideoTrack));
 
             // Event data
             WritableMap eventData = Arguments.createMap();
             eventData.putString(Constant.KEY_UUID, uuid);
             eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_REMOTE_STREAM, eventData);
+            Utils.sendEvent(reactContext, Constant.CALL2_ON_REMOTE_TRACK_ADDED, eventData);
         }
     }
 
@@ -220,30 +235,8 @@ public class StringeeCall2Wrapper implements StringeeCall2.StringeeCallListener,
         }
     }
 
-    public TextureViewRenderer getLocalView() {
-        if (stringeeCall2 != null) {
-            return stringeeCall2.getLocalView2();
-        }
-        return null;
-    }
-
-    public void renderLocalView(RendererCommon.ScalingType scalingType) {
-        if (stringeeCall2 != null) {
-            stringeeCall2.renderLocalView2(scalingType);
-        }
-    }
-
-    public TextureViewRenderer getRemoteView() {
-        if (stringeeCall2 != null) {
-            return stringeeCall2.getRemoteView2();
-        }
-        return null;
-    }
-
-    public void renderRemoteView(RendererCommon.ScalingType scalingType) {
-        if (stringeeCall2 != null) {
-            stringeeCall2.renderRemoteView2(scalingType);
-        }
+    public Map<String, StringeeVideoTrack> getVideoTrackMap() {
+        return videoTrackMap;
     }
 
     public void makeCall(String from, String to, boolean isVideoCall, String customData, String resolution, Callback callback) {

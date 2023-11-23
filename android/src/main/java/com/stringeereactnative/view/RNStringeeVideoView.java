@@ -9,6 +9,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.ReadableMap;
+import com.stringee.video.StringeeVideoTrack;
 import com.stringee.video.TextureViewRenderer;
 import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.common.Utils;
@@ -23,6 +25,7 @@ public class RNStringeeVideoView extends FrameLayout {
     private String uuid;
     private boolean isLocal = false;
     private ScalingType scalingType = ScalingType.SCALE_ASPECT_FILL;
+    private ReadableMap videoTrackMap;
 
     public RNStringeeVideoView(@NonNull Context context) {
         super(context);
@@ -56,24 +59,43 @@ public class RNStringeeVideoView extends FrameLayout {
         }
     }
 
+    public void setVideoTrackMap(ReadableMap videoTrackMap) {
+        this.videoTrackMap = videoTrackMap;
+    }
+
     public void createView() {
         setupLayout(this);
         this.removeAllViews();
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
         FrameLayout layout = new FrameLayout(getContext());
+
+        if (!Utils.isMapEmpty(videoTrackMap)) {
+            StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
+            if (call2Wrapper != null) {
+                boolean isLocal = videoTrackMap.getBoolean("isLocal");
+                String trackId = isLocal ? videoTrackMap.getString("localId") : videoTrackMap.getString("serverId");
+                if (!Utils.isStringEmpty(trackId)) {
+                    StringeeVideoTrack stringeeVideoTrack = call2Wrapper.getVideoTrackMap().get(trackId);
+                    if (stringeeVideoTrack != null) {
+                        TextureViewRenderer videoView = stringeeVideoTrack.getView2(getContext());
+                        if (videoView != null) {
+                            if (videoView.getParent() != null) {
+                                ((ViewGroup) videoView.getParent()).removeView(videoView);
+                            }
+                            layout.addView(videoView, layoutParams);
+                            stringeeVideoTrack.renderView2(scalingType);
+                        }
+                    }
+                }
+            }
+        }
+
         if (!Utils.isStringEmpty(uuid)) {
             StringeeCallWrapper callWrapper = StringeeManager.getInstance().getCallMap().get(uuid);
-            StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
-
-            if (callWrapper == null && call2Wrapper == null) {
-                return;
-            }
-
-            if (isLocal) {
-                TextureViewRenderer localView;
-                if (callWrapper != null) {
-                    localView = callWrapper.getLocalView();
+            if (callWrapper != null) {
+                if (isLocal) {
+                    TextureViewRenderer localView = callWrapper.getLocalView();
                     if (localView != null) {
                         if (localView.getParent() != null) {
                             ((ViewGroup) localView.getParent()).removeView(localView);
@@ -82,34 +104,13 @@ public class RNStringeeVideoView extends FrameLayout {
                         callWrapper.renderLocalView(scalingType);
                     }
                 } else {
-                    localView = call2Wrapper.getLocalView();
-                    if (localView != null) {
-                        if (localView.getParent() != null) {
-                            ((ViewGroup) localView.getParent()).removeView(localView);
-                        }
-                        layout.addView(localView, layoutParams);
-                        call2Wrapper.renderLocalView(scalingType);
-                    }
-                }
-            } else {
-                TextureViewRenderer remoteView;
-                if (callWrapper != null) {
-                    remoteView = callWrapper.getRemoteView();
+                    TextureViewRenderer remoteView = callWrapper.getRemoteView();
                     if (remoteView != null) {
                         if (remoteView.getParent() != null) {
                             ((ViewGroup) remoteView.getParent()).removeView(remoteView);
                         }
                         layout.addView(remoteView, layoutParams);
                         callWrapper.renderRemoteView(scalingType);
-                    }
-                } else {
-                    remoteView = call2Wrapper.getRemoteView();
-                    if (remoteView != null) {
-                        if (remoteView.getParent() != null) {
-                            ((ViewGroup) remoteView.getParent()).removeView(remoteView);
-                        }
-                        layout.addView(remoteView, layoutParams);
-                        call2Wrapper.renderRemoteView(scalingType);
                     }
                 }
             }

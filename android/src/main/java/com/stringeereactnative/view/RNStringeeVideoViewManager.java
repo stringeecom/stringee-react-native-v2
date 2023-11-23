@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -74,5 +75,10 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
     @ReactProp(name = "scalingType")
     public void setScalingType(RNStringeeVideoView view, String scalingType) {
         view.setScalingType(scalingType);
+    }
+
+    @ReactProp(name = "videoTrack")
+    public void setVideoTrackMap(RNStringeeVideoView view, ReadableMap videoTrackMap) {
+        view.setVideoTrackMap(videoTrackMap);
     }
 }

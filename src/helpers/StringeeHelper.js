@@ -70,6 +70,8 @@ const callEvents = {
     onChangeMediaState: 'didChangeMediaState',
     onReceiveLocalStream: 'didReceiveLocalStream',
     onReceiveRemoteStream: 'didReceiveRemoteStream',
+    onReceiveLocalTrack: 'didAddLocalTrack2',
+    onReceiveRemoteTrack: 'didAddRemoteTrack2',
     onReceiveDtmfDigit: 'didReceiveDtmfDigit',
     onReceiveCallInfo: 'didReceiveCallInfo',
     onHandleOnAnotherDevice: 'didHandleOnAnotherDevice',
@@ -80,6 +82,8 @@ const callEvents = {
     onChangeMediaState: 'onMediaStateChange',
     onReceiveLocalStream: 'onLocalStream',
     onReceiveRemoteStream: 'onRemoteStream',
+    onReceiveLocalTrack: 'onReceiveLocalTrack',
+    onReceiveRemoteTrack: 'onReceiveRemoteTrack',
     onReceiveDtmfDigit: 'onDTMF',
     onReceiveCallInfo: 'onCallInfo',
     onHandleOnAnotherDevice: 'onHandledOnAnotherDevice',
@@ -102,8 +106,8 @@ const stringeeCallEvents = [
 const stringeeCall2Events = [
   'onChangeSignalingState',
   'onChangeMediaState',
-  'onReceiveLocalStream',
-  'onReceiveRemoteStream',
+  'onReceiveLocalTrack',
+  'onReceiveRemoteTrack',
   'onReceiveDtmfDigit',
   'onReceiveCallInfo',
   'onHandleOnAnotherDevice',
@@ -163,6 +167,12 @@ const CallType = {
   appToAppIncoming: 'appToAppIncoming',
   appToPhone: 'appToPhone',
   phoneToApp: 'phoneToApp',
+};
+
+const TrackType = {
+  camera: 'camera',
+  screen: 'screen',
+  player: 'player',
 };
 
 function getSignalingState(code: number): SignalingState {
@@ -235,6 +245,18 @@ const normalCallbackHandle = (resolve, reject, name) => {
   };
 };
 
+function getTrackType(code: number): TrackType {
+  switch (code) {
+    case 1:
+      return TrackType.screen;
+    case 2:
+      return TrackType.player;
+    case 0:
+    default:
+      return TrackType.camera;
+  }
+}
+
 export {
   clientEvents,
   callEvents,
@@ -253,10 +275,12 @@ export {
   RNStringeeClient,
   isIOS,
   isAndroid,
+  TrackType,
   normalCallbackHandle,
   getSignalingState,
   getMediaState,
   getMediaType,
   getListAudioDevice,
   getAudioDevice,
+  getTrackType,
 };

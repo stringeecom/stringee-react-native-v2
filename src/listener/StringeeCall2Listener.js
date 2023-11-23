@@ -4,6 +4,7 @@ import {
   MediaType,
   SignalingState,
   StringeeCall2,
+  StringeeVideoTrack,
 } from '../../index';
 
 class StringeeCall2Listener {
@@ -17,11 +18,11 @@ class StringeeCall2Listener {
    * @param {string} sipReason The description of sip code
    */
   onChangeSignalingState: (
-    stringeeCall2: StringeeCall2,
-    signalingState: SignalingState,
-    reason: string,
-    sipCode: number,
-    sipReason: string,
+      stringeeCall2: StringeeCall2,
+      signalingState: SignalingState,
+      reason: string,
+      sipCode: number,
+      sipReason: string,
   ) => void;
   /**
    * Invoked when the call media state changes between: connected, disconnected.
@@ -31,22 +32,28 @@ class StringeeCall2Listener {
    * @param {string} description The description of the state
    */
   onChangeMediaState: (
-    stringeeCall2: StringeeCall2,
-    mediaState: MediaState,
-    description: string,
+      stringeeCall2: StringeeCall2,
+      mediaState: MediaState,
+      description: string,
   ) => void;
   /**
-   * Invoked when the local stream is initialized and available to be rendered to a view.
-   * @function onReceiveLocalStream
+   * Invoked when the local track is initialized and available to be rendered to a view.
+   * @function onReceiveLocalTrack
    * @param {StringeeCall2} stringeeCall2
    */
-  onReceiveLocalStream: (stringeeCall2: StringeeCall2) => void;
+  onReceiveLocalTrack: (
+      stringeeCall2: StringeeCall2,
+      stringeeVideoTrack: StringeeVideoTrack,
+  ) => void;
   /**
-   * Invoked when the remote stream is initialized and available to be rendered to a view.
-   * @function onReceiveRemoteStream
+   * Invoked when the remote track is initialized and available to be rendered to a view.
+   * @function onReceiveRemoteTrack
    * @param {StringeeCall2} stringeeCall2
    */
-  onReceiveRemoteStream: (stringeeCall2: StringeeCall2) => void;
+  onReceiveRemoteTrack: (
+      stringeeCall2: StringeeCall2,
+      stringeeVideoTrack: StringeeVideoTrack,
+  ) => void;
   /**
    * Invoked when the call receives a DTMF.
    * @function onReceiveDtmfDigit
@@ -69,9 +76,9 @@ class StringeeCall2Listener {
    * @param {string} description The description of the state
    */
   onHandleOnAnotherDevice: (
-    stringeeCall2: StringeeCall2,
-    signalingState: SignalingState,
-    description: string,
+      stringeeCall2: StringeeCall2,
+      signalingState: SignalingState,
+      description: string,
   ) => void;
   /**
    * Invoked when device change audio device.
@@ -82,9 +89,9 @@ class StringeeCall2Listener {
    * @param {Array<AudioDevice>} availableAudioDevices List available  audio devices on your android device
    */
   onAudioDeviceChange: (
-    stringeeCall2: StringeeCall2,
-    selectedAudioDevice: AudioDevice,
-    availableAudioDevices: Array<AudioDevice>,
+      stringeeCall2: StringeeCall2,
+      selectedAudioDevice: AudioDevice,
+      availableAudioDevices: Array<AudioDevice>,
   ) => void;
   /**
    * Invoked when other user send event change track media state.
@@ -95,10 +102,10 @@ class StringeeCall2Listener {
    * @param {boolean} enable State of media. true - on, false - off
    */
   onTrackMediaStateChange: (
-    stringeeCall2: StringeeCall2,
-    from: string,
-    mediaType: MediaType,
-    enable: boolean,
+      stringeeCall2: StringeeCall2,
+      from: string,
+      mediaType: MediaType,
+      enable: boolean,
   ) => void;
 }
 

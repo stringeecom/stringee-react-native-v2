@@ -17,6 +17,7 @@ import {
   MediaType,
   VideoResolution,
   CallType,
+  TrackType,
 } from './src/helpers/StringeeHelper';
 import {StringeeClientListener} from './src/listener/StringeeClientListener';
 import {StringeeCallListener} from './src/listener/StringeeCallListener';
@@ -27,6 +28,8 @@ import {ConversationInfo} from './src/helpers/ConversationInfo';
 import {NewMessageInfo} from './src/helpers/NewMessageInfo';
 import {LiveChatTicketParam} from './src/helpers/LiveChatTicketParam';
 import {StringeeError} from './src/helpers/StringeeError';
+import {StringeeRoomUser} from './src/video/StringeeRoomUser';
+import {StringeeVideoTrack} from './src/video/StringeeVideoTrack';
 
 export {
   StringeeClient,
@@ -56,4 +59,7 @@ export {
   NewMessageInfo,
   LiveChatTicketParam,
   StringeeError,
+  StringeeRoomUser,
+  StringeeVideoTrack,
+  TrackType,
 };

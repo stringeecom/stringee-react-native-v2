@@ -7,11 +7,12 @@ import {
   View,
 } from 'react-native';
 import React, {Component} from 'react';
-import {StringeeVideoScalingType} from '../index';
+import {StringeeVideoScalingType, StringeeVideoTrack} from '../index';
 class StringeeVideoView extends Component {
   uuid: string;
   local: boolean;
   scalingType: StringeeVideoScalingType;
+  stringeeVideoTrack: StringeeVideoTrack;
 
   constructor(props) {
     super(props);
@@ -22,6 +23,7 @@ class StringeeVideoView extends Component {
         props.scalingType !== undefined
             ? props.scalingType
             : StringeeVideoScalingType.fill;
+    this.stringeeVideoTrack = props.stringeeVideoTrack;
   }
 
   componentDidMount() {
@@ -47,6 +49,7 @@ class StringeeVideoView extends Component {
               uuid={this.uuid}
               local={this.local}
               scalingType={this.scalingType}
+              stringeeVideoTrack={this.stringeeVideoTrack}
               ref={this.ref}
           />
         </View>
@@ -61,6 +64,7 @@ StringeeVideoView.propTypes = {
     StringeeVideoScalingType.fit,
     StringeeVideoScalingType.fill,
   ]),
+  stringeeVideoTrack: PropTypes.objectOf(StringeeVideoTrack),
   ...View.propTypes,
 };
 

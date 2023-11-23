@@ -21,6 +21,7 @@ import {
   StringeeCall2Listener,
   StringeeClient,
   StringeeError,
+  StringeeVideoTrack,
   VideoResolution,
 } from '../../index';
 
@@ -115,11 +116,17 @@ class StringeeCall2 {
                             data.description,
                         );
                         break;
-                      case 'onReceiveLocalStream':
-                        listener.onReceiveLocalStream(this);
+                      case 'onReceiveLocalTrack':
+                        listener.onReceiveLocalTrack(
+                            this,
+                            new StringeeVideoTrack(data.videoTrack),
+                        );
                         break;
-                      case 'onReceiveRemoteStream':
-                        listener.onReceiveRemoteStream(this);
+                      case 'onReceiveRemoteTrack':
+                        listener.onReceiveRemoteTrack(
+                            this,
+                            new StringeeVideoTrack(data.videoTrack),
+                        );
                         break;
                       case 'onReceiveDtmfDigit':
                         listener.onReceiveDtmfDigit(this, data.dtmf);

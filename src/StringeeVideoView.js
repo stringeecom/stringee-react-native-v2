@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import React, {Component} from 'react';
 import {StringeeVideoScalingType, StringeeVideoTrack} from '../index';
+import { isIOS } from './helpers/StringeeHelper';
 class StringeeVideoView extends Component {
   uuid: string;
   local: boolean;
@@ -54,19 +55,27 @@ class StringeeVideoView extends Component {
   }
 
   reload() {
-    const params = {
-      width: this.props.style.width,
-      height: this.props.style.height,
-      uuid: this.props.uuid,
-      local: this.props.local,
-      scalingType: this.props.scalingType,
-      videoTrack: this.props.videoTrack,
-    };
-    UIManager.dispatchViewManagerCommand(
+    if (isIOS) {
+      UIManager.dispatchViewManagerCommand(
         this.viewId,
-        UIManager.RNStringeeVideoView.Commands.reload.toString(),
-        [params],
-    );
+        UIManager.RNStringeeVideoView.Commands.reload,
+        []
+      )
+    }else {
+      const params = {
+        width: this.props.style.width,
+        height: this.props.style.height,
+        uuid: this.props.uuid,
+        local: this.props.local,
+        scalingType: this.props.scalingType,
+        videoTrack: this.props.videoTrack,
+      };
+      UIManager.dispatchViewManagerCommand(
+          this.viewId,
+          UIManager.RNStringeeVideoView.Commands.reload.toString(),
+          [params],
+      );
+    }
   }
 
   render(): React.ReactNode {

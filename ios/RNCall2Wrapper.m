@@ -107,23 +107,6 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 
 }
 
-- (void)didReceiveLocalStream2:(StringeeCall2 *)stringeeCall2 {
-    if ([jsEvents containsObject:didReceiveLocalStream]) {
-        [rnCall2 sendEventWithName:didReceiveLocalStream body: @{
-            @"uuid" : _identifier,
-            @"data" : @{ @"callId" : stringeeCall2.callId }
-        }];
-    }
-}
-
-- (void)didReceiveRemoteStream2:(StringeeCall2 *)stringeeCall2 {
-    if ([jsEvents containsObject:didReceiveRemoteStream]) {
-        [rnCall2 sendEventWithName:didReceiveRemoteStream body:@{
-            @"uuid" : _identifier,
-            @"data" : @{ @"callId" : stringeeCall2.callId }
-        }];
-    }
-}
 
 - (void)didAddTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
     [[RNStringeeInstanceManager instance].call2VideoTracks setObject:track forKey:stringeeCall2.callId];

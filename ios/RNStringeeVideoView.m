@@ -43,29 +43,36 @@
                 if ([wrapper.videoTrack objectForKey:localId]) {
                     track = [wrapper.videoTrack objectForKey:localId];
                 }
-            }else if (serverId != nil && serverId.length > 0) {
-                if ([wrapper.videoTrack objectForKey:localId]) {
-                    track = [wrapper.videoTrack objectForKey:localId];
+            } else if (serverId != nil && serverId.length > 0) {
+                if ([wrapper.videoTrack objectForKey:serverId]) {
+                    track = [wrapper.videoTrack objectForKey:serverId];
                 }
             }
             
             if (track != nil) {
                 StringeeVideoView *videoView = [track attachWithVideoContentMode:mode];
-                videoView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-                [self addSubview:videoView];
-                hasDisplayed = true;
+                if (videoView != nil) {
+                    videoView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+                    NSLog(@"videoView frame: %f %f", videoView.frame.size.width,  videoView.frame.size.height);
+                    [self addSubview:videoView];
+                    hasDisplayed = true;
+                }
             }
             
         }
     }
     
-    if (!hasDisplayed ) {
-        if (_uuid.length) {
-            [[RNStringeeInstanceManager instance].rnCall addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];
-            [[RNStringeeInstanceManager instance].rnCall2 addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];
-            hasDisplayed = YES;
+}
+
+-(void) reload {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self->hasDisplayed = false;
+        for (UIView *view in self.subviews) {
+            [view removeFromSuperview];
         }
-    }
+        [self layoutSubviews];
+    });
+
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -86,25 +93,6 @@
     // Thay đổi frame của StringeeRemoteVideoView khi kích thước video thay đổi
     self.videoSize = size;
     [self updateFrameToFitVideoSize:size subView:videoView superView:self];
-    
-//    CGFloat superWidth = self.bounds.size.width;
-//    CGFloat superHeight = self.bounds.size.height;
-//
-//    CGFloat newWidth;
-//    CGFloat newHeight;
-//
-//    if (size.width > size.height) {
-//        newWidth = superWidth;
-//        newHeight = newWidth * size.height / size.width;
-//
-//        [videoView setFrame:CGRectMake(0, (superHeight - newHeight) / 2, newWidth, newHeight)];
-//
-//    } else {
-//        newHeight = superHeight;
-//        newWidth = newHeight * size.width / size.height;
-//
-//        [videoView setFrame:CGRectMake((superWidth - newWidth) / 2, 0, newWidth, newHeight)];
-//    }
 }
 
 - (void)updateFrameToFitVideoSize:(CGSize)size subView:(UIView *)subView superView:(UIView *)superView {

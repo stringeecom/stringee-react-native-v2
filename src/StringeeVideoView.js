@@ -26,20 +26,48 @@ class StringeeVideoView extends Component {
     this.videoTrack = props.videoTrack;
   }
 
-  componentDidMount() {
-    this.viewId = findNodeHandle(this.ref.current);
-    if (Platform.OS === 'android') {
-      this.createNativeView(this.viewId);
+  componentDidUpdate(prevProps) {
+    if (
+        this.props.uuid !== prevProps.uuid ||
+        this.props.local !== prevProps.local ||
+        this.props.scalingType !== prevProps.scalingType ||
+        (this.props.videoTrack &&
+            prevProps.videoTrack &&
+            (this.props.videoTrack.localId !== prevProps.videoTrack.localId ||
+                this.props.videoTrack.serverId !== prevProps.videoTrack.serverId)) ||
+        this.props.style.width !== prevProps.style.width ||
+        this.props.style.height !== prevProps.style.height
+    ) {
+      this.reload();
     }
   }
 
-  createNativeView = viewId => {
+  componentDidMount() {
+    this.viewId = findNodeHandle(this.ref.current);
+    if (Platform.OS === 'android') {
+      UIManager.dispatchViewManagerCommand(
+          this.viewId,
+          UIManager.RNStringeeVideoView.Commands.create.toString(),
+          [],
+      );
+    }
+  }
+
+  reload() {
+    const params = {
+      width: this.props.style.width,
+      height: this.props.style.height,
+      uuid: this.props.uuid,
+      local: this.props.local,
+      scalingType: this.props.scalingType,
+      videoTrack: this.props.videoTrack,
+    };
     UIManager.dispatchViewManagerCommand(
-        viewId,
-        UIManager.RNStringeeVideoView.Commands.create.toString(),
-        [],
+        this.viewId,
+        UIManager.RNStringeeVideoView.Commands.reload.toString(),
+        [params],
     );
-  };
+  }
 
   render(): React.ReactNode {
     return (
@@ -64,7 +92,7 @@ StringeeVideoView.propTypes = {
     StringeeVideoScalingType.fit,
     StringeeVideoScalingType.fill,
   ]),
-  videoTrack: PropTypes.instanceOf(StringeeVideoTrack),
+  videoTrack: PropTypes.any,
   ...View.propTypes,
 };
 

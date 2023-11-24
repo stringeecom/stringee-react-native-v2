@@ -64,7 +64,7 @@ StringeeVideoView.propTypes = {
     StringeeVideoScalingType.fit,
     StringeeVideoScalingType.fill,
   ]),
-  videoTrack: PropTypes.objectOf(StringeeVideoTrack),
+  videoTrack: PropTypes.instanceOf(StringeeVideoTrack),
   ...View.propTypes,
 };
 

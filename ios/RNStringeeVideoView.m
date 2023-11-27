@@ -43,7 +43,8 @@
                 if ([wrapper.videoTrack objectForKey:localId]) {
                     track = [wrapper.videoTrack objectForKey:localId];
                 }
-            } else if (serverId != nil && serverId.length > 0) {
+            }
+            if (track == nil && serverId != nil && serverId.length > 0) {
                 if ([wrapper.videoTrack objectForKey:serverId]) {
                     track = [wrapper.videoTrack objectForKey:serverId];
                 }

@@ -55,21 +55,21 @@ class StringeeVideoView extends Component {
   }
 
   reload() {
+    const params = {
+      width: this.props.style.width,
+      height: this.props.style.height,
+      uuid: this.props.uuid,
+      local: this.props.local,
+      scalingType: this.props.scalingType,
+      videoTrack: this.props.videoTrack,
+    };
     if (isIOS) {
       UIManager.dispatchViewManagerCommand(
         this.viewId,
         UIManager.RNStringeeVideoView.Commands.reload,
-        []
-      )
+        [params],
+      );
     }else {
-      const params = {
-        width: this.props.style.width,
-        height: this.props.style.height,
-        uuid: this.props.uuid,
-        local: this.props.local,
-        scalingType: this.props.scalingType,
-        videoTrack: this.props.videoTrack,
-      };
       UIManager.dispatchViewManagerCommand(
           this.viewId,
           UIManager.RNStringeeVideoView.Commands.reload.toString(),

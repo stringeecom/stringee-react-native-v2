@@ -53,7 +53,6 @@
                 StringeeVideoView *videoView = [track attachWithVideoContentMode:mode];
                 if (videoView != nil) {
                     videoView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-                    NSLog(@"videoView frame: %f %f", videoView.frame.size.width,  videoView.frame.size.height);
                     [self addSubview:videoView];
                     hasDisplayed = true;
                 }

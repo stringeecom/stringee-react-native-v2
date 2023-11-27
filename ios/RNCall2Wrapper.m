@@ -150,11 +150,10 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 -(void)didAddLocalTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
-    if (track.localId != nil && track.localId.length > 0) {
-        _videoTrack[track.localId] = track;
-    }
     if (track.serverId != nil && track.serverId.length > 0) {
         _videoTrack[track.serverId] = track;
+    }else if (track.localId != nil && track.localId.length > 0) {
+        _videoTrack[track.localId] = track;
     }
     
     if ([ jsEvents containsObject:didAddLocalTrack]) {
@@ -162,8 +161,8 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
                     @"uuid" : _identifier,
                     @"data" : @{
                         @"videoTrack": @{
-                            @"localId": track.localId,
-                            @"serverId": track.serverId,
+                            @"localId": track.localId == nil ? @"" : track.localId,
+                            @"serverId": track.serverId == nil ? @"" : track.serverId,
                             @"isLocal": @(track.isLocal),
                             @"audio": @(track.audio),
                             @"video": @(track.video),
@@ -179,11 +178,10 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 -(void)didAddRemoteTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
-    if (track.localId != nil && track.localId.length > 0) {
-        _videoTrack[track.localId] = track;
-    }
     if (track.serverId != nil && track.serverId.length > 0) {
         _videoTrack[track.serverId] = track;
+    }else if (track.localId != nil && track.localId.length > 0) {
+        _videoTrack[track.localId] = track;
     }
     
     if ([ jsEvents containsObject:didAddRemoteTrack]) {
@@ -191,8 +189,8 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
             @"uuid" : _identifier,
             @"data" : @{
                 @"videoTrack": @{
-                    @"localId": track.localId,
-                    @"serverId": track.serverId,
+                    @"localId": track.localId == nil ? @"" : track.localId,
+                    @"serverId": track.serverId == nil ? @"" : track.serverId,
                     @"isLocal": @(track.isLocal),
                     @"audio": @(track.audio),
                     @"video": @(track.video),

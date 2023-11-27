@@ -22,13 +22,22 @@ RCT_EXPORT_VIEW_PROPERTY(streamId, NSString)
 RCT_EXPORT_VIEW_PROPERTY(uuid, NSString)
 RCT_EXPORT_VIEW_PROPERTY(videoTrack, NSDictionary)
 
-RCT_EXPORT_METHOD(reload: (nonnull NSNumber*) reactTag) {
+RCT_EXPORT_METHOD(reload: (nonnull NSNumber*) reactTag newProperty: (NSDictionary *)newProperty) {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
         RNStringeeVideoView *videoView = (RNStringeeVideoView *)viewRegistry[reactTag];
         if (!videoView || ![videoView isKindOfClass:[RNStringeeVideoView class]]) {
             RCTLogError(@"Cannot find RNStringeeVideoView with tag #%@", reactTag);
             return;
         }
+        
+        double with = [newProperty[@"width"] doubleValue];
+        double height = [newProperty[@"height"] doubleValue];
+        
+        videoView.videoSize = CGSizeMake(with, height);
+        videoView.uuid = newProperty[@"uuid"];
+        videoView.videoTrack = newProperty[@"videoTrack"];
+        videoView.scalingType = newProperty[@"scalingType"];
+        videoView.local = [newProperty[@"local"] boolValue];
         [videoView reload];
     }];
 }

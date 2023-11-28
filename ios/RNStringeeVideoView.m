@@ -61,6 +61,11 @@
             
         }
     }
+
+    if (!hasDisplayed && _uuid.length > 0) {
+        [RNStringeeInstanceManager.instance.rnCall addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];
+        [RNStringeeInstanceManager.instance.rnCall2 addRenderToView:self uuid:_uuid isLocal:_local contentMode:mode];
+    }
     
 }
 

@@ -5,10 +5,10 @@
 //  Created by HoangDuoc on 5/20/20.
 //
 
-#import "RNClientWrapper.h"
-#import "RNStringeeInstanceManager.h"
-#import "RNStringeeClient.h"
 #import "RCTConvert+StringeeHelper.h"
+#import "RNClientWrapper.h"
+#import "RNStringeeClient.h"
+#import "RNStringeeInstanceManager.h"
 
 @implementation RNClientWrapper {
     NSMutableArray<NSString *> *jsEvents;
@@ -18,8 +18,10 @@
     BOOL _firstConnectTime;
 }
 
-- (instancetype)initWithIdentifier:(NSString *)identifier baseUrl:(NSString *)baseUrl serverAddresses:(NSArray<StringeeServerAddress *> *)serverAddresses stringeeXBaseUrl:(NSString *)stringeeXBaseUrl
-{
+- (instancetype)initWithIdentifier:(NSString *)identifier
+                           baseUrl:(NSString *)baseUrl
+                   serverAddresses:(NSArray<StringeeServerAddress *> *)serverAddresses
+                  stringeeXBaseUrl:(NSString *)stringeeXBaseUrl {
     self = [super init];
     if (self) {
         self.identifier = identifier;
@@ -32,15 +34,15 @@
         // Fix cho phan live-chat
         _firstConnectTime = true;
         _client = [[StringeeClient alloc] init];
-        [_client setStringeeXBaseUrl:stringeeXBaseUrl completionHandler:^(BOOL status, int code, NSString *message) {
+        [_client setStringeeXBaseUrl:stringeeXBaseUrl
+                   completionHandler:^(BOOL status, int code, NSString *message){
             
         }];
     }
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [_client disconnect];
     _client = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -69,20 +71,31 @@
         _client.incomingCallDelegate = self;
         
         if (_baseUrl != nil && _baseUrl.length > 0) {
-            [_client setRestBaseUrl:_baseUrl completionHandler:^(BOOL status, int code, NSString *message) {
-                            
-            }];
-        }
-        
-        if (_stringeexBaseUrl != nil && _stringeexBaseUrl.length > 0) {
-            [_client setStringeeXBaseUrl:_stringeexBaseUrl completionHandler:^(BOOL status, int code, NSString *message) {
+            [_client setRestBaseUrl:_baseUrl
+                  completionHandler:^(BOOL status, int code, NSString *message){
                 
             }];
         }
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleObjectChangeNotification:) name:StringeeClientObjectsDidChangeNotification object:_client];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNewMessageNotification:) name:StringeeClientNewMessageNotification object:_client];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleUserTypingNotification:) name:StringeeChatUserTypingNotification object:_client];
+        if (_stringeexBaseUrl != nil && _stringeexBaseUrl.length > 0) {
+            [_client setStringeeXBaseUrl:_stringeexBaseUrl
+                       completionHandler:^(BOOL status, int code, NSString *message){
+                
+            }];
+        }
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleObjectChangeNotification:)
+                                                     name:StringeeClientObjectsDidChangeNotification
+                                                   object:_client];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleNewMessageNotification:)
+                                                     name:StringeeClientNewMessageNotification
+                                                   object:_client];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleUserTypingNotification:)
+                                                     name:StringeeChatUserTypingNotification
+                                                   object:_client];
         
         _firstConnectTime = false;
     }
@@ -92,24 +105,37 @@
 
 - (void)requestAccessToken:(StringeeClient *)stringeeClient {
     _isConnecting = NO;
-    [RNStringeeInstanceManager.instance.rnClient sendEventWithName:requestAccessToken body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : stringeeClient.userId}}];
+    [RNStringeeInstanceManager.instance.rnClient sendEventWithName:requestAccessToken
+                                                              body:@{@"uuid" : _identifier, @"data" : @{@"userId" : stringeeClient.userId}}];
 }
 
 - (void)didConnect:(StringeeClient *)stringeeClient isReconnecting:(BOOL)isReconnecting {
     if ([jsEvents containsObject:didConnect]) {
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:didConnect body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : stringeeClient.userId, @"projectId" : stringeeClient.projectId, @"isReconnecting" : @(isReconnecting) } }];
+        [RNStringeeInstanceManager.instance.rnClient
+         sendEventWithName:didConnect
+         body:@{
+            @"uuid" : _identifier,
+            @"data" : @{@"userId" : stringeeClient.userId, @"projectId" : stringeeClient.projectId, @"isReconnecting" : @(isReconnecting)}
+        }];
     }
 }
 
 - (void)didDisConnect:(StringeeClient *)stringeeClient isReconnecting:(BOOL)isReconnecting {
     if ([jsEvents containsObject:didDisConnect]) {
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:didDisConnect body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : stringeeClient.userId, @"projectId" : stringeeClient.projectId, @"isReconnecting" : @(isReconnecting) }}];
+        [RNStringeeInstanceManager.instance.rnClient
+         sendEventWithName:didDisConnect
+         body:@{
+            @"uuid" : _identifier,
+            @"data" : @{@"userId" : stringeeClient.userId, @"projectId" : stringeeClient.projectId, @"isReconnecting" : @(isReconnecting)}
+        }];
     }
 }
 
 - (void)didFailWithError:(StringeeClient *)stringeeClient code:(int)code message:(NSString *)message {
     if ([jsEvents containsObject:didFailWithError]) {
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:didFailWithError body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : stringeeClient.userId, @"code" : @(code), @"message" : message }}];
+        [RNStringeeInstanceManager.instance.rnClient
+         sendEventWithName:didFailWithError
+         body:@{@"uuid" : _identifier, @"data" : @{@"userId" : stringeeClient.userId, @"code" : @(code), @"message" : message}}];
     }
 }
 
@@ -124,55 +150,55 @@
         
         data = (data != nil) ? data : @"";
         
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:didReceiveCustomMessage body: @{ @"uuid" : _identifier, @"data" : @{ @"from" : userId, @"data" : data }}];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:didReceiveCustomMessage
+                                                                  body:@{@"uuid" : _identifier, @"data" : @{@"from" : userId, @"data" : data}}];
     }
 }
 
 - (void)didReceiveChatRequest:(StringeeClient *)stringeeClient request:(StringeeChatRequest *)request {
     if ([jsEvents containsObject:didReceiveChatRequest]) {
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:didReceiveChatRequest body: @{ @"uuid" : _identifier, @"data" : @{ @"request" : [RCTConvert StringeeChatRequest:request] }}];
+        [RNStringeeInstanceManager.instance.rnClient
+         sendEventWithName:didReceiveChatRequest
+         body:@{@"uuid" : _identifier, @"data" : @{@"request" : [RCTConvert StringeeChatRequest:request]}}];
     }
 }
 
 - (void)didReceiveTransferChatRequest:(StringeeClient *)stringeeClient request:(StringeeChatRequest *)request {
     if ([jsEvents containsObject:didReceiveTransferChatRequest]) {
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:didReceiveTransferChatRequest body: @{ @"uuid" : _identifier, @"data" : @{ @"request" : [RCTConvert StringeeChatRequest:request] }}];
+        [RNStringeeInstanceManager.instance.rnClient
+         sendEventWithName:didReceiveTransferChatRequest
+         body:@{@"uuid" : _identifier, @"data" : @{@"request" : [RCTConvert StringeeChatRequest:request]}}];
     }
 }
 
 - (void)timeoutAnswerChat:(StringeeClient *)stringeeClient request:(StringeeChatRequest *)request {
     if ([jsEvents containsObject:timeoutAnswerChat]) {
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:timeoutAnswerChat body: @{ @"uuid" : _identifier, @"data" : @{ @"request" : [RCTConvert StringeeChatRequest:request] }}];
+        [RNStringeeInstanceManager.instance.rnClient
+         sendEventWithName:timeoutAnswerChat
+         body:@{@"uuid" : _identifier, @"data" : @{@"request" : [RCTConvert StringeeChatRequest:request]}}];
     }
 }
 
 - (void)timeoutInQueue:(StringeeClient *)stringeeClient info:(NSDictionary *)info {
     if ([jsEvents containsObject:timeoutInQueue]) {
         id Info = info != nil ? info : [NSNull null];
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:timeoutInQueue body: @{ @"uuid" : _identifier, @"data" : Info}];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:timeoutInQueue body:@{@"uuid" : _identifier, @"data" : Info}];
     }
 }
-
 
 - (void)conversationEnded:(StringeeClient *)stringeeClient info:(NSDictionary *)info {
     if ([jsEvents containsObject:conversationEnded]) {
         id Info = info != nil ? info : [NSNull null];
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:conversationEnded body: @{ @"uuid" : _identifier, @"data" : Info}];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:conversationEnded body:@{@"uuid" : _identifier, @"data" : Info}];
     }
 }
-
-
-
-
 
 #pragma mark Call Delelgate
 
 - (void)incomingCallWithStringeeClient:(StringeeClient *)stringeeClient stringeeCall:(StringeeCall *)stringeeCall {
-
     if ([jsEvents containsObject:incomingCall]) {
-
         int index = 0;
-
+        
         if (stringeeCall.callType == CallTypeCallIn) {
             // Phone-to-app
             index = 3;
@@ -186,7 +212,7 @@
             // App-to-app-outgoing-call
             index = 0;
         }
-
+        
         id returnUserId = stringeeClient.userId ? stringeeClient.userId : [NSNull null];
         id returnCallId = stringeeCall.callId ? stringeeCall.callId : [NSNull null];
         id returnFrom = stringeeCall.from ? stringeeCall.from : [NSNull null];
@@ -201,16 +227,30 @@
         stringeeCall.delegate = wrapper;
         RNStringeeInstanceManager.instance.callWrappers[uuid] = wrapper;
         
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : returnUserId, @"callId" : returnCallId, @"from" : returnFrom, @"to" : returnTo, @"fromAlias" : returnFromAlias, @"toAlias" : returnToAlias, @"callType" : @(index), @"isVideoCall" : @(stringeeCall.isVideoCall), @"customDataFromYourServer" : returnCustomData, @"serial" : @(stringeeCall.serial), @"uuid": uuid}}];
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall
+                                                                  body:@{
+            @"uuid" : _identifier,
+            @"data" : @{
+                @"userId" : returnUserId,
+                @"callId" : returnCallId,
+                @"from" : returnFrom,
+                @"to" : returnTo,
+                @"fromAlias" : returnFromAlias,
+                @"toAlias" : returnToAlias,
+                @"callType" : @(index),
+                @"isVideoCall" : @(stringeeCall.isVideoCall),
+                @"customDataFromYourServer" : returnCustomData,
+                @"serial" : @(stringeeCall.serial),
+                @"uuid" : uuid
+            }
+        }];
     }
-    
 }
 
 - (void)incomingCallWithStringeeClient:(StringeeClient *)stringeeClient stringeeCall2:(StringeeCall2 *)stringeeCall2 {
     if ([jsEvents containsObject:incomingCall2]) {
-
         int index = 0;
-
+        
         if (stringeeCall2.callType == CallTypeCallIn) {
             // Phone-to-app
             index = 3;
@@ -238,8 +278,24 @@
         wrapper.call = stringeeCall2;
         stringeeCall2.delegate = wrapper;
         RNStringeeInstanceManager.instance.call2Wrappers[uuid] = wrapper;
-
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall2 body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : returnUserId, @"callId" : returnCallId, @"from" : returnFrom, @"to" : returnTo, @"fromAlias" : returnFromAlias, @"toAlias" : returnToAlias, @"callType" : @(index), @"isVideoCall" : @(stringeeCall2.isVideoCall), @"customDataFromYourServer" : returnCustomData, @"serial" : @(stringeeCall2.serial), @"uuid": uuid}}];
+        
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:incomingCall2
+                                                                  body:@{
+            @"uuid" : _identifier,
+            @"data" : @{
+                @"userId" : returnUserId,
+                @"callId" : returnCallId,
+                @"from" : returnFrom,
+                @"to" : returnTo,
+                @"fromAlias" : returnFromAlias,
+                @"toAlias" : returnToAlias,
+                @"callType" : @(index),
+                @"isVideoCall" : @(stringeeCall2.isVideoCall),
+                @"customDataFromYourServer" : returnCustomData,
+                @"serial" : @(stringeeCall2.serial),
+                @"uuid" : uuid
+            }
+        }];
     }
 }
 
@@ -247,21 +303,21 @@
 
 - (void)handleObjectChangeNotification:(NSNotification *)notification {
     if (![jsEvents containsObject:objectChangeNotification]) return;
-
+    
     NSArray *objectChanges = [notification.userInfo objectForKey:StringeeClientObjectChangesUserInfoKey];
     if (!objectChanges.count) {
         return;
     }
-
+    
     NSMutableArray *objects = [[NSMutableArray alloc] init];
-
+    
     for (StringeeObjectChange *objectChange in objectChanges) {
         [objects addObject:objectChange.object];
     }
-
+    
     StringeeObjectChange *firstObjectChange = [objectChanges firstObject];
     id firstObject = [objects firstObject];
-
+    
     int objectType;
     NSArray *jsObjectDatas;
     if ([firstObject isKindOfClass:[StringeeConversation class]]) {
@@ -270,7 +326,7 @@
     } else if ([firstObject isKindOfClass:[StringeeMessage class]]) {
         objectType = 1;
         jsObjectDatas = [RCTConvert StringeeMessages:objects];
-
+        
         // Xoá đối tượng message đã lưu
         for (NSDictionary *message in jsObjectDatas) {
             NSNumber *state = message[@"state"];
@@ -284,15 +340,20 @@
     } else {
         objectType = 2;
     }
-
+    
     id returnObjects = jsObjectDatas ? jsObjectDatas : [NSNull null];
-
-    [RNStringeeInstanceManager.instance.rnClient sendEventWithName:objectChangeNotification body: @{ @"uuid" : _identifier, @"data" : @{ @"objectType" : @(objectType), @"objects" : returnObjects, @"changeType" : @(firstObjectChange.type) }}];
+    
+    [RNStringeeInstanceManager.instance.rnClient
+     sendEventWithName:objectChangeNotification
+     body:@{
+        @"uuid" : _identifier,
+        @"data" : @{@"objectType" : @(objectType), @"objects" : returnObjects, @"changeType" : @(firstObjectChange.type)}
+    }];
 }
 
 - (void)handleNewMessageNotification:(NSNotification *)notification {
     if (![jsEvents containsObject:objectChangeNotification]) return;
-
+    
     NSDictionary *userInfo = [notification userInfo];
     if (!userInfo) return;
     
@@ -303,7 +364,8 @@
     
     // Lấy về conversation
     __weak RNClientWrapper *weakSelf = self;
-    [_client getConversationWithConversationId:convId completionHandler:^(BOOL status, int code, NSString *message, StringeeConversation *conversation) {
+    [_client getConversationWithConversationId:convId
+                             completionHandler:^(BOOL status, int code, NSString *message, StringeeConversation *conversation) {
         if (!conversation) {
             return;
         }
@@ -311,15 +373,24 @@
         if (weakSelf == nil) {
             return;
         }
-
+        
         RNClientWrapper *strongSelf = weakSelf;
-        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:objectChangeNotification body: @{ @"uuid" : strongSelf.identifier, @"data" : @{ @"objectType" : @(0), @"objects" : @[[RCTConvert StringeeConversation:conversation]], @"changeType" : @(StringeeObjectChangeTypeCreate) }}];
+        [RNStringeeInstanceManager.instance.rnClient
+         sendEventWithName:objectChangeNotification
+         body:@{
+            @"uuid" : strongSelf.identifier,
+            @"data" : @{
+                @"objectType" : @(0),
+                @"objects" : @[ [RCTConvert StringeeConversation:conversation] ],
+                @"changeType" : @(StringeeObjectChangeTypeCreate)
+            }
+        }];
     }];
 }
 
 - (void)handleUserTypingNotification:(NSNotification *)notification {
     if (![jsEvents containsObject:userBeginTyping] && ![jsEvents containsObject:userEndTyping]) return;
-
+    
     NSDictionary *userInfo = [notification userInfo];
     if (!userInfo) return;
     
@@ -327,16 +398,12 @@
     NSString *userId = [userInfo objectForKey:@"userId"] != nil ? [userInfo objectForKey:@"userId"] : @"";
     NSString *displayName = [userInfo objectForKey:@"displayName"] != nil ? [userInfo objectForKey:@"displayName"] : @"";
     BOOL begin = [[userInfo objectForKey:@"begin"] boolValue];
-
-    NSDictionary *infos = @{
-                            @"convId" : convId,
-                            @"userId" : userId,
-                            @"displayName" : displayName
-                            };
     
+    NSDictionary *infos = @{@"convId" : convId, @"userId" : userId, @"displayName" : displayName};
     
     NSString *eventName = begin ? userBeginTyping : userEndTyping;
-    [RNStringeeInstanceManager.instance.rnClient sendEventWithName:eventName body: @{ @"uuid" : _identifier, @"data" : infos}];
+    [RNStringeeInstanceManager.instance.rnClient sendEventWithName:eventName body:@{@"uuid" : _identifier, @"data" : infos}];
 }
 
 @end
+

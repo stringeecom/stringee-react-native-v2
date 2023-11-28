@@ -18,7 +18,4 @@
 
 @interface RNStringeeCall2 : RCTEventEmitter <RCTBridgeModule>
 
-// Render video
-- (void)addRenderToView:(UIView *)view uuid:(NSString *)uuid isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode;
-
 @end

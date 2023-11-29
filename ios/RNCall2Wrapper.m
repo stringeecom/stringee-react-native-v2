@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RNCall2Wrapper.h"
 #import "RNStringeeInstanceManager.h"
+#import "RCTConvert+StringeeHelper.h"
 
 static NSString *didChangeSignalingState = @"didChangeSignalingState";
 static NSString *didChangeMediaState = @"didChangeMediaState";
@@ -140,9 +141,9 @@ static NSString *didAddRemoteTrack = @"didAddRemoteTrack";
 }
 
 - (void)didAddLocalTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
-    if (track.serverId != nil && track.serverId.length > 0) {
+    if ([RCTConvert isValid:track.serverId]) {
         _videoTrack[track.serverId] = track;
-    } else if (track.localId != nil && track.localId.length > 0) {
+    } else if ([RCTConvert isValid:track.localId]) {
         _videoTrack[track.localId] = track;
     }
     
@@ -167,9 +168,9 @@ static NSString *didAddRemoteTrack = @"didAddRemoteTrack";
 }
 
 - (void)didAddRemoteTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
-    if (track.serverId != nil && track.serverId.length > 0) {
+    if ([RCTConvert isValid:track.serverId]) {
         _videoTrack[track.serverId] = track;
-    } else if (track.localId != nil && track.localId.length > 0) {
+    } else if ([RCTConvert isValid:track.localId]) {
         _videoTrack[track.localId] = track;
     }
     

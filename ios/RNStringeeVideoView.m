@@ -2,6 +2,7 @@
 #import <React/RCTLog.h>
 #import "RNStringeeInstanceManager.h"
 #import "RNStringeeVideoView.h"
+#import "RCTConvert+StringeeHelper.h"
 
 NSString *const videoViewName = @"STRINGEE-VIDEO-VIEW";
 
@@ -42,13 +43,13 @@ NSString *const videoViewName = @"STRINGEE-VIDEO-VIEW";
                 
                 StringeeVideoTrack *track;
                 
-                if (serverId != nil && serverId.length > 0) {
+                if ([RCTConvert isValid:serverId]) {
                     if ([wrapper.videoTrack objectForKey:serverId]) {
                         track = [wrapper.videoTrack objectForKey:serverId];
                     }
                 }
                 
-                if (track == nil && localId != nil && localId.length > 0) {
+                if (track == nil && [RCTConvert isValid: localId]) {
                     if ([wrapper.videoTrack objectForKey:localId]) {
                         track = [wrapper.videoTrack objectForKey:localId];
                     }

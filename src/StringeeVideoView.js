@@ -9,6 +9,7 @@ import {
 import React, {Component} from 'react';
 import {StringeeVideoScalingType, StringeeVideoTrack} from '../index';
 import { isIOS } from './helpers/StringeeHelper';
+
 class StringeeVideoView extends Component {
   uuid: string;
   local: boolean;

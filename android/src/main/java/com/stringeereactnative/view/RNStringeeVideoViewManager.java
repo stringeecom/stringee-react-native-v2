@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideoView> {
     public final int COMMAND_CREATE = 1;
+    public final int COMMAND_RELOAD = 2;
     ReactApplicationContext reactContext;
 
     public RNStringeeVideoViewManager(ReactApplicationContext reactContext) {
@@ -37,7 +38,7 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
     @Nullable
     @Override
     public Map<String, Integer> getCommandsMap() {
-        return MapBuilder.of("create", COMMAND_CREATE);
+        return MapBuilder.of("create", COMMAND_CREATE, "reload", COMMAND_RELOAD);
     }
 
     @Override
@@ -45,9 +46,29 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
         super.receiveCommand(root, commandId, args);
         int commandIdInt = Integer.parseInt(commandId);
 
-        if (commandIdInt == COMMAND_CREATE) {
-            if (args != null) {
-                root.createView();
+        if (args != null) {
+            switch (commandIdInt) {
+                case COMMAND_CREATE:
+                    root.createView();
+                    break;
+                case COMMAND_RELOAD:
+                    if (args.size() > 0) {
+                        ReadableMap newProps = args.getMap(0);
+                        int width = newProps.getInt("width");
+                        int height = newProps.getInt("height");
+                        String uuid = newProps.getString("uuid");
+                        boolean isLocal = newProps.getBoolean("local");
+                        String scalingType = newProps.getString("scalingType");
+                        ReadableMap videoTrackMap = newProps.getMap("videoTrack");
+                        root.setWidth(width);
+                        root.setHeight(height);
+                        root.setUUID(uuid);
+                        root.setLocal(isLocal);
+                        root.setScalingType(scalingType);
+                        root.setVideoTrackMap(videoTrackMap);
+                        root.createView();
+                    }
+                    break;
             }
         }
     }

@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 import React, {Component} from 'react';
 import {StringeeVideoScalingType, StringeeVideoTrack} from '../index';
-import { isIOS } from './helpers/StringeeHelper';
+import {isIOS} from './helpers/StringeeHelper';
+
 class StringeeVideoView extends Component {
   uuid: string;
   local: boolean;
@@ -21,23 +22,23 @@ class StringeeVideoView extends Component {
     this.uuid = props.uuid;
     this.local = props.local !== undefined ? props.local : false;
     this.scalingType =
-        props.scalingType !== undefined
-            ? props.scalingType
-            : StringeeVideoScalingType.fill;
+      props.scalingType !== undefined
+        ? props.scalingType
+        : StringeeVideoScalingType.fill;
     this.videoTrack = props.videoTrack;
   }
 
   componentDidUpdate(prevProps) {
     if (
-        this.props.uuid !== prevProps.uuid ||
-        this.props.local !== prevProps.local ||
-        this.props.scalingType !== prevProps.scalingType ||
-        (this.props.videoTrack &&
-            prevProps.videoTrack &&
-            (this.props.videoTrack.localId !== prevProps.videoTrack.localId ||
-                this.props.videoTrack.serverId !== prevProps.videoTrack.serverId)) ||
-        this.props.style.width !== prevProps.style.width ||
-        this.props.style.height !== prevProps.style.height
+      this.props.uuid !== prevProps.uuid ||
+      this.props.local !== prevProps.local ||
+      this.props.scalingType !== prevProps.scalingType ||
+      (this.props.videoTrack &&
+        prevProps.videoTrack &&
+        (this.props.videoTrack.localId !== prevProps.videoTrack.localId ||
+          this.props.videoTrack.serverId !== prevProps.videoTrack.serverId)) ||
+      this.props.style.width !== prevProps.style.width ||
+      this.props.style.height !== prevProps.style.height
     ) {
       this.reload();
     }
@@ -47,14 +48,17 @@ class StringeeVideoView extends Component {
     this.viewId = findNodeHandle(this.ref.current);
     if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
-          this.viewId,
-          UIManager.RNStringeeVideoView.Commands.create.toString(),
-          [],
+        this.viewId,
+        UIManager.RNStringeeVideoView.Commands.create.toString(),
+        [],
       );
     }
   }
 
   reload() {
+    const reloadCommand = isIOS
+      ? UIManager.RNStringeeVideoView.Commands.reload
+      : UIManager.RNStringeeVideoView.Commands.reload.toString();
     const params = {
       width: this.props.style.width,
       height: this.props.style.height,
@@ -63,33 +67,21 @@ class StringeeVideoView extends Component {
       scalingType: this.props.scalingType,
       videoTrack: this.props.videoTrack,
     };
-    if (isIOS) {
-      UIManager.dispatchViewManagerCommand(
-        this.viewId,
-        UIManager.RNStringeeVideoView.Commands.reload,
-        [params],
-      );
-    }else {
-      UIManager.dispatchViewManagerCommand(
-          this.viewId,
-          UIManager.RNStringeeVideoView.Commands.reload.toString(),
-          [params],
-      );
-    }
+    UIManager.dispatchViewManagerCommand(this.viewId, reloadCommand, [params]);
   }
 
   render(): React.ReactNode {
     return (
-        <View style={this.props.style}>
-          <RCTStringeeVideoView
-              {...this.props}
-              uuid={this.uuid}
-              local={this.local}
-              scalingType={this.scalingType}
-              videoTrack={this.videoTrack}
-              ref={this.ref}
-          />
-        </View>
+      <View style={this.props.style}>
+        <RCTStringeeVideoView
+          {...this.props}
+          uuid={this.uuid}
+          local={this.local}
+          scalingType={this.scalingType}
+          videoTrack={this.videoTrack}
+          ref={this.ref}
+        />
+      </View>
     );
   }
 }

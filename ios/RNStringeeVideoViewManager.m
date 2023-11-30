@@ -22,7 +22,7 @@ RCT_EXPORT_VIEW_PROPERTY(streamId, NSString)
 RCT_EXPORT_VIEW_PROPERTY(uuid, NSString)
 RCT_EXPORT_VIEW_PROPERTY(videoTrack, NSDictionary)
 
-RCT_EXPORT_METHOD(reload : (nonnull NSNumber *)reactTag newProperty : (NSDictionary *)newProperty) {
+RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag newProperty:(NSDictionary *)newProperty) {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         RNStringeeVideoView *videoView = (RNStringeeVideoView *)viewRegistry[reactTag];
         if (!videoView || ![videoView isKindOfClass:[RNStringeeVideoView class]]) {

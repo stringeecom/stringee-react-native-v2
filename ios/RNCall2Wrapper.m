@@ -194,8 +194,9 @@ static NSString *didAddRemoteTrack = @"didAddRemoteTrack";
     }
 }
 
-- (StringeeClient *)getClient;
-{ return [RNStringeeInstanceManager.instance.clientWrappers objectForKey:clientID].client; }
+- (StringeeClient *)getClient{ 
+    return [RNStringeeInstanceManager.instance.clientWrappers objectForKey:clientID].client;
+}
 
 @end
 

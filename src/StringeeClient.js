@@ -962,7 +962,7 @@ class StringeeClient {
         (status, code, message, conversation) => {
           if (status) {
             conversation.stringeeClient = this;
-            resolve(Conversation(conversation));
+            resolve(new Conversation(conversation));
           } else {
             reject(new StringeeError(code, message, 'createLiveChatConversation'));
           }

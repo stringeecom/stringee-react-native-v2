@@ -246,7 +246,7 @@ class StringeeCall2 {
           }
         });
       } else {
-        reject(new StringeeError(-9, 'The call did Answered', 'answer'));
+        reject(new StringeeError(-9, 'Encountered an error while processing your request', 'answer'));
       }
     });
   }

@@ -40,6 +40,7 @@ class StringeeCall2Listener {
    * Invoked when the local track is initialized and available to be rendered to a view.
    * @function onReceiveLocalTrack
    * @param {StringeeCall2} stringeeCall2
+   * @param {StringeeVideoTrack} stringeeVideoTrack
    */
   onReceiveLocalTrack: (
       stringeeCall2: StringeeCall2,
@@ -49,6 +50,7 @@ class StringeeCall2Listener {
    * Invoked when the remote track is initialized and available to be rendered to a view.
    * @function onReceiveRemoteTrack
    * @param {StringeeCall2} stringeeCall2
+   * @param {StringeeVideoTrack} stringeeVideoTrack
    */
   onReceiveRemoteTrack: (
       stringeeCall2: StringeeCall2,

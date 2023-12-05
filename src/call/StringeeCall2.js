@@ -234,9 +234,9 @@ class StringeeCall2 {
    * @function answer
    */
   answer(): Promise<void> {
-    this.canAnswer = false;
     return new Promise((resolve, reject) => {
       if (this.canAnswer) {
+        this.canAnswer = false;
         RNStringeeCall2.answer(this.uuid, (status, code, message) => {
           if (status) {
             resolve();

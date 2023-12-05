@@ -241,8 +241,6 @@ class StringeeCall {
    * @function hangup
    */
   hangup() {
-
-    console.log('gọi hàm hangup');
     return new Promise((resolve, reject) => {
       RNStringeeCall.hangup(
           this.uuid,

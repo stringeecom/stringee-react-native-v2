@@ -38,6 +38,7 @@ class StringeeCall {
   videoResolution: VideoResolution = VideoResolution.normal;
   serial: number;
   uuid: string;
+  canAnswer: Boolean;
 
   /**
    * Create the StringeeCall.
@@ -68,7 +69,7 @@ class StringeeCall {
 
       RNStringeeCall.createWrapper(this.uuid, this.stringeeClient.uuid);
     }
-
+    this.canAnswer = false;
     this.from = props.from;
     this.to = props.to;
     this.events = [];
@@ -219,10 +220,19 @@ class StringeeCall {
    */
   answer(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeCall.answer(
-          this.uuid,
-          normalCallbackHandle(resolve, reject, 'answer'),
-      );
+      if (this.canAnswer) {
+        this.canAnswer = false;
+        RNStringeeCall.answer(this.uuid, (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            this.canAnswer = true;
+            reject(new StringeeError(code, message, 'answer'));
+          }
+        });
+      } else {
+        reject(new StringeeError(-9, 'The call did Answered', 'answer'));
+      }
     });
   }
 
@@ -231,6 +241,8 @@ class StringeeCall {
    * @function hangup
    */
   hangup() {
+
+    console.log('gọi hàm hangup');
     return new Promise((resolve, reject) => {
       RNStringeeCall.hangup(
           this.uuid,

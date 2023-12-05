@@ -330,10 +330,11 @@ RCT_EXPORT_METHOD(mute:(NSString *)uuid mute:(BOOL)mute callback:(RCTResponseSen
         callback(@[@(NO), @(-3), @"The call is not found."]);
         return;
     }
-
-    [call mute:mute];
-    callback(@[@(YES), @(0), @"Success"]);
-
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [call mute:mute];
+        callback(@[@(YES), @(0), @"Success"]);
+    });
+    
 }
 
 RCT_EXPORT_METHOD(setSpeakerphoneOn:(NSString *)uuid speaker:(BOOL)speaker callback:(RCTResponseSenderBlock)callback) {
@@ -386,8 +387,10 @@ RCT_EXPORT_METHOD(enableVideo:(NSString *)uuid enableVideo:(BOOL)enableVideo cal
         return;
     }
 
-    [call enableLocalVideo:enableVideo];
-    callback(@[@(YES), @(0), @"Success"]);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [call enableLocalVideo:enableVideo];
+        callback(@[@(YES), @(0), @"Success"]);
+    });
 }
 RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(nonnull NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
     NSString *uuid = [RNStringeeInstanceManager.instance generateUUID:callId serial:serial];

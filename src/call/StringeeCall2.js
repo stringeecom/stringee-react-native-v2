@@ -40,6 +40,7 @@ class StringeeCall2 {
   videoResolution: VideoResolution = VideoResolution.normal;
   serial: number;
   uuid: string;
+  canAnswer: Boolean;
 
   /**
    * Create the StringeeCall2.
@@ -74,6 +75,7 @@ class StringeeCall2 {
     this.events = [];
     this.subscriptions = [];
     this.eventEmitter = new NativeEventEmitter(RNStringeeCall2);
+    this.canAnswer = false;
   }
 
   /**
@@ -232,8 +234,20 @@ class StringeeCall2 {
    * @function answer
    */
   answer(): Promise<void> {
+    this.canAnswer = false;
     return new Promise((resolve, reject) => {
-      RNStringeeCall2.answer(this.uuid, normalCallbackHandle(resolve, reject));
+      if (this.canAnswer) {
+        RNStringeeCall2.answer(this.uuid, (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            this.canAnswer = true;
+            reject(new StringeeError(code, message, 'answer'));
+          }
+        });
+      } else {
+        reject(new StringeeError(-9, 'The call did Answered', 'answer'));
+      }
     });
   }
 

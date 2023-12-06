@@ -18,45 +18,18 @@ Install `stringee-react-native-v2` by running:
 **Note** Please make sure to have [CocoaPods](https://cocoapods.org/) on your computer.
 1. In you terminal, change into your `ios` directory.
 
-2. Create a pod file by running: `pod init`.
+2. Now run, `pod install`
 
-3. Add the following to your pod file:
+3. Open XCode
 
-   ```
-    platform :ios, '8.0'
+4. Open `<YourProjectName>.xcworkspace` file in XCode. This file can be found in the `ios` folder of your React Native project. 
 
-    target '<YourProjectName>' do
-      node_modules_path = '../node_modules'
+5. In the "Build Settings" tab -> "Other linker flags" add "$(inherited)" flag.
 
-      pod 'yoga', path: "#{node_modules_path}/react-native/ReactCommon/yoga/yoga.podspec"
-      pod 'React', path: "#{node_modules_path}/react-native", :subspecs => ['DevSupport', 'RCTNetwork']
+6. In the "Build Settings" tab -> "Enable bitcode" select "NO".
 
-      pod 'RNStringee', path: "#{node_modules_path}/stringee/ios"
-    end
-
-    post_install do |installer|
-      installer.pods_project.targets.each do |target|
-        if target.name == "React"
-          target.remove_from_project
-        end
-      end
-    end
-
-   ```
-
-4. Now run, `pod install`
-
-5. Open XCode
-
-6. Open `<YourProjectName>.xcworkspace` file in XCode. This file can be found in the `ios` folder of your React Native project. 
-
-7. In the "Build Settings" tab -> "Other linker flags" add "$(inherited)" flag.
-
-8. In the "Build Settings" tab -> "Enable bitcode" select "NO".
-
-9. Right-click the information property list file (Info.plist) and select Open As -> Source Code.
-
-10. Insert the following XML snippet into the body of your file just before the final element:
+7. Right-click the information property list file (Info.plist) and select Open As -> Source Code.
+8. Insert the following XML snippet into the body of your file just before the final element:
 
    ```
    <key>NSCameraUsageDescription</key>

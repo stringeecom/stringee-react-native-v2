@@ -1,8 +1,9 @@
-import {NativeModules} from 'react-native';
+import {NativeModules, Platform} from 'react-native';
+import {StringeeError} from '../../index';
 
 const RNStringeeClient = NativeModules.RNStringeeClient;
-
-const iOS = Platform.OS === 'ios';
+const isIOS = Platform.OS === 'ios';
+const isAndroid = Platform.OS === 'android';
 
 const clientEvents = {
   ios: {
@@ -73,12 +74,16 @@ const callEvents = {
     onReceiveCallInfo: 'didReceiveCallInfo',
     onHandleOnAnotherDevice: 'didHandleOnAnotherDevice',
     onTrackMediaStateChange: 'trackMediaStateChange',
+    onReceiveLocalTrack: 'didAddLocalTrack',
+    onReceiveRemoteTrack: 'didAddRemoteTrack'
   },
   android: {
     onChangeSignalingState: 'onSignalingStateChange',
     onChangeMediaState: 'onMediaStateChange',
     onReceiveLocalStream: 'onLocalStream',
     onReceiveRemoteStream: 'onRemoteStream',
+    onReceiveLocalTrack: 'onLocalTrackAdded',
+    onReceiveRemoteTrack: 'onRemoteTrackAdded',
     onReceiveDtmfDigit: 'onDTMF',
     onReceiveCallInfo: 'onCallInfo',
     onHandleOnAnotherDevice: 'onHandledOnAnotherDevice',
@@ -101,8 +106,8 @@ const stringeeCallEvents = [
 const stringeeCall2Events = [
   'onChangeSignalingState',
   'onChangeMediaState',
-  'onReceiveLocalStream',
-  'onReceiveRemoteStream',
+  'onReceiveLocalTrack',
+  'onReceiveRemoteTrack',
   'onReceiveDtmfDigit',
   'onReceiveCallInfo',
   'onHandleOnAnotherDevice',
@@ -164,7 +169,13 @@ const CallType = {
   phoneToApp: 'phoneToApp',
 };
 
-export function getSignalingState(code: number): SignalingState {
+const TrackType = {
+  camera: 'camera',
+  screen: 'screen',
+  player: 'player',
+};
+
+function getSignalingState(code: number): SignalingState {
   switch (code) {
     case 0:
       return SignalingState.calling;
@@ -180,7 +191,7 @@ export function getSignalingState(code: number): SignalingState {
   }
 }
 
-export function getMediaState(code: number): MediaState {
+function getMediaState(code: number): MediaState {
   switch (code) {
     case 0:
       return MediaState.connected;
@@ -190,7 +201,7 @@ export function getMediaState(code: number): MediaState {
   }
 }
 
-export function getAudioDevice(audioDevice: string): AudioDevice {
+function getAudioDevice(audioDevice: string): AudioDevice {
   switch (audioDevice) {
     case 'SPEAKER_PHONE':
       return AudioDevice.speakerPhone;
@@ -206,7 +217,7 @@ export function getAudioDevice(audioDevice: string): AudioDevice {
   }
 }
 
-export function getListAudioDevice(audioDevices: Array): Array<AudioDevice> {
+function getListAudioDevice(audioDevices: Array): Array<AudioDevice> {
   let availableAudioDevices = [];
   audioDevices.forEach(audioDevice => {
     availableAudioDevices.push(getAudioDevice(audioDevice));
@@ -214,7 +225,7 @@ export function getListAudioDevice(audioDevices: Array): Array<AudioDevice> {
   return availableAudioDevices;
 }
 
-export function getMediaType(code: number): MediaType {
+function getMediaType(code: number): MediaType {
   switch (code) {
     case 2:
       return MediaType.video;
@@ -224,11 +235,27 @@ export function getMediaType(code: number): MediaType {
   }
 }
 
-export type RNStringeeEventCallback = (
-  status: boolean,
-  code: number,
-  message: string,
-) => void;
+const normalCallbackHandle = (resolve, reject, name) => {
+  return (status, code, message) => {
+    if (status) {
+      resolve();
+    } else {
+      reject(new StringeeError(code, message, name));
+    }
+  };
+};
+
+function getTrackType(code: number): TrackType {
+  switch (code) {
+    case 1:
+      return TrackType.screen;
+    case 2:
+      return TrackType.player;
+    case 0:
+    default:
+      return TrackType.camera;
+  }
+}
 
 export {
   clientEvents,
@@ -246,5 +273,14 @@ export {
   VideoResolution,
   CallType,
   RNStringeeClient,
-  iOS
+  isIOS,
+  isAndroid,
+  TrackType,
+  normalCallbackHandle,
+  getSignalingState,
+  getMediaState,
+  getMediaType,
+  getListAudioDevice,
+  getAudioDevice,
+  getTrackType,
 };

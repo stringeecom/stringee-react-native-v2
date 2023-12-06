@@ -39,7 +39,7 @@ static NSString *conversationEnded              = @"conversationEnded";
 static NSString *userBeginTyping                = @"userBeginTyping";
 static NSString *userEndTyping                  = @"userEndTyping";
 
-@interface RNStringeeClient : RCTEventEmitter <RCTBridgeModule, StringeeConnectionDelegate, StringeeIncomingCallDelegate>
+@interface RNStringeeClient : RCTEventEmitter <RCTBridgeModule>
 
 
 @end

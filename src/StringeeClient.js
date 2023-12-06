@@ -1,11 +1,11 @@
 import {EmitterSubscription, NativeEventEmitter, Platform} from 'react-native';
-import type {RNStringeeEventCallback} from './helpers/StringeeHelper';
 import {
   CallType,
   clientEvents,
   RNStringeeClient,
   stringeeClientEvents,
-  iOS
+  isIOS,
+  normalCallbackHandle,
 } from './helpers/StringeeHelper';
 import {
   ChangeType,
@@ -20,7 +20,8 @@ import {
   StringeeServerAddress,
   User,
   UserInfo,
-  LiveChatTicketParam
+  LiveChatTicketParam,
+  StringeeError,
 } from '../index';
 
 class StringeeClient {
@@ -68,17 +69,16 @@ class StringeeClient {
   }
 
   /**
-   * Register to listen to events from StringeeClient.
-   * @function registerEvents
+   * Set listener for StringeeClient.
+   * @function setListener
    * @param {StringeeClientListener} listener
    */
-  registerEvents(listener: StringeeClientListener) {
-    if (this.events.length !== 0 && this.subscriptions.length !== 0) {
-      return;
-    }
+  setListener(listener: StringeeClientListener) {
+    this.unregisterEvents();
+
     if (listener) {
       stringeeClientEvents.forEach(event => {
-        if (listener[event]) {
+        if (listener[event] && clientEvents[Platform.OS][event]) {
           let emitterSubscription: EmitterSubscription =
             this.eventEmitter.addListener(
               clientEvents[Platform.OS][event],
@@ -238,25 +238,26 @@ class StringeeClient {
    * @param {string} deviceToken The registration token
    * @param {boolean} isProduction (Ios) true: For production environment, false: For development environment
    * @param {boolean} isVoip (Ios) true: To receive voip push notification, false: To receive remote push notification
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   registerPush(
     deviceToken: string,
     isProduction: boolean,
     isVoip: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    if (iOS) {
-      RNStringeeClient.registerPushForDeviceToken(
-        this.uuid,
-        deviceToken,
-        isProduction,
-        isVoip,
-        callback,
-      );
-    } else {
-      RNStringeeClient.registerPushToken(this.uuid, deviceToken, callback);
-    }
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const callback = normalCallbackHandle(resolve, reject, 'registerPush');
+      if (isIOS) {
+        RNStringeeClient.registerPushForDeviceToken(
+          this.uuid,
+          deviceToken,
+          isProduction,
+          isVoip,
+          callback,
+        );
+      } else {
+        RNStringeeClient.registerPushToken(this.uuid, deviceToken, callback);
+      }
+    });
   }
 
   /**
@@ -267,32 +268,33 @@ class StringeeClient {
    * @param {boolean} isProduction (Ios) true: For production environment, false: For development environment
    * @param {boolean} isVoip (Ios) true: To receive voip push notification, false: To receive remote push notification
    * @param {Array<string>} packageNames List of project's package names
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   registerPushAndDeleteOthers(
     deviceToken: string,
     isProduction: boolean,
     isVoip: boolean,
     packageNames: Array<string>,
-    callback: RNStringeeEventCallback,
-  ) {
-    if (iOS) {
-      RNStringeeClient.registerPushAndDeleteOthers(
-        this.uuid,
-        deviceToken,
-        isProduction,
-        isVoip,
-        packageNames,
-        callback,
-      );
-    } else {
-      RNStringeeClient.registerPushAndDeleteOthers(
-        this.uuid,
-        deviceToken,
-        packageNames,
-        callback,
-      );
-    }
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const callback = normalCallbackHandle(resolve, reject, 'registerPushAndDeleteOthers')
+      if (isIOS) {
+        RNStringeeClient.registerPushAndDeleteOthers(
+          this.uuid,
+          deviceToken,
+          isProduction,
+          isVoip,
+          packageNames,
+          callback,
+        );
+      } else {
+        RNStringeeClient.registerPushAndDeleteOthers(
+          this.uuid,
+          deviceToken,
+          packageNames,
+          callback,
+        );
+      }
+    });
   }
 
   /**
@@ -300,10 +302,15 @@ class StringeeClient {
    * Your device will not receive push notification when you have an incoming call.
    * @function unregisterPush
    * @param {string} deviceToken The registration token
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  unregisterPush(deviceToken: string, callback: RNStringeeEventCallback) {
-    RNStringeeClient.unregisterPushToken(this.uuid, deviceToken, callback);
+  unregisterPush(deviceToken: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.unregisterPushToken(
+        this.uuid,
+        deviceToken,
+        normalCallbackHandle(resolve, reject, 'unregisterPush')
+      );
+    });
   }
 
   /**
@@ -311,14 +318,16 @@ class StringeeClient {
    * @function sendCustomMessage
    * @param {string} toUserId User id to send a custom message to
    * @param {string} message Message to send
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  sendCustomMessage(
-    toUserId: string,
-    message: string,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.sendCustomMessage(this.uuid, toUserId, message, callback);
+  sendCustomMessage(toUserId: string, message: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.sendCustomMessage(
+        this.uuid,
+        toUserId,
+        message,
+        normalCallbackHandle(resolve, reject, 'sendCustomMessage')
+      );
+    });
   }
 
   /**
@@ -326,50 +335,51 @@ class StringeeClient {
    * @function createConversation
    * @param {Array<string>} userIds User's id of participants
    * @param {ConversationOption} options Conversation options to use when constructing this conversation
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   createConversation(
     userIds: Array<string>,
     options: ConversationOption,
-    callback: RNStringeeEventCallback,
-  ) {
-    if (options === undefined) {
-      options = new ConversationOption();
-    }
-    RNStringeeClient.createConversation(
-      this.uuid,
-      userIds,
-      options,
-      (status, code, message, conversation) => {
-        let returnConversation;
-        if (status) {
-          conversation.stringeeClient = this;
-          returnConversation = new Conversation(conversation);
-        }
-        return callback(status, code, message, returnConversation);
-      },
-    );
+  ): Promise<Conversation> {
+    return new Promise((resolve, reject) => {
+      if (options === undefined) {
+        options = new ConversationOption();
+      }
+      RNStringeeClient.createConversation(
+        this.uuid,
+        userIds,
+        options,
+        (status, code, message, conversation) => {
+          if (status) {
+            conversation.stringeeClient = this;
+            resolve(new Conversation(conversation));
+          } else {
+            reject(new StringeeError(code, message, 'createConversation'));
+          }
+        },
+      );
+    });
   }
 
   /**
    * Get the existing conversation with given id.
    * @function getConversationById
    * @param {string} convId Conversation's id
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  getConversationById(convId: string, callback: RNStringeeEventCallback) {
-    RNStringeeClient.getConversationById(
-      this.uuid,
-      convId,
-      (status, code, message, conversation) => {
-        let returnConversation;
-        if (status) {
-          conversation.stringeeClient = this;
-          returnConversation = new Conversation(conversation);
-        }
-        return callback(status, code, message, returnConversation);
-      },
-    );
+  getConversationById(convId: string): Promise<Conversation> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getConversationById(
+        this.uuid,
+        convId,
+        (status, code, message, conversation) => {
+          if (status) {
+            conversation.stringeeClient = this;
+            resolve(new Conversation(conversation));
+          } else {
+            reject(new StringeeError(code, message, 'getConversationById'));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -378,62 +388,69 @@ class StringeeClient {
    * @param {string} userId Other user's id
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getLocalConversations(
     userId: string,
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    if (iOS) {
-      // iOS su dung ca 2 tham so
-      RNStringeeClient.getLocalConversations(
-        this.uuid,
-        count,
-        userId,
-        (status, code, message, conversations) => {
-          let returnConversations = [];
-          if (status) {
-            if (isAscending) {
-              conversations.reverse().map(conversation => {
-                conversation.stringeeClient = this;
-                returnConversations.push(new Conversation(conversation));
-              });
-            } else {
-              conversations.map(conversation => {
-                conversation.stringeeClient = this;
-                returnConversations.push(new Conversation(conversation));
-              });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      const callback = (status, code, message, conversations) => {
+        if (status) {
+          resolve(conversations);
+        } else {
+          reject(new StringeeError(code, message, 'getLocalConversations'));
+        }
+      };
+      if (isIOS) {
+        // iOS su dung ca 2 tham so
+        RNStringeeClient.getLocalConversations(
+          this.uuid,
+          count,
+          userId,
+          (status, code, message, conversations) => {
+            let returnConversations = [];
+            if (status) {
+              if (isAscending) {
+                conversations.reverse().map(conversation => {
+                  conversation.stringeeClient = this;
+                  returnConversations.push(new Conversation(conversation));
+                });
+              } else {
+                conversations.map(conversation => {
+                  conversation.stringeeClient = this;
+                  returnConversations.push(new Conversation(conversation));
+                });
+              }
             }
-          }
-          return callback(status, code, message, returnConversations);
-        },
-      );
-    } else {
-      // Android chi su dung userId
-      RNStringeeClient.getLocalConversations(
-        this.uuid,
-        userId,
-        (status, code, message, conversations) => {
-          let returnConversations = [];
-          if (status) {
-            if (isAscending) {
-              conversations.reverse().map(conversation => {
-                conversation.stringeeClient = this;
-                returnConversations.push(new Conversation(conversation));
-              });
-            } else {
-              conversations.map(conversation => {
-                conversation.stringeeClient = this;
-                returnConversations.push(new Conversation(conversation));
-              });
+            callback(status, code, message, returnConversations);
+          },
+        );
+      } else {
+        // Android chi su dung userId
+        RNStringeeClient.getLocalConversations(
+          this.uuid,
+          userId,
+          (status, code, message, conversations) => {
+            let returnConversations = [];
+            if (status) {
+              if (isAscending) {
+                conversations.reverse().map(conversation => {
+                  conversation.stringeeClient = this;
+                  returnConversations.push(new Conversation(conversation));
+                });
+              } else {
+                conversations.map(conversation => {
+                  conversation.stringeeClient = this;
+                  returnConversations.push(new Conversation(conversation));
+                });
+              }
             }
-          }
-          return callback(status, code, message, returnConversations);
-        },
-      );
-    }
+            callback(status, code, message, returnConversations);
+          },
+        );
+      }
+    });
   }
 
   /**
@@ -441,34 +458,36 @@ class StringeeClient {
    * @function getLastConversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getLastConversations(
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getLastConversations(
-      this.uuid,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getLastConversations(
+        this.uuid,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getLastConversations'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
@@ -476,35 +495,37 @@ class StringeeClient {
    * @function getAllLastConversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getAllLastConversations(
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getAllLastConversations(
-      this.uuid,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            // Tăng dần -> Cần đảo mảng
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getAllLastConversations(
+        this.uuid,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              // Tăng dần -> Cần đảo mảng
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getAllLastConversations'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
@@ -513,36 +534,38 @@ class StringeeClient {
    * @param {number} datetime Number of conversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getConversationsAfter(
     datetime: number,
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getConversationsAfter(
-      this.uuid,
-      datetime,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getConversationsAfter(
+        this.uuid,
+        datetime,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getConversationsAfter'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
@@ -551,36 +574,38 @@ class StringeeClient {
    * @param {number} datetime Number of conversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getAllConversationsAfter(
     datetime: number,
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getAllConversationsAfter(
-      this.uuid,
-      datetime,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getAllConversationsAfter(
+        this.uuid,
+        datetime,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getAllConversationsAfter'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
@@ -589,36 +614,38 @@ class StringeeClient {
    * @param {number} datetime Number of conversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getConversationsBefore(
     datetime: number,
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getConversationsBefore(
-      this.uuid,
-      datetime,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getConversationsBefore(
+        this.uuid,
+        datetime,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getConversationsBefore'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
@@ -627,36 +654,38 @@ class StringeeClient {
    * @param {number} datetime Number of conversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getAllConversationsBefore(
     datetime: number,
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getAllConversationsBefore(
-      this.uuid,
-      datetime,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getAllConversationsBefore(
+        this.uuid,
+        datetime,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getAllConversationsBefore'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
@@ -664,35 +693,37 @@ class StringeeClient {
    * @function getLastUnreadConversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getLastUnreadConversations(
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getLastUnreadConversations(
-      this.uuid,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            // Tăng dần -> Cần đảo mảng
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getLastUnreadConversations(
+        this.uuid,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              // Tăng dần -> Cần đảo mảng
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getLastUnreadConversations'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
@@ -701,36 +732,38 @@ class StringeeClient {
    * @param {number} datetime Number of conversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getUnreadConversationsAfter(
     datetime: number,
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getUnreadConversationsAfter(
-      this.uuid,
-      datetime,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getUnreadConversationsAfter(
+        this.uuid,
+        datetime,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getUnreadConversationsAfter'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
@@ -739,97 +772,114 @@ class StringeeClient {
    * @param {number} datetime Number of conversations
    * @param {string} count Number of conversations
    * @param {boolean} isAscending Sort order true: ascending, false: descending
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getUnreadConversationsBefore(
     datetime: number,
     count: number,
     isAscending: boolean,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getUnreadConversationsBefore(
-      this.uuid,
-      datetime,
-      count,
-      (status, code, message, conversations) => {
-        let returnConversations = [];
-        if (status) {
-          if (isAscending) {
-            conversations.reverse().map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+  ): Promise<Array<Conversation>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getUnreadConversationsBefore(
+        this.uuid,
+        datetime,
+        count,
+        (status, code, message, conversations) => {
+          if (status) {
+            let returnConversations = [];
+            if (isAscending) {
+              conversations.reverse().map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            } else {
+              conversations.map(conversation => {
+                conversation.stringeeClient = this;
+                returnConversations.push(new Conversation(conversation));
+              });
+            }
+            resolve(returnConversations);
           } else {
-            conversations.map(conversation => {
-              conversation.stringeeClient = this;
-              returnConversations.push(new Conversation(conversation));
-            });
+            reject(new StringeeError(code, message, 'getUnreadConversationsBefore'));
           }
-        }
-        return callback(status, code, message, returnConversations);
-      },
-    );
+        },
+      );
+    });
   }
 
   /**
    * Get an existing conversations with given id of user.
    * @function getConversationWithUser
    * @param {string} userId other user's id
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  getConversationWithUser(userId: string, callback: RNStringeeEventCallback) {
-    RNStringeeClient.getConversationWithUser(
-      this.uuid,
-      userId,
-      (status, code, message, conversation) => {
-        let returnConversation;
-        if (status) {
-          conversation.stringeeClient = this;
-          returnConversation = new Conversation(conversation);
-        }
-        return callback(status, code, message, returnConversation);
-      },
-    );
+  getConversationWithUser(userId: string): Promise<Conversation> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getConversationWithUser(
+        this.uuid,
+        userId,
+        (status, code, message, conversation) => {
+          if (status) {
+            conversation.stringeeClient = this;
+            resolve(new Conversation(conversation));
+          } else {
+            reject(new StringeeError(code, message, 'getConversationWithUser'));
+          }
+        },
+      );
+    });
   }
 
   /**
    * Get the number of unread conversations.
    * @function getUnreadConversationCount
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  getUnreadConversationCount(callback: RNStringeeEventCallback) {
-    RNStringeeClient.getUnreadConversationCount(this.uuid, callback);
+  getUnreadConversationCount(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getUnreadConversationCount(
+        this.uuid,
+        (status, code, message, count) => {
+          if (status) {
+            resolve(count);
+          } else {
+            reject(new StringeeError(code, message, 'getUnreadConversationCount'));
+          }
+        },
+      );
+    });
   }
 
   /**
    * Clear the local database.
    * @function clearDb
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  clearDb(callback: RNStringeeEventCallback) {
-    RNStringeeClient.clearDb(this.uuid, callback);
+  clearDb(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.clearDb(this.uuid, normalCallbackHandle(resolve, reject, 'clearDb'))
+    });
   }
 
   /**
    * Get the list of user's information with a given list of user's ids.
    * @function getUserInfo
    * @param {Array<string>} userIds List of user's ids.
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  getUserInfo(userIds: Array<string>, callback: RNStringeeEventCallback) {
-    RNStringeeClient.getUserInfo(
-      this.uuid,
-      userIds,
-      (status, code, message, users) => {
-        let returnUsers = [];
-        if (status) {
-          users.map(user => {
-            returnUsers.push(new User(user));
-          });
-        }
-        return callback(status, code, message, returnUsers);
-      },
-    );
+  getUserInfo(userIds: Array<string>): Promise<Array<User>> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getUserInfo(
+        this.uuid,
+        userIds,
+        (status, code, message, users) => {
+          if (status) {
+            let returnUsers = [];
+            users.map(user => {
+              returnUsers.push(new User(user));
+            });
+            resolve(returnUsers);
+          } else {
+            reject(new StringeeError(code, message, 'getUserInfo'));
+          }
+        },
+      );
+    });
   }
 
   // ============================== LIVE-CHAT ================================
@@ -838,10 +888,21 @@ class StringeeClient {
    * Get the portal's chat profile containing a list of queues.
    * @function getChatProfile
    * @param {string} widgetKey Portal's widgetKey
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  getChatProfile(widgetKey: string, callback: RNStringeeEventCallback) {
-    RNStringeeClient.getChatProfile(this.uuid, widgetKey, callback);
+  getChatProfile(widgetKey: string): Promise<Object> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getChatProfile(
+        this.uuid,
+        widgetKey,
+        (status, code, message, chatProfile) => {
+          if (status) {
+            resolve(chatProfile);
+          } else {
+            reject(new StringeeError(code, message, 'getChatProfile'));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -850,59 +911,64 @@ class StringeeClient {
    * @param {string} widgetKey Portal's widgetKey
    * @param {string} name Customer's name
    * @param {string} email Customer's email
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   getLiveChatToken(
     widgetKey: string,
     name: string,
     email: string,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.getLiveChatToken(
-      this.uuid,
-      widgetKey,
-      name,
-      email,
-      callback,
-    );
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.getLiveChatToken(
+        this.uuid,
+        widgetKey,
+        name,
+        email,
+        (status, code, message, token) => {
+          if (status) {
+            resolve(token);
+          } else {
+            reject(new StringeeError(code, message, 'getLiveChatToken'));
+          }
+        },
+      );
+    });
   }
 
   /**
    * Update the user information.
    * @function updateUserInfo
    * @param {UserInfo} userInfo
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  updateUserInfo(userInfo: UserInfo, callback: RNStringeeEventCallback) {
-    RNStringeeClient.updateUserInfo2(
-      this.uuid,
-      JSON.stringify(userInfo),
-      callback,
-    );
+  updateUserInfo(userInfo: UserInfo): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.updateUserInfo2(
+        this.uuid,
+        JSON.stringify(userInfo),
+        normalCallbackHandle(resolve, reject, 'updateUserInfo')
+      );
+    });
   }
 
   /**
    * Create a live chat conversation.
    * @function createLiveChatConversation
    * @param {string} queueId Queue's id
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  createLiveChatConversation(
-    queueId: string,
-    callback: RNStringeeEventCallback,
-  ) {
-    RNStringeeClient.createLiveChatConversation(
-      this.uuid,
-      queueId,
-      (status, code, message, data) => {
-        let returnConversation;
-        if (status) {
-          data.stringeeClient = this;
-          returnConversation = new Conversation(data);
-        }
-        return callback(status, code, message, returnConversation);
-      },
-    );
+  createLiveChatConversation(queueId: string): Promise<Conversation> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.createLiveChatConversation(
+        this.uuid,
+        queueId,
+        (status, code, message, conversation) => {
+          if (status) {
+            conversation.stringeeClient = this;
+            resolve(new Conversation(conversation));
+          } else {
+            reject(new StringeeError(code, message, 'createLiveChatConversation'));
+          }
+        },
+      );
+    });
   }
 
   /**
@@ -910,26 +976,32 @@ class StringeeClient {
    * @function createLiveChatTicket
    * @param {string} widgetKey Portal's widgetKey
    * @param {LiveChatTicketParam} liveChatTicketParam Param contain name, email, phone, note
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
   createLiveChatTicket(
     widgetKey: string,
     liveChatTicketParam: LiveChatTicketParam,
-    callback: RNStringeeEventCallback,
-  ) {
-    if (liveChatTicketParam === undefined) {
-      callback(false, -1, 'liveChatTicketParam is undefined');
-      return;
-    }
-    RNStringeeClient.createLiveChatTicket(
-      this.uuid,
-      widgetKey,
-      liveChatTicketParam.name,
-      liveChatTicketParam.email,
-      liveChatTicketParam.phone,
-      liveChatTicketParam.note,
-      callback,
-    );
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (liveChatTicketParam === undefined) {
+        reject(new StringeeError(-1, 'liveChatTicketParam is undefined', 'createLiveChatTicket'));
+        return;
+      }
+      RNStringeeClient.createLiveChatTicket(
+        this.uuid,
+        widgetKey,
+        liveChatTicketParam.name,
+        liveChatTicketParam.email,
+        liveChatTicketParam.phone,
+        liveChatTicketParam.note,
+        (status, code, message) => {
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message, 'createLiveChatTicket'));
+          }
+        },
+      );
+    });
   }
 }
 
@@ -938,6 +1010,7 @@ function getStringeeCall(stringeeClient: StringeeClient, data): StringeeCall {
     stringeeClient: stringeeClient,
     from: data.from,
     to: data.to,
+    uuid: data.uuid,
   });
   stringeeCall.callId = data.callId;
   stringeeCall.customData = data.customDataFromYourServer;
@@ -946,6 +1019,7 @@ function getStringeeCall(stringeeClient: StringeeClient, data): StringeeCall {
   stringeeCall.callType = getCallType(data.callType);
   stringeeCall.isVideoCall = data.isVideoCall;
   stringeeCall.serial = data.serial;
+  stringeeCall.canAnswer = true;
   return stringeeCall;
 }
 
@@ -954,6 +1028,7 @@ function getStringeeCall2(stringeeClient: StringeeClient, data): StringeeCall2 {
     stringeeClient: stringeeClient,
     from: data.from,
     to: data.to,
+    uuid: data.uuid,
   });
   stringeeCall2.callId = data.callId;
   stringeeCall2.customData = data.customDataFromYourServer;
@@ -962,6 +1037,7 @@ function getStringeeCall2(stringeeClient: StringeeClient, data): StringeeCall2 {
   stringeeCall2.callType = getCallType(data.callType);
   stringeeCall2.isVideoCall = data.isVideoCall;
   stringeeCall2.serial = data.serial;
+  stringeeCall2.canAnswer = true;
   return stringeeCall2;
 }
 

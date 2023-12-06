@@ -1,4 +1,4 @@
-#if __has_include(<React/RCTBridgeModule.h>)
+ #if __has_include(<React/RCTBridgeModule.h>)
 #import <React/RCTBridgeModule.h>
 #elif __has_include("RCTBridgeModule.h")
 #import “RCTBridgeModule.h”
@@ -16,9 +16,6 @@
 
 #import <Stringee/Stringee.h>
 
-@interface RNStringeeCall : RCTEventEmitter <RCTBridgeModule, StringeeCallDelegate>
-
-// Render video
-- (void)addRenderToView:(UIView *)view callId:(NSString *)callId isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode;
+@interface RNStringeeCall : RCTEventEmitter <RCTBridgeModule>
 
 @end

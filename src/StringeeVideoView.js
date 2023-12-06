@@ -7,50 +7,78 @@ import {
   View,
 } from 'react-native';
 import React, {Component} from 'react';
-import {StringeeVideoScalingType} from './helpers/StringeeHelper';
+import {StringeeVideoScalingType, StringeeVideoTrack} from '../index';
+import {isIOS} from './helpers/StringeeHelper';
 
 class StringeeVideoView extends Component {
-  callId: string;
+  uuid: string;
   local: boolean;
-  overlay: boolean;
   scalingType: StringeeVideoScalingType;
+  videoTrack: StringeeVideoTrack;
 
   constructor(props) {
     super(props);
     this.ref = React.createRef();
-    this.callId = props.callId;
+    this.uuid = props.uuid;
     this.local = props.local !== undefined ? props.local : false;
-    this.overlay = props.overlay !== undefined ? props.overlay : false;
     this.scalingType =
       props.scalingType !== undefined
         ? props.scalingType
         : StringeeVideoScalingType.fill;
+    this.videoTrack = props.videoTrack;
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.uuid !== prevProps.uuid ||
+      this.props.local !== prevProps.local ||
+      this.props.scalingType !== prevProps.scalingType ||
+      (this.props.videoTrack &&
+        prevProps.videoTrack &&
+        (this.props.videoTrack.localId !== prevProps.videoTrack.localId ||
+          this.props.videoTrack.serverId !== prevProps.videoTrack.serverId)) ||
+      this.props.style.width !== prevProps.style.width ||
+      this.props.style.height !== prevProps.style.height
+    ) {
+      this.reload();
+    }
   }
 
   componentDidMount() {
     this.viewId = findNodeHandle(this.ref.current);
     if (Platform.OS === 'android') {
-      this.createNativeView(this.viewId);
+      UIManager.dispatchViewManagerCommand(
+        this.viewId,
+        UIManager.RNStringeeVideoView.Commands.create.toString(),
+        [],
+      );
     }
   }
 
-  createNativeView = viewId => {
-    UIManager.dispatchViewManagerCommand(
-      viewId,
-      UIManager.RNStringeeVideoView.Commands.create.toString(),
-      [],
-    );
-  };
+  reload() {
+    const reloadCommand = isIOS
+      ? UIManager.RNStringeeVideoView.Commands.reload
+      : UIManager.RNStringeeVideoView.Commands.reload.toString();
+    const params = {
+      width: this.props.style.width,
+      height: this.props.style.height,
+      uuid: this.props.uuid,
+      local: this.props.local,
+      scalingType: this.props.scalingType,
+      videoTrack: this.props.videoTrack,
+    };
+    UIManager.dispatchViewManagerCommand(this.viewId, reloadCommand, [params]);
+  }
 
   render(): React.ReactNode {
     return (
       <View style={this.props.style}>
         <RCTStringeeVideoView
           {...this.props}
-          callId={this.callId}
+          uuid={this.uuid}
           local={this.local}
-          overLay={this.overlay}
           scalingType={this.scalingType}
+          videoTrack={this.videoTrack}
           ref={this.ref}
         />
       </View>
@@ -59,13 +87,13 @@ class StringeeVideoView extends Component {
 }
 
 StringeeVideoView.propTypes = {
-  callId: PropTypes.string,
+  uuid: PropTypes.string,
   local: PropTypes.bool,
-  overlay: PropTypes.bool,
   scalingType: PropTypes.oneOf([
     StringeeVideoScalingType.fit,
     StringeeVideoScalingType.fill,
   ]),
+  videoTrack: PropTypes.any,
   ...View.propTypes,
 };
 

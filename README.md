@@ -22,7 +22,7 @@ Install `stringee-react-native-v2` by running:
 
 3. Add the following to your pod file:
 
-```
+   ```
     platform :ios, '8.0'
 
     target '<YourProjectName>' do
@@ -42,7 +42,7 @@ Install `stringee-react-native-v2` by running:
       end
     end
 
-```
+   ```
 
 4. Now run, `pod install`
 
@@ -58,12 +58,12 @@ Install `stringee-react-native-v2` by running:
 
 10. Insert the following XML snippet into the body of your file just before the final element:
 
-```
-  <key>NSCameraUsageDescription</key>
-  <string>$(PRODUCT_NAME) uses Camera</string>
-  <key>NSMicrophoneUsageDescription</key>
-  <string>$(PRODUCT_NAME) uses Microphone</string>
-```
+   ```
+   <key>NSCameraUsageDescription</key>
+   <string>$(PRODUCT_NAME) uses Camera</string>
+   <key>NSMicrophoneUsageDescription</key>
+   <string>$(PRODUCT_NAME) uses Microphone</string>
+   ```
 
 #### Android
 

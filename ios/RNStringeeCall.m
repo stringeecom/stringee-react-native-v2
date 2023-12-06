@@ -1,5 +1,6 @@
 
 #import "RNStringeeCall.h"
+#import "RNCallWrapper.h"
 #import "RNStringeeInstanceManager.h"
 #import <React/RCTLog.h>
 
@@ -13,10 +14,7 @@ static NSString *didReceiveCallInfo         = @"didReceiveCallInfo";
 static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
 
 
-@implementation RNStringeeCall {
-    // Events are supported
-    NSMutableArray<NSString *> *jsEvents;
-}
+@implementation RNStringeeCall
 
 @synthesize bridge = _bridge;
 
@@ -26,14 +24,13 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self) {
         [RNStringeeInstanceManager instance].rnCall = self;
-        jsEvents = [[NSMutableArray alloc] init];
     }
     return self;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
     return @[didChangeSignalingState,
-             didChangeMediaState, 
+             didChangeMediaState,
              didReceiveLocalStream,
              didReceiveRemoteStream,
              didReceiveDtmfDigit,
@@ -48,24 +45,41 @@ RCT_EXPORT_MODULE();
 
 // TODO: - Publish Functions
 
-RCT_EXPORT_METHOD(setNativeEvent:(NSString *)event) {
-    [jsEvents addObject:event];
+RCT_EXPORT_METHOD(createWrapper:(NSString *)uuid clientUUID:(NSString *)clientUUID) {
+    NSLog(@"%@ create Wrapper: ", uuid);
+    RNCallWrapper *wrapper = [[RNCallWrapper alloc] initWithIdentifier:uuid clientUUID:clientUUID];
+    [RNStringeeInstanceManager.instance.callWrappers setObject:wrapper forKey:uuid];
 }
 
-RCT_EXPORT_METHOD(removeNativeEvent:(NSString *)event) {
-    int index = -1;
-    index = (int)[jsEvents indexOfObject:event];
-    if (index >= 0) {
-        [jsEvents removeObjectAtIndex:index];
-    }
+RCT_EXPORT_METHOD(clean:(NSString *)uuid) {
+    RNStringeeInstanceManager.instance.callWrappers[uuid] = nil;
 }
+
+RCT_EXPORT_METHOD(setNativeEvent:(NSString *)uuid event:(NSString *)event) {
+    RNCallWrapper *callWrapper = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid];
+    if (callWrapper == nil) {
+        RCTLog(@"setNativeEvent: -1 wrapper not found");
+        return;
+    }
+    [callWrapper setNativeEvent:event];
+}
+
+RCT_EXPORT_METHOD(removeNativeEvent:(NSString *)uuid event:(NSString *)event) {
+    RNCallWrapper *callWrapper = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid];
+    if (callWrapper == nil) {
+        RCTLog(@"removeNativeEvent: -1 wrapper not found");
+        return;
+    }
+    [callWrapper removeNativeEvent:event];
+}
+
 
 RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters callback:(RCTResponseSenderBlock)callback) {
     
     NSError *jsonError;
     NSData *objectData = [parameters dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *data = [NSJSONSerialization JSONObjectWithData:objectData
-                                      options:NSJSONReadingMutableContainers 
+                                      options:NSJSONReadingMutableContainers
                                         error:&jsonError];
     if (jsonError) {
         callback(@[@(NO), @(-4), @"The parameters format is invalid.", [NSNull null], [NSNull null]]);
@@ -76,19 +90,22 @@ RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters ca
         NSString *customData = data[@"customData"];
         NSString *videoResolution = data[@"videoResolution"];
         
-        RNClientWrapper *wrapper = [RNStringeeInstanceManager.instance.clientWrappers objectForKey:uuid];
+        RNCallWrapper *wrapper = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid];
         if (wrapper == nil) {
             callback(@[@(NO), @(-1), @"Wrapper is not found", [NSNull null], [NSNull null]]);
             return;
         }
         
-        if (!wrapper.client) {
+        StringeeClient *client = [wrapper getClient];
+
+        if (!client) {
             callback(@[@(NO), @(-1), @"StringeeClient is not initialized", [NSNull null], [NSNull null]]);
             return;
         }
 
-        StringeeCall *outgoingCall = [[StringeeCall alloc] initWithStringeeClient:wrapper.client from:from to:to];
-        outgoingCall.delegate = self;
+        StringeeCall *outgoingCall = [[StringeeCall alloc] initWithStringeeClient:client from:from to:to];
+        wrapper.call = outgoingCall;
+        outgoingCall.delegate = wrapper;
         outgoingCall.isVideoCall = [isVideoCall boolValue];
 
         if (customData.length) {
@@ -101,50 +118,37 @@ RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters ca
             outgoingCall.videoResolution = VideoResolution_HD;
         }
 
-        __weak StringeeCall *weakCall = outgoingCall;
-        __weak NSMutableDictionary *weakCalls = [RNStringeeInstanceManager instance].calls;
-
         [outgoingCall makeCallWithCompletionHandler:^(BOOL status, int code, NSString *message, NSString *data) {
-            StringeeCall *strongCall = weakCall;
-            NSMutableDictionary *strongCalls = weakCalls;
-            if (status) {
-                [strongCalls setObject:strongCall forKey:strongCall.callId]; 
-            } 
-            id returnCallId = strongCall.callId ? strongCall.callId : [NSNull null];
             id returnData = data ? data : [NSNull null];
-            callback(@[@(status), @(code), message, returnCallId, returnData]);
+            callback(@[@(status), @(code), message, outgoingCall.callId, returnData]);
         }];
     }
 }
 
-RCT_EXPORT_METHOD(initAnswer:(NSString *)uuid callId:(NSString *)callId callback:(RCTResponseSenderBlock)callback) {
-    RNClientWrapper *wrapper = [RNStringeeInstanceManager.instance.clientWrappers objectForKey:uuid];
+RCT_EXPORT_METHOD(initAnswer:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
+    RNCallWrapper *wrapper = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid];
     if (wrapper == nil) {
         callback(@[@(NO), @(-1), @"Wrapper is not found", [NSNull null], [NSNull null]]);
         return;
     }
+    StringeeCall *call = wrapper.call;
+    StringeeClient *client = [wrapper getClient];
     
-    if (wrapper.client && wrapper.client.hasConnected) {
-        if (callId.length) {
-            StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
-            if (call) {
-                call.delegate = self;
-                [call initAnswerCall];
-                callback(@[@(YES), @(0), @"Init answer call successfully."]);
-            } else {
-                callback(@[@(NO), @(-3), @"Init answer call failed. The call is not found."]);
-            }
+    if (client && client.hasConnected) {
+        if (call) {
+            [call initAnswerCall];
+            callback(@[@(YES), @(0), @"Init answer call successfully."]);
         } else {
-            callback(@[@(NO), @(-2), @"Init answer call failed. The callId is invalid."]);
+            callback(@[@(NO), @(-3), @"Init answer call failed. The call is not found."]);
         }
     } else {
         callback(@[@(NO), @(-1), @"StringeeClient is not initialzied or connected."]);
     }
 }
 
-RCT_EXPORT_METHOD(answer:(NSString *)callId callback:(RCTResponseSenderBlock)callback) {
-    if (callId.length) {
-        StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+RCT_EXPORT_METHOD(answer:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
+    if (uuid.length) {
+        StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
         if (call) {
             [call answerCallWithCompletionHandler:^(BOOL status, int code, NSString *message) {
                 callback(@[@(status), @(code), message]);
@@ -153,13 +157,13 @@ RCT_EXPORT_METHOD(answer:(NSString *)callId callback:(RCTResponseSenderBlock)cal
             callback(@[@(NO), @(-3), @"Answer call failed. The call is not found."]);
         }
     } else {
-        callback(@[@(NO), @(-2), @"Answer call failed. The callId is invalid."]);
+        callback(@[@(NO), @(-2), @"Answer call failed. The uuid is invalid."]);
     }
 }
 
-RCT_EXPORT_METHOD(hangup:(NSString *)callId callback:(RCTResponseSenderBlock)callback) {
-    if (callId.length) {
-        StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+RCT_EXPORT_METHOD(hangup:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
+    if (uuid.length) {
+        StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
         if (call) {
             [call hangupWithCompletionHandler:^(BOOL status, int code, NSString *message) {
                 callback(@[@(status), @(code), message]);
@@ -168,13 +172,13 @@ RCT_EXPORT_METHOD(hangup:(NSString *)callId callback:(RCTResponseSenderBlock)cal
             callback(@[@(NO), @(-3), @"Hangup call failed. The call is not found."]);
         }
     } else {
-        callback(@[@(NO), @(-2), @"Hangup call failed. The callId is invalid."]);
+        callback(@[@(NO), @(-2), @"Hangup call failed. The uuid is invalid."]);
     }
 }
 
-RCT_EXPORT_METHOD(reject:(NSString *)callId callback:(RCTResponseSenderBlock)callback) {
-    if (callId.length) {
-        StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+RCT_EXPORT_METHOD(reject:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
+    if (uuid.length) {
+        StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
         if (call) {
             [call rejectWithCompletionHandler:^(BOOL status, int code, NSString *message) {
                 callback(@[@(status), @(code), message]);
@@ -183,13 +187,13 @@ RCT_EXPORT_METHOD(reject:(NSString *)callId callback:(RCTResponseSenderBlock)cal
             callback(@[@(NO), @(-3), @"Reject call failed. The call is not found."]);
         }
     } else {
-        callback(@[@(NO), @(-2), @"Reject call failed. The callId is invalid."]);
+        callback(@[@(NO), @(-2), @"Reject call failed. The uuid is invalid."]);
     }
 }
 
-RCT_EXPORT_METHOD(sendDTMF:(NSString *)callId dtmf:(NSString *)dtmf callback:(RCTResponseSenderBlock)callback) {
-    if (callId.length) {
-        StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+RCT_EXPORT_METHOD(sendDTMF:(NSString *)uuid dtmf:(NSString *)dtmf callback:(RCTResponseSenderBlock)callback) {
+    if (uuid.length) {
+        StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
         if (call) {
             NSArray *DTMF = @[@"0", @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @"*", @"#"];
             if ([DTMF containsObject:dtmf]) {
@@ -247,19 +251,19 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)callId dtmf:(NSString *)dtmf callback:(RC
             callback(@[@(NO), @(-3), @"Failed to send. The call is not found."]);
         }
     } else {
-        callback(@[@(NO), @(-2), @"Failed to send. The callId is invalid."]);
+        callback(@[@(NO), @(-2), @"Failed to send. The uuid is invalid."]);
     }
 }
 
-RCT_EXPORT_METHOD(sendCallInfo:(NSString *)callId callInfo:(NSString *)callInfo callback:(RCTResponseSenderBlock)callback) {
-    if (callId.length) {
-        StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+RCT_EXPORT_METHOD(sendCallInfo:(NSString *)uuid callInfo:(NSString *)callInfo callback:(RCTResponseSenderBlock)callback) {
+    if (uuid.length) {
+        StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
         if (call) {
 
             NSError *jsonError;
             NSData *objectData = [callInfo dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *data = [NSJSONSerialization JSONObjectWithData:objectData
-                                                        options:NSJSONReadingMutableContainers 
+                                                        options:NSJSONReadingMutableContainers
                                                         error:&jsonError];
 
             if (jsonError) {
@@ -278,28 +282,25 @@ RCT_EXPORT_METHOD(sendCallInfo:(NSString *)callId callInfo:(NSString *)callInfo 
             callback(@[@(NO), @(-3), @"Failed to send. The call is not found"]);
         }
     } else {
-        callback(@[@(NO), @(-2), @"Failed to send. The callId is invalid"]);
+        callback(@[@(NO), @(-2), @"Failed to send. The uuid is invalid"]);
     }
 }
 
-RCT_EXPORT_METHOD(getCallStats:(NSString *)uuid callId:(NSString *)callId callback:(RCTResponseSenderBlock)callback) {
-    RNClientWrapper *wrapper = [RNStringeeInstanceManager.instance.clientWrappers objectForKey:uuid];
+RCT_EXPORT_METHOD(getCallStats:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
+    RNCallWrapper *wrapper = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid];
     if (wrapper == nil) {
         callback(@[@(NO), @(-1), @"Wrapper is not found", [NSNull null], [NSNull null]]);
         return;
     }
     
-    if (!wrapper.client || !wrapper.client.hasConnected) {
+    StringeeClient *client = [wrapper getClient];
+    
+    if (!client || !client.hasConnected) {
         callback(@[@(NO), @(-1), @"StringeeClient is not initialzied or connected.", @""]);
         return;
     }
 
-    if (!callId.length) {
-        callback(@[@(NO), @(-2), @"The call id is invalid.", @""]);
-        return;
-    }
-
-    StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+    StringeeCall *call = wrapper.call;
 
     if (!call) {
         callback(@[@(NO), @(-3), @"The call is not found.", @""]);
@@ -316,33 +317,34 @@ RCT_EXPORT_METHOD(getCallStats:(NSString *)uuid callId:(NSString *)callId callba
 
 }
 
-RCT_EXPORT_METHOD(mute:(NSString *)callId mute:(BOOL)mute callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(mute:(NSString *)uuid mute:(BOOL)mute callback:(RCTResponseSenderBlock)callback) {
 
-    if (!callId.length) {
+    if (!uuid.length) {
         callback(@[@(NO), @(-2), @"The call id is invalid."]);
         return;
     }
 
-    StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+    StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
 
     if (!call) {
         callback(@[@(NO), @(-3), @"The call is not found."]);
         return;
     }
-
-    [call mute:mute];
-    callback(@[@(YES), @(0), @"Success"]);
-
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [call mute:mute];
+        callback(@[@(YES), @(0), @"Success"]);
+    });
+    
 }
 
-RCT_EXPORT_METHOD(setSpeakerphoneOn:(NSString *)callId speaker:(BOOL)speaker callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(setSpeakerphoneOn:(NSString *)uuid speaker:(BOOL)speaker callback:(RCTResponseSenderBlock)callback) {
 
-    if (!callId.length) {
-        callback(@[@(NO), @(-2), @"The call id is invalid."]);
+    if (!uuid.length) {
+        callback(@[@(NO), @(-2), @"The uuid is invalid."]);
         return;
     }
 
-    StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+    StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
 
     if (!call) {
         callback(@[@(NO), @(-3), @"The call is not found."]);
@@ -353,14 +355,14 @@ RCT_EXPORT_METHOD(setSpeakerphoneOn:(NSString *)callId speaker:(BOOL)speaker cal
     callback(@[@(YES), @(0), @"Success"]);
 }
 
-RCT_EXPORT_METHOD(switchCamera:(NSString *)callId callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(switchCamera:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
 
-    if (!callId.length) {
-        callback(@[@(NO), @(-2), @"The call id is invalid."]);
+    if (!uuid.length) {
+        callback(@[@(NO), @(-2), @"The uuid is invalid."]);
         return;
     }
 
-    StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+    StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
 
     if (!call) {
         callback(@[@(NO), @(-3), @"The call is not found."]);
@@ -371,113 +373,28 @@ RCT_EXPORT_METHOD(switchCamera:(NSString *)callId callback:(RCTResponseSenderBlo
     callback(@[@(YES), @(0), @"Success"]);
 }
 
-RCT_EXPORT_METHOD(enableVideo:(NSString *)callId enableVideo:(BOOL)enableVideo callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(enableVideo:(NSString *)uuid enableVideo:(BOOL)enableVideo callback:(RCTResponseSenderBlock)callback) {
 
-    if (!callId.length) {
-        callback(@[@(NO), @(-2), @"The call id is invalid."]);
+    if (!uuid.length) {
+        callback(@[@(NO), @(-2), @"The uuid is invalid."]);
         return;
     }
 
-    StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
+    StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid].call;
 
     if (!call) {
         callback(@[@(NO), @(-3), @"The call is not found."]);
         return;
     }
 
-    [call enableLocalVideo:enableVideo];
-    callback(@[@(YES), @(0), @"Success"]);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [call enableLocalVideo:enableVideo];
+        callback(@[@(YES), @(0), @"Success"]);
+    });
 }
 RCT_EXPORT_METHOD(generateUUID:(NSString *)callId serial:(nonnull NSNumber *)serial callback:(RCTResponseSenderBlock)callback) {
     NSString *uuid = [RNStringeeInstanceManager.instance generateUUID:callId serial:serial];
     callback(@[uuid]);
 }
 
-- (void)didChangeSignalingState:(StringeeCall *)stringeeCall signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
-    
-    if ([jsEvents containsObject:didChangeSignalingState]) {
-        [self sendEventWithName:didChangeSignalingState body:@{ @"callId" : stringeeCall.callId, @"code" : @(signalingState), @"reason" : reason, @"sipCode" : @(sipCode), @"sipReason" : sipReason, @"serial": @(stringeeCall.serial) }];
-    }
-}
-
-- (void)didChangeMediaState:(StringeeCall *)stringeeCall mediaState:(MediaState)mediaState {
-
-    if ([jsEvents containsObject:didChangeMediaState]) {
-        switch (mediaState) {
-            case MediaStateConnected:
-                [self sendEventWithName:didChangeMediaState body:@{ @"callId" : stringeeCall.callId, @"code" : @(0), @"description" : @"Connected" }];
-                break;
-            case MediaStateDisconnected:
-                [self sendEventWithName:didChangeMediaState body:@{ @"callId" : stringeeCall.callId, @"code" : @(1), @"description" : @"Disconnected" }];
-                break;
-            default:
-                break;
-        }
-    }
-
-}
-
-- (void)didReceiveLocalStream:(StringeeCall *)stringeeCall {
-    if ([jsEvents containsObject:didReceiveLocalStream]) {
-        [self sendEventWithName:didReceiveLocalStream body:@{ @"callId" : stringeeCall.callId }];
-    }    
-}
-
-- (void)didReceiveRemoteStream:(StringeeCall *)stringeeCall {
-    if ([jsEvents containsObject:didReceiveRemoteStream]) {
-        [self sendEventWithName:didReceiveRemoteStream body:@{ @"callId" : stringeeCall.callId }];
-    }
-}
-
-- (void)didReceiveDtmfDigit:(StringeeCall *)stringeeCall callDTMF:(CallDTMF)callDTMF {
-
-    if ([jsEvents containsObject:didReceiveDtmfDigit]) {
-        NSString * digit = @"";
-        if ((long)callDTMF <= 9) {
-            digit = [NSString stringWithFormat:@"%ld", (long)callDTMF];
-        } else if (callDTMF == 10) {
-            digit = @"*";
-        } else if (callDTMF == 11) {
-            digit = @"#";
-        }
-
-        [self sendEventWithName:didReceiveDtmfDigit body:@{ @"callId" : stringeeCall.callId, @"dtmf" : digit }];
-    }
-
-}
-
-- (void)didReceiveCallInfo:(StringeeCall *)stringeeCall info:(NSDictionary *)info {
-    if ([jsEvents containsObject:didReceiveCallInfo]) {
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:info
-                                            options:NSJSONWritingPrettyPrinted
-                                            error:nil];
-        NSString *jsonString = [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@" " withString:@""];
-        [self sendEventWithName:didReceiveCallInfo body:@{ @"callId" : stringeeCall.callId, @"data" : jsonString }];
-    }
-}
-
-- (void)didHandleOnAnotherDevice:(StringeeCall *)stringeeCall signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
-    
-    if ([jsEvents containsObject:didHandleOnAnotherDevice]) {
-        [self sendEventWithName:didHandleOnAnotherDevice body:@{ @"callId" : stringeeCall.callId, @"code" : @(signalingState), @"description" : reason }];
-    }
-
-}
-
-- (void)addRenderToView:(UIView *)view callId:(NSString *)callId isLocal:(BOOL)isLocal contentMode:(StringeeVideoContentMode)contentMode {
-    if (callId.length) {
-        StringeeCall *call = [[RNStringeeInstanceManager instance].calls objectForKey:callId];
-        if (call) {
-            if (isLocal) {
-                call.localVideoView.frame = CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height);
-                call.localVideoView.contentMode = contentMode;
-                [view addSubview:call.localVideoView];
-            } else {
-                call.remoteVideoView.frame = CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height);
-                call.remoteVideoView.contentMode = contentMode;
-                [view addSubview:call.remoteVideoView];
-            }
-        }
-    }
-}
 @end

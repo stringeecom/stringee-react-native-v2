@@ -1,14 +1,16 @@
 
-#import "RNStringeeVideoView.h"
-#import "RNStringeeInstanceManager.h"
 #import <React/RCTLog.h>
+#import "RNStringeeInstanceManager.h"
+#import "RNStringeeVideoView.h"
+#import "RCTConvert+StringeeHelper.h"
+
+NSString *const videoViewName = @"STRINGEE-VIDEO-VIEW";
 
 @implementation RNStringeeVideoView {
     BOOL hasDisplayed;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         [self addObserver:self forKeyPath:@"bounds" options:0 context:nil];
@@ -18,31 +20,93 @@
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self removeObserver:self forKeyPath:@"bounds"];
     [self removeObserver:self forKeyPath:@"frame"];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-
+    
     StringeeVideoContentMode mode = StringeeVideoContentModeScaleAspectFill;
     if ([_scalingType isEqualToString:@"fit"]) {
         mode = StringeeVideoContentModeScaleAspectFit;
     }
     
     if (!hasDisplayed) {
-        if (_callId.length) {
-            [[RNStringeeInstanceManager instance].rnCall addRenderToView:self callId:_callId isLocal:_local contentMode:mode];
-            [[RNStringeeInstanceManager instance].rnCall2 addRenderToView:self callId:_callId isLocal:_local contentMode:mode];
-            hasDisplayed = YES;
+        if (_uuid.length && _videoTrack) {
+            RNCall2Wrapper *wrapper = [RNStringeeInstanceManager.instance.call2Wrappers objectForKey:_uuid];
+            
+            if (wrapper) {
+                NSString *localId = [_videoTrack objectForKey:@"localId"];
+                NSString *serverId = [_videoTrack objectForKey:@"serverId"];
+                
+                StringeeVideoTrack *track;
+                
+                if ([RCTConvert isValid:serverId]) {
+                    if ([wrapper.videoTrack objectForKey:serverId]) {
+                        track = [wrapper.videoTrack objectForKey:serverId];
+                    }
+                }
+                
+                if (track == nil && [RCTConvert isValid: localId]) {
+                    if ([wrapper.videoTrack objectForKey:localId]) {
+                        track = [wrapper.videoTrack objectForKey:localId];
+                    }
+                }
+                
+                if (track != nil) {
+                    StringeeVideoView *videoView = [track attachWithVideoContentMode:mode];
+                    if (videoView != nil) {
+                        videoView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+                        [self addSubview:videoView];
+                        videoView.layer.name = videoViewName;
+                        hasDisplayed = true;
+                    }
+                }
+            }
         }
+    }
+    
+    if (!hasDisplayed && _uuid.length > 0) {
+        StringeeCall *call = [RNStringeeInstanceManager.instance.callWrappers objectForKey:_uuid].call;
+        if (call) {
+            if (_local) {
+                call.localVideoView.layer.name = videoViewName;
+                call.localVideoView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+                call.localVideoView.contentMode = mode;
+                [self addSubview:call.localVideoView];
+            } else {
+                call.remoteVideoView.layer.name = videoViewName;
+                call.remoteVideoView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+                call.remoteVideoView.contentMode = mode;
+                [self addSubview:call.remoteVideoView];
+            }
+            hasDisplayed = true;
+        }
+    }
+    
+    if (!hasDisplayed) {
+        RCTLogError(@"Stringee Error | Render StringeeVideoView Error");
     }
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
+- (void)reload {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self->hasDisplayed = false;
+        
+        for (UIView *view in self.subviews) {
+            if ([view.layer.name isEqualToString:videoViewName]) {
+                [view removeFromSuperview];
+            }
+        }
+        
+        [self setNeedsLayout];
+        [self layoutIfNeeded];
+    });
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (object == self) {
         if (([keyPath isEqualToString:@"bounds"] || [keyPath isEqualToString:@"frame"])) {
             if (!CGSizeEqualToSize(self.videoSize, CGSizeZero)) {
@@ -59,32 +123,13 @@
     // Thay đổi frame của StringeeRemoteVideoView khi kích thước video thay đổi
     self.videoSize = size;
     [self updateFrameToFitVideoSize:size subView:videoView superView:self];
-    
-//    CGFloat superWidth = self.bounds.size.width;
-//    CGFloat superHeight = self.bounds.size.height;
-//
-//    CGFloat newWidth;
-//    CGFloat newHeight;
-//
-//    if (size.width > size.height) {
-//        newWidth = superWidth;
-//        newHeight = newWidth * size.height / size.width;
-//
-//        [videoView setFrame:CGRectMake(0, (superHeight - newHeight) / 2, newWidth, newHeight)];
-//
-//    } else {
-//        newHeight = superHeight;
-//        newWidth = newHeight * size.width / size.height;
-//
-//        [videoView setFrame:CGRectMake((superWidth - newWidth) / 2, 0, newWidth, newHeight)];
-//    }
 }
 
 - (void)updateFrameToFitVideoSize:(CGSize)size subView:(UIView *)subView superView:(UIView *)superView {
     dispatch_async(dispatch_get_main_queue(), ^{
         CGFloat superWidth = superView.frame.size.width;
         CGFloat superHeight = superView.frame.size.height;
-
+        
         CGFloat newWidth, newHeight;
         
         if (size.width > size.height) {
@@ -100,3 +145,4 @@
 }
 
 @end
+

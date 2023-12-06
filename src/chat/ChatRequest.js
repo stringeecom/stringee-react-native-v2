@@ -1,6 +1,8 @@
-import type {RNStringeeEventCallback} from '../helpers/StringeeHelper';
-import {RNStringeeClient} from '../helpers/StringeeHelper';
-import type {StringeeClient} from '../StringeeClient';
+import {
+  RNStringeeClient,
+  normalCallbackHandle,
+} from '../helpers/StringeeHelper';
+import {StringeeClient} from '../../index';
 
 class ChatRequest {
   // Request info
@@ -24,28 +26,30 @@ class ChatRequest {
   /**
    * Accept the chat request.
    * @function acceptChatRequest
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  acceptChatRequest(callback: RNStringeeEventCallback) {
-    RNStringeeClient.acceptChatRequest(
-      this.stringeeClient.uuid,
-      this.convId,
-      callback,
-    );
+  acceptChatRequest(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.acceptChatRequest(
+        this.stringeeClient.uuid,
+        this.convId,
+        normalCallbackHandle(resolve, reject, 'acceptChatRequest'),
+      );
+    });
   }
 
   /**
    * Reject the chat request.
    * @function rejectChatRequest
-   * @param {RNStringeeEventCallback} callback Return the result of function
    */
-  rejectChatRequest(callback: RNStringeeEventCallback) {
-    RNStringeeClient.rejectChatRequest(
-      this.stringeeClient.uuid,
-      this.convId,
-      callback,
-    );
+  rejectChatRequest(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      RNStringeeClient.rejectChatRequest(
+        this.stringeeClient.uuid,
+        this.convId,
+        normalCallbackHandle(resolve, reject, 'rejectChatRequest'),
+      );
+    });
   }
 }
 
-export default ChatRequest;
+export {ChatRequest};

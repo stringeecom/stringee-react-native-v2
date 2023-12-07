@@ -84,7 +84,6 @@ class StringeeCall {
    */
   setListener(listener: StringeeCallListener) {
     this.unregisterEvents();
-
     if (listener) {
       stringeeCallEvents.forEach(event => {
         if (listener[event] && callEvents[Platform.OS][event]) {

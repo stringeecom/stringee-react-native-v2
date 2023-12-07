@@ -28,6 +28,18 @@
 
 + (NSDictionary *)StringeeChatRequest:(StringeeChatRequest *)request;
 
++ (NSDictionary *)StringeeVideoRoom:(StringeeVideoRoom *)room;
+
++ (NSDictionary *)StringeeVideoTrackInfo:(StringeeVideoTrackInfo *)trackInfo;
+
++ (NSArray *)StringeeVideoTrackInfos:(NSArray<StringeeVideoTrackInfo *> *)tracks;
+
++ (NSDictionary *)StringeeRoomUserInfo:(StringeeRoomUserInfo *)request;
+
++ (NSArray *)StringeeRoomUserInfos:(NSArray<StringeeRoomUserInfo *> *)request;
+
++ (NSDictionary *)StringeeVideoTrack:(StringeeVideoTrack *)track;
+
 + (BOOL)isValid:(NSString *)value;
 
 + (BOOL)isValidEmail:(NSString *)emailTxt;

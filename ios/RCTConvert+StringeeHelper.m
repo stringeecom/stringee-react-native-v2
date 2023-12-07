@@ -374,6 +374,15 @@
     return response;
 }
 
++ (NSDictionary *)StringeeVideoRoom:(StringeeVideoRoom *)room {
+    if (!room) return RCTNullIfNil(nil);
+    
+    return @{
+        @"id" : room.roomId,
+        @"recored" : @(room.record)
+    };
+}
+
 + (NSDictionary *)StringeeChatRequest:(StringeeChatRequest *)request {
     if (!request) return RCTNullIfNil(nil);
 
@@ -388,6 +397,64 @@
              @"channelType": @(request.channelType),
              @"type": @(request.type)
              };
+}
+
++ (NSDictionary *)StringeeRoomUserInfo:(StringeeRoomUserInfo *)request {
+    if (!request) return RCTNullIfNil(nil);
+    
+    return @{
+        @"userId" : request.userId ? request.userId : @""
+    };
+}
+
++(NSArray *)StringeeRoomUserInfos:(NSArray<StringeeRoomUserInfo *> *)request {
+    if (!request) return RCTNullIfNil(nil);
+    NSMutableArray *response = [NSMutableArray array];
+    for (StringeeRoomUserInfo *info in request) {
+        [response addObject:[self StringeeRoomUserInfo:info]];
+    }
+    return response;
+}
+
++ (NSDictionary *)StringeeVideoTrackInfo:(StringeeVideoTrackInfo *)trackInfo {
+    if (!trackInfo) return RCTNullIfNil(nil);
+    
+    return @{
+        @"id" : trackInfo.serverId ? trackInfo.serverId : @"",
+        @"audio" : @(trackInfo.audio),
+        @"video" : @(trackInfo.video),
+        @"screen" : @(trackInfo.screen),
+        @"publisher" : @{
+            @"userId" : trackInfo.userPublish ? trackInfo.userPublish : @""
+        }
+    };
+    
+}
+
++ (NSArray *)StringeeVideoTrackInfos:(NSArray<StringeeVideoTrackInfo *> *)tracks {
+    if (!tracks) return RCTNullIfNil(nil);
+    NSMutableArray *response = [NSMutableArray array];
+    for (StringeeVideoTrackInfo *track in tracks) {
+        [response addObject:[self StringeeVideoTrackInfo:track]];
+    }
+    return  response;
+}
+
++ (NSDictionary *)StringeeVideoTrack:(StringeeVideoTrack *)track {
+    if (!track) return RCTNullIfNil(nil);
+    NSMutableArray *response = [NSMutableArray array];
+    return @{
+        @"localId": track.localId == nil ? @"" : track.localId,
+        @"serverId": track.serverId == nil ? @"" : track.serverId,
+        @"isLocal": @(track.isLocal),
+        @"audio": @(track.audio),
+        @"video": @(track.video),
+        @"screen": @(track.screen),
+        @"trackType": @(track.trackType),
+        @"publisher": @{
+            @"userId" : track.publisher.userId
+        }
+    };
 }
 
 // MARK: - Utils

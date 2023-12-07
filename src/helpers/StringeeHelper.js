@@ -115,6 +115,27 @@ const stringeeCall2Events = [
   'onAudioDeviceChange',
 ];
 
+const stringeeRoomEvents = {
+  ios: [
+    'onJoinRoom',
+    'onLeaveRoom',
+    'onAddVideoTrack',
+    'onRemoveVideoTrack',
+    'onReceiptRoomMessage',
+    'onTrackReadyToPlay',
+    'onTrackMediaStateChange'
+  ],
+  android: [
+    'onJoinRoom',
+    'onLeaveRoom',
+    'onAddVideoTrack',
+    'onRemoveVideoTrack',
+    'onReceiptRoomMessage',
+    'onTrackReadyToPlay',
+    'onTrackMediaStateChange'
+  ]
+}
+
 const StringeeVideoScalingType = {
   fit: 'fit',
   fill: 'fill',
@@ -283,4 +304,5 @@ export {
   getListAudioDevice,
   getAudioDevice,
   getTrackType,
+  stringeeRoomEvents
 };

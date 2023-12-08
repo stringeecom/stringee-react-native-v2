@@ -46,5 +46,13 @@
 
 + (id)StringToDictionary:(NSString *)str;
 
++ (StringeeVideoTrack *)searchTrackWithInfo:(NSDictionary *)info data:(NSDictionary<NSString *, StringeeVideoTrack *> *)data;
+
++ (StringeeVideoTrackInfo *)rnInfoDataToTrackInfo:(NSDictionary *) info;
+
++ (StringeeVideoTrackOption *)rnInfoDataToTrackOption:(NSDictionary *)info;
+
++ (StringeeVideoTrack *)searchTrackOnRoom:(NSDictionary *)info;
+
 @end
 

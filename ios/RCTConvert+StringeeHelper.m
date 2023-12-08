@@ -7,6 +7,7 @@
 //
 
 #import "RCTConvert+StringeeHelper.h"
+#import "RNStringeeInstanceManager.h"
 #import <React/RCTUtils.h>
 
 @implementation RCTConvert (StringeeHelper)
@@ -488,6 +489,52 @@
     NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
     NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
     return [emailTest evaluateWithObject:emailTxt];
+}
+
++ (StringeeVideoTrack *)searchTrackWithInfo:(NSDictionary *)info data:(NSDictionary<NSString *, StringeeVideoTrack *> *)data {
+    NSString *localId = [info objectForKey:@"localId"];
+    NSString *serverId = [info objectForKey:@"serverId"];
+    
+    if ([data objectForKey:serverId ] != nil) {
+        return [ data objectForKey:serverId];
+    }
+    
+    if ([data objectForKey:localId] != nil) {
+        return [data objectForKey:localId];
+    }
+    return nil;
+}
+
+
++ (StringeeVideoTrackInfo *)rnInfoDataToTrackInfo:(NSDictionary *) info {
+    NSDictionary *userPublish = [info objectForKey:@"publisher"];
+    return [[StringeeVideoTrackInfo alloc] initWithData:@{
+        @"audio" : [info objectForKey:@"audio"],
+        @"video" : [info objectForKey:@"video"],
+        @"screen" : [info objectForKey:@"screen"],
+        @"serverId" : [info objectForKey: @"id"],
+        @"userPublish" : [userPublish objectForKey: @"userId"]
+    }];
+}
++ (StringeeVideoTrackOption *)rnInfoDataToTrackOption:(NSDictionary *)info {
+    StringeeVideoTrackOption *option = [[StringeeVideoTrackOption alloc] init];
+    option.audio = [info objectForKey:@"audio"];
+    option.video = [info objectForKey:@"video"];
+    NSString *dimenstion = [info objectForKey: @"videoResolution"];
+    
+    if ([dimenstion isEqualToString:@"HD"]) {
+        option.videoDimension = StringeeVideoDimension720p;
+    }
+    if ([dimenstion isEqualToString:@"FULL_HD"]) {
+        option.videoDimension = StringeeVideoDimension1080p;
+    }
+    
+    return option;
+}
++ (StringeeVideoTrack *)searchTrackOnRoom:(NSDictionary *)info {
+    NSString *roomId = [info objectForKey: @"roomId"];
+    RNRoomWrapper *wrapper = [RNStringeeInstanceManager.instance.roomWrappers objectForKey: roomId];
+    return [self searchTrackWithInfo:info data:wrapper.videoTrack];
 }
 
 @end

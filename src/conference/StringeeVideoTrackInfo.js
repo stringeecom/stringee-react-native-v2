@@ -6,6 +6,7 @@ export default class StringeeVideoTrackInfo {
     audio: boolean;
     video: boolean;
     screen: boolean;
+    player: boolean;
     publisher: StringeeRoomUser
 
     constructor(probs) {
@@ -13,6 +14,7 @@ export default class StringeeVideoTrackInfo {
         this.audio = probs.audio;
         this.video = probs.video;
         this.screen = probs.screen;
+        this.player = probs.player;
         this.publisher = new StringeeRoomUser(probs.publisher);
     }
 }

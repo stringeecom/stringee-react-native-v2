@@ -27,7 +27,7 @@ class StringeeVideoTrack {
     this.screen = props.screen;
     this.trackType = getTrackType(props.trackType);
     this.publisher = new StringeeRoomUser(props.publisher);
-    this.roomId = props.roomId ? props.roomId : "";
+    this.roomId = "";
   }
 
   mute = (isMute: boolean): Promise<void> => new Promise((resolve, reject) => {

@@ -123,7 +123,6 @@ const stringeeRoomEvents = {
     'onRemoveVideoTrack',
     'onReceiptRoomMessage',
     'onTrackReadyToPlay',
-    'onTrackMediaStateChange'
   ],
   android: [
     'onJoinRoom',
@@ -181,6 +180,7 @@ const AudioDevice = {
 const VideoResolution = {
   normal: 'NORMAL',
   hd: 'HD',
+  fullHD : 'FULL_HD'
 };
 
 const CallType = {

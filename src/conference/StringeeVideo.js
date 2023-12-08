@@ -4,7 +4,6 @@ import {
 
 import { StringeeClient } from "../StringeeClient";
 import { StringeeError } from "../helpers/StringeeError";
-import { normalCallbackHandle } from "../helpers/StringeeHelper";
 import { StringeeVideoTrack } from "../video/StringeeVideoTrack";
 import StringeeVideoRoom from "./StringeeVideoRoom";
 import StringeeVideoTrackOption from "./StringeeVideoTrackOption";

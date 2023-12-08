@@ -31,7 +31,7 @@ class StringeeVideoTrack {
   }
 
   mute = (isMute: boolean): Promise<void> => new Promise((resolve, reject) => {
-    RNStringeeVideoTrack.mute(this isMute, normalCallbackHandle(resolve, reject, 'mute'));
+    RNStringeeVideoTrack.mute(this, isMute, normalCallbackHandle(resolve, reject, 'mute'));
   })
 
   enableVideo = (isEnable: boolean): Promise<void> => new Promise((resolve, reject) => {
@@ -44,24 +44,6 @@ class StringeeVideoTrack {
 
   release = (): Promise<void>  => new Promise((resolve, reject) => {
     RNStringeeVideoTrack.release(this, normalCallbackHandle(resolve, reject, 'release'));
-  })
-
-  snapShot = (): Promise<string> => new Promise((resolve, reject) => {
-    RNStringeeVideoTrack.snapShot(this, (status, code, message, data) => {
-      if (status) {
-        resolve(data);
-      } else { 
-        reject(new StringeeError(code, message, 'snapShot'));
-      }
-    })
-  })
-
-  sendAudioEnableNotification = (isOn: boolean): Promise<void> => new Promise((resolve, reject) => {
-    RNStringeeVideoTrack.sendAudioEnableNotification(this, isOn, normalCallbackHandle(resolve, reject, 'sendAudioEnableNotification'));
-  })
-
-  sendVideoEnableNotification = (isOn: boolean): Promise<void> => new Promise((resolve, reject) => {
-    RNStringeeVideoTrack.sendVideoEnableNotification(this, isOn, normalCallbackHandle(resolve, reject, 'sendVideoEnableNotification'));
   })
 }
 

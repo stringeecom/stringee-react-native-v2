@@ -125,6 +125,7 @@ static NSString *didHandleOnAnotherDevice   = @"didHandleOnAnotherDevice";
         }];
     }
 }
+
 - (void)didReceiveDtmfDigit:(StringeeCall *)stringeeCall callDTMF:(CallDTMF)callDTMF {
     if ([jsEvents containsObject:didReceiveDtmfDigit]) {
         NSString * digit = @"";

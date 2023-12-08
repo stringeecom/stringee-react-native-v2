@@ -442,7 +442,6 @@
 
 + (NSDictionary *)StringeeVideoTrack:(StringeeVideoTrack *)track {
     if (!track) return RCTNullIfNil(nil);
-    NSMutableArray *response = [NSMutableArray array];
     return @{
         @"localId": track.localId == nil ? @"" : track.localId,
         @"serverId": track.serverId == nil ? @"" : track.serverId,

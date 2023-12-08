@@ -39,8 +39,7 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
         clientID = clientUUID;
         _identifier = identifier;
         _videoTrack = [[NSMutableDictionary alloc] init];
-    }
-    
+    }   
     return self;
 }
 

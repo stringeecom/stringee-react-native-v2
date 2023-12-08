@@ -5,7 +5,6 @@ import {
     Platform,
   } from 'react-native';
 
-const RN
 import { StringeeClient } from "../..";
 import { stringeeRoomEvents } from "../helpers/StringeeHelper";
 import StringeeVideoRoomListener from "../listener/StringeeVideoRoomListener";
@@ -42,5 +41,4 @@ export default class StringeeVideoRoom {
         this.events.forEach(e => RNStringeeCall.removeNativeEvent(this.uuid, e));
         this.events = [];
     }
-
 }

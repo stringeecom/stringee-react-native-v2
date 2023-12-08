@@ -7,6 +7,7 @@
 #import "RNCallWrapper.h"
 #import "RNCall2Wrapper.h"
 #import "RNRoomWrapper.h"
+#import "RNStringeeVideoRoom.h"
 #import <CallKit/CallKit.h>
 
 @interface RNStringeeInstanceManager : NSObject<CXCallObserverDelegate>
@@ -16,6 +17,7 @@
 @property(strong, nonatomic) RNStringeeClient *rnClient;
 @property(strong, nonatomic) RNStringeeCall *rnCall;
 @property(strong, nonatomic) RNStringeeCall2 *rnCall2;
+@property(strong, nonatomic) RNStringeeVideoRoom *rnRoom;
 
 @property(strong, nonatomic) NSMutableDictionary *call2VideoTracks;
 

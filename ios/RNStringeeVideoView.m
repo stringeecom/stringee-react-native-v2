@@ -87,6 +87,19 @@ NSString *const videoViewName = @"STRINGEE-VIDEO-VIEW";
     }
     
     if (!hasDisplayed) {
+        StringeeVideoTrack *track = [RCTConvert searchTrackOnRoom:_videoTrack];
+        if (track != nil) {
+            StringeeVideoView *videoView = [track attachWithVideoContentMode:mode];
+            if (videoView != nil) {
+                videoView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+                [self addSubview:videoView];
+                videoView.layer.name = videoViewName;
+                hasDisplayed = true;
+            }
+        }
+    }
+    
+    if (!hasDisplayed) {
         RCTLogError(@"Stringee Error | Render StringeeVideoView Error");
     }
 }

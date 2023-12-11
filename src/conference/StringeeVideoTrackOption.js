@@ -1,5 +1,4 @@
 
-
 export default class StringeeVideoTrackOption {
     audio: boolean;
     video: boolean;

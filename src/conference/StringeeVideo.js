@@ -7,13 +7,21 @@ import { StringeeError } from "../helpers/StringeeError";
 import { StringeeVideoTrack } from "../video/StringeeVideoTrack";
 import StringeeVideoRoom from "./StringeeVideoRoom";
 import StringeeVideoTrackOption from "./StringeeVideoTrackOption";
+import StringeeVideoTrackInfo from './StringeeVideoTrackInfo';
+import { StringeeRoomUser } from '../video/StringeeRoomUser';
 
 const RNStrigneeVideo = NativeModules.RNStrigneeVideo;
 
 const joinRoom = (client: StringeeClient, roomToken: string): Promise<any> => new Promise((resolve, reject) => {
-    RNStrigneeVideo.joinRoom(client.uuid, roomToken, (status, code, message, data) => {
+    RNStrigneeVideo.joinRoom(client.uuid, roomToken, (status, code, message,room, tracks, users) => {
         if (status) {
-            resolve(data);
+            resolve(
+                {
+                    room: new StringeeVideoRoom(room),
+                    tracks: tracks.map(item => {return new StringeeVideoTrackInfo(item)}),
+                    users:  users.map(item => {return new StringeeRoomUser(item)})
+                }               
+            )
         } else {
             reject(new StringeeError(code, message, 'joinRoom'));
         }

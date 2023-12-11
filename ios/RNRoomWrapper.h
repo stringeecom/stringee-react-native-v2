@@ -7,7 +7,7 @@
 
 #import <Stringee/Stringee.h>
 
-@interface RNRoomWrapper : NSObject <StringeeVideoRoomDelegate>
+@interface RNRoomWrapper : NSObject <StringeeVideoRoomDelegate, StringeeVideoTrackDelegate>
 
 @property (nonatomic) StringeeVideoRoom *room;
 @property (strong, nonatomic) NSMutableDictionary<NSString *, StringeeVideoTrack *> *videoTrack;
@@ -15,5 +15,6 @@
 - (instancetype) initWithRoom:(StringeeVideoRoom *)room;
 - (void)setNativeEvent:(NSString *)event;
 - (void)removeNativeEvent:(NSString *)event;
+- (void) pushTrack:(StringeeVideoTrack *)track
 
 @end

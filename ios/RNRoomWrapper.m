@@ -23,9 +23,21 @@
         room.delegate = self;
         jsEvent = [[NSMutableSet alloc] init];
         rnRoom = RNStringeeInstanceManager.instance.rnRoom;
+        _videoTrack = [[NSMutableDictionary alloc] init];
         
     }
     return self;
+}
+
+- (void) pushTrack:(StringeeVideoTrack *)track {
+    if ([RCTConvert isValid:track.serverId]) {
+        [_videoTrack setObject:track forKey:track.serverId];
+        return;
+    }
+    if ([RCTConvert isValid:track.localId]) {
+        [_videoTrack setObject:track forKey:track.localId];
+        return;
+    }
 }
 
 - (void)removeNativeEvent:(NSString *)event {
@@ -83,5 +95,14 @@
     }
 }
 
+
+- (void)ready:(StringeeVideoTrack *)track { 
+    if ([jsEvent containsObject:onTrackReadyToPlay]) {
+        [rnRoom sendEventWithName:onTrackReadyToPlay body:@{
+            @"roomId"   : RCTNullIfNil(_room.roomId),
+            @"track"     : [RCTConvert StringeeVideoTrack:track]
+        }];
+    }
+}
 
 @end

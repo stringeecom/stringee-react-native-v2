@@ -531,6 +531,7 @@
     
     return option;
 }
+
 + (StringeeVideoTrack *)searchTrackOnRoom:(NSDictionary *)info {
     NSString *roomId = [info objectForKey: @"roomId"];
     RNRoomWrapper *wrapper = [RNStringeeInstanceManager.instance.roomWrappers objectForKey: roomId];

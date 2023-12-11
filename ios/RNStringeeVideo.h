@@ -1,12 +1,12 @@
 //
 //  RNStringeeVideo.h
-//  Pods
+//  RNStringee
 //
 //  Created by Hiệp Hoàng on 11/12/2023.
 //
 
-#ifndef RNStringeeVideo_h
-#define RNStringeeVideo_h
+#import <React/RCTBridgeModule.h>
 
+@interface RNStringeeVideo : NSObject<RCTBridgeModule>
 
-#endif /* RNStringeeVideo_h */
+@end

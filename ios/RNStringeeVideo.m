@@ -9,6 +9,7 @@
 #import "RNStringeeVideo.h"
 #import "RNStringeeInstanceManager.h"
 #import "RCTConvert+StringeeHelper.h"
+#import "React/RCTLog.h"
 
 @implementation RNStringeeVideo
 
@@ -17,7 +18,7 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_METHOD(joinRoom:(NSString *)clientUUID roomToken:(NSString *)roomToken callback:(RCTResponseSenderBlock)callback) {
     
     StringeeClient *client = [RNStringeeInstanceManager.instance.clientWrappers objectForKey:clientUUID].client;
-    if (client == nil || client.hasConnected == false) {
+    if (client == nil ) {
         callback(@[
             @(false),
             @(-1),
@@ -25,6 +26,7 @@ RCT_EXPORT_METHOD(joinRoom:(NSString *)clientUUID roomToken:(NSString *)roomToke
         ]);
         return;
     }
+    NSLog(@"client: %@ -  %@ - %d",clientUUID, client.userId, client.hasConnected);
     
     if (![RCTConvert isValid:roomToken]) {
         callback(@[

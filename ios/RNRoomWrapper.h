@@ -15,6 +15,6 @@
 - (instancetype) initWithRoom:(StringeeVideoRoom *)room;
 - (void)setNativeEvent:(NSString *)event;
 - (void)removeNativeEvent:(NSString *)event;
-- (void) pushTrack:(StringeeVideoTrack *)track
+- (void) pushTrack:(StringeeVideoTrack *)track;
 
 @end

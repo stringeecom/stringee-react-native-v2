@@ -26,7 +26,7 @@ export default class StringeeVideoRoom {
         this.subscriptions = [];
         this.eventEmitter = new NativeEventEmitter(RNStringeeVideoRoom);
     }
-    setListener = (listener: StringeeVideoRoomListener) {
+    setListener = (listener: StringeeVideoRoomListener) => {
         if (!listener) { return }
         this.removeEventListener();
         const supportEvents =  Platform.OS === 'ios' ? stringeeRoomEvents.ios : stringeeRoomEvents.android;

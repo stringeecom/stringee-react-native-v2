@@ -30,6 +30,18 @@ import {LiveChatTicketParam} from './src/helpers/LiveChatTicketParam';
 import {StringeeError} from './src/helpers/StringeeError';
 import {StringeeRoomUser} from './src/video/StringeeRoomUser';
 import {StringeeVideoTrack} from './src/video/StringeeVideoTrack';
+//conference
+import * as StringeeVideo from './src/conference/StringeeVideo'
+import StringeeVideoTrackInfo from 'stringee-react-native-v2/src/conference/StringeeVideoTrackInfo';
+import StringeeVideoTrackOption from 'stringee-react-native-v2/src/conference/StringeeVideoTrackOption';
+import StringeeVideoRoom from 'stringee-react-native-v2/src/conference/StringeeVideoRoom';
+import StringeeVideoRoomListener from './src/listener/StringeeVideoRoomListener'
+export {
+  StringeeVideo,
+  StringeeVideoTrackInfo,
+  StringeeVideoTrackOption,
+  StringeeVideoRoom
+}
 
 export {
   StringeeClient,
@@ -47,6 +59,7 @@ export {
   StringeeClientListener,
   StringeeCallListener,
   StringeeCall2Listener,
+  StringeeVideoRoomListener,
   SignalingState,
   MediaState,
   AudioDevice,
@@ -61,5 +74,5 @@ export {
   StringeeError,
   StringeeRoomUser,
   StringeeVideoTrack,
-  TrackType,
+  TrackType
 };

@@ -379,7 +379,7 @@
     if (!room) return RCTNullIfNil(nil);
     
     return @{
-        @"id" : room.roomId,
+        @"id" : RCTNullIfNil(room.roomId),
         @"recored" : @(room.record)
     };
 }

@@ -1,4 +1,4 @@
-import {EmitterSubscription, NativeEventEmitter, Platform} from 'react-native';
+import {EmitterSubscription, NativeEventEmitter, NativeModules, Platform} from 'react-native';
 import {
   CallType,
   clientEvents,

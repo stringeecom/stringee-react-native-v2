@@ -1,6 +1,9 @@
 import {
+    EmitterSubscription,
+    NativeEventEmitter,
     NativeModules,
-} from 'react-native';
+    Platform,
+  } from 'react-native';
 
 import { StringeeClient } from "../StringeeClient";
 import { StringeeError } from "../helpers/StringeeError";
@@ -10,9 +13,9 @@ import StringeeVideoTrackOption from "./StringeeVideoTrackOption";
 import StringeeVideoTrackInfo from './StringeeVideoTrackInfo';
 import { StringeeRoomUser } from '../video/StringeeRoomUser';
 
-const RNStrigneeVideo = NativeModules.RNStrigneeVideo;
+const RNStrigneeVideo = NativeModules.RNStringeeVideo;
 
-const joinRoom = (client: StringeeClient, roomToken: string): Promise<any> => new Promise((resolve, reject) => {
+export const joinRoom = (client: StringeeClient, roomToken: string): Promise<any> => new Promise((resolve, reject) => {
     RNStrigneeVideo.joinRoom(client.uuid, roomToken, (status, code, message,room, tracks, users) => {
         if (status) {
             resolve(
@@ -28,8 +31,8 @@ const joinRoom = (client: StringeeClient, roomToken: string): Promise<any> => ne
     })
 })
 
-const createLocalVideoTrack = (client: StringeeClient,room: StringeeVideoRoom , option: StringeeVideoTrackOption): Promise<StringeeVideoTrack> => new Promise((resolve, reject) => {
-    RNStrigneeVideo.createLocalVideoTrack(client.uuid, room.id, option, (status, code, message, data) => {
+export const createLocalVideoTrack = (room: StringeeVideoRoom , option: StringeeVideoTrackOption): Promise<StringeeVideoTrack> => new Promise((resolve, reject) => {
+    RNStrigneeVideo.createLocalVideoTrack(room.client.uuid, room.id, option, (status, code, message, data) => {
         if (status) {
             resolve(new StringeeVideoTrack(data));
         } else {
@@ -38,12 +41,6 @@ const createLocalVideoTrack = (client: StringeeClient,room: StringeeVideoRoom , 
     })
 })
 
-const releaseRoom = (videoRoom: StringeeVideoRoom): void => {
+export const releaseRoom = (videoRoom: StringeeVideoRoom): void => {
     RNStrigneeVideo.releaseRoom(videoRoom.id);
-}
-
-export default {
-    joinRoom,
-    createLocalVideoTrack,
-    releaseRoom
 }

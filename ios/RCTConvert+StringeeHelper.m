@@ -444,15 +444,15 @@
 + (NSDictionary *)StringeeVideoTrack:(StringeeVideoTrack *)track {
     if (!track) return RCTNullIfNil(nil);
     return @{
-        @"localId": track.localId == nil ? @"" : track.localId,
-        @"serverId": track.serverId == nil ? @"" : track.serverId,
+        @"localId": RCTNullIfNil(track.localId),
+        @"serverId": RCTNullIfNil(track.localId),
         @"isLocal": @(track.isLocal),
         @"audio": @(track.audio),
         @"video": @(track.video),
         @"screen": @(track.screen),
-        @"trackType": @(track.trackType),
+        @"trackType": @(track.trackType == StringeeTrackTypeCamera ? 0 : track.trackType == StringeeTrackTypePlayer ? 1 : 2),
         @"publisher": @{
-            @"userId" : track.publisher.userId
+            @"userId" : RCTNullIfNil(track.publisher.userId)
         }
     };
 }

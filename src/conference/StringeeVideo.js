@@ -20,7 +20,7 @@ export const joinRoom = (client: StringeeClient, roomToken: string): Promise<any
         if (status) {
             resolve(
                 {
-                    room: new StringeeVideoRoom(room),
+                    room: new StringeeVideoRoom(client, room),
                     tracks: tracks.map(item => {return new StringeeVideoTrackInfo(item)}),
                     users:  users.map(item => {return new StringeeRoomUser(item)})
                 }               
@@ -31,15 +31,19 @@ export const joinRoom = (client: StringeeClient, roomToken: string): Promise<any
     })
 })
 
-export const createLocalVideoTrack = (room: StringeeVideoRoom , option: StringeeVideoTrackOption): Promise<StringeeVideoTrack> => new Promise((resolve, reject) => {
-    RNStrigneeVideo.createLocalVideoTrack(room.client.uuid, room.id, option, (status, code, message, data) => {
-        if (status) {
-            resolve(new StringeeVideoTrack(data));
-        } else {
-            reject(new StringeeError(code, message, 'createLocalVideoTrack'));
-        }
+export const createLocalVideoTrack = (room: StringeeVideoRoom , option: StringeeVideoTrackOption): Promise<StringeeVideoTrack> => { 
+    return new Promise((resolve, reject) => {
+        RNStrigneeVideo.createLocalVideoTrack(room.client.uuid, room.id, option, (status, code, message, data) => {
+            if (status) {
+                let track = new StringeeVideoTrack(data);
+                track.roomId = room.roomId;
+                resolve(track);
+            } else {
+                reject(new StringeeError(code, message, 'createLocalVideoTrack'));
+            }
+        }) 
     })
-})
+}
 
 export const releaseRoom = (videoRoom: StringeeVideoRoom): void => {
     RNStrigneeVideo.releaseRoom(videoRoom.id);

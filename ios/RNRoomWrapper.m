@@ -53,7 +53,9 @@
     if ([jsEvent containsObject:onAddVideoTrack]) {
         [rnRoom sendEventWithName:onAddVideoTrack body:@{
             @"roomId"   : RCTNullIfNil(_room.roomId),
-            @"trackInfo": [RCTConvert StringeeVideoTrackInfo:trackInfo]
+            @"data"     : @{
+                @"trackInfo": [RCTConvert StringeeVideoTrackInfo:trackInfo]
+            }
         }];
     }
 }
@@ -62,7 +64,9 @@
     if ([jsEvent containsObject:onJoinRoom]) {
         [rnRoom sendEventWithName:onJoinRoom body:@{
             @"roomId"   : RCTNullIfNil(_room.roomId),
-            @"userInfo" : [RCTConvert StringeeRoomUserInfo:userInfo]
+            @"data"     : @{
+                @"userInfo" : [RCTConvert StringeeRoomUserInfo:userInfo]
+            }
         }];
     }
 }
@@ -71,7 +75,9 @@
     if ([jsEvent containsObject:onLeaveRoom]) {
         [rnRoom sendEventWithName:onLeaveRoom body:@{
             @"roomId"   : RCTNullIfNil(_room.roomId),
-            @"userInfo" : [RCTConvert StringeeRoomUserInfo:userInfo]
+            @"data"     : @{
+                @"userInfo" : [RCTConvert StringeeRoomUserInfo:userInfo]
+            }
         }];
     }
 }
@@ -80,8 +86,10 @@
     if ([jsEvent containsObject:onReceiptRoomMessage]) {
         [rnRoom sendEventWithName:onReceiptRoomMessage body:@{
             @"roomId"   : RCTNullIfNil(_room.roomId),
-            @"fromUser" : [RCTConvert StringeeRoomUserInfo:fromUser],
-            @"msg"      : msg
+            @"data"     : @{
+                @"fromUser" : [RCTConvert StringeeRoomUserInfo:fromUser],
+                @"msg"      : msg
+            }
         }];
     }
 }
@@ -90,17 +98,23 @@
     if ([jsEvent containsObject:onRemoveVideoTrack]) {
         [rnRoom sendEventWithName:onRemoveVideoTrack body:@{
             @"roomId"   : RCTNullIfNil(_room.roomId),
-            @"trackInfo": [RCTConvert StringeeVideoTrackInfo:trackInfo]
+            @"data"     : @{
+                @"trackInfo": [RCTConvert StringeeVideoTrackInfo:trackInfo]
+            }
         }];
     }
 }
 
 
 - (void)ready:(StringeeVideoTrack *)track { 
+    NSLog(@"track ready");
     if ([jsEvent containsObject:onTrackReadyToPlay]) {
+        NSLog(@"send track ready");
         [rnRoom sendEventWithName:onTrackReadyToPlay body:@{
             @"roomId"   : RCTNullIfNil(_room.roomId),
-            @"track"     : [RCTConvert StringeeVideoTrack:track]
+            @"data"     : @{
+                @"track"     : [RCTConvert StringeeVideoTrack:track]
+            }
         }];
     }
 }

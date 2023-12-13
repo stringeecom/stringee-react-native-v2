@@ -1,8 +1,5 @@
 import {
-    EmitterSubscription,
-    NativeEventEmitter,
     NativeModules,
-    Platform,
   } from 'react-native';
 
 import { StringeeClient } from "../StringeeClient";
@@ -31,19 +28,20 @@ export const joinRoom = (client: StringeeClient, roomToken: string): Promise<any
     })
 })
 
-export const createLocalVideoTrack = (room: StringeeVideoRoom , option: StringeeVideoTrackOption): Promise<StringeeVideoTrack> => { 
+export const createLocalVideoTrack = (room, option) => {
     return new Promise((resolve, reject) => {
         RNStrigneeVideo.createLocalVideoTrack(room.client.uuid, room.id, option, (status, code, message, data) => {
             if (status) {
-                let track = new StringeeVideoTrack(data);
-                track.roomId = room.roomId;
-                resolve(track);
+                let track = new StringeeVideoTrack(data)
+                track.roomId = room.id;
+                return resolve(track);
             } else {
-                reject(new StringeeError(code, message, 'createLocalVideoTrack'));
+                return reject(new StringeeError(code, message, 'createLocalVideoTrack'));
             }
-        }) 
+        })
     })
 }
+
 
 export const releaseRoom = (videoRoom: StringeeVideoRoom): void => {
     RNStrigneeVideo.releaseRoom(videoRoom.id);

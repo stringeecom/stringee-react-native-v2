@@ -27,37 +27,52 @@ export default class StringeeVideoRoom {
         this.eventEmitter = new NativeEventEmitter(RNStringeeVideoRoom);
     }
     setListener = (listener: StringeeVideoRoomListener) => {
+        console.log('setListener');
         if (!listener) { return }
         this.removeEventListener();
         const supportEvents =  Platform.OS === 'ios' ? stringeeRoomEvents.ios : stringeeRoomEvents.android;
         supportEvents.forEach(event => {
-            if (listener[event]) {
-                let emitterSubscription: EmitterSubscription = this.eventEmitter.addListener(
-                    event,
-                    ({roomId, data}) => {
-                        if (roomId !== this.id) { return }
-                        switch(event) {
-                            case 'onJoinRoom':
+            console.log(event);
+            let emitterSubscription: EmitterSubscription = this.eventEmitter.addListener(
+                event,
+                ({roomId, data}) => {
+                    console.log("native event: ". roomId, data)
+                    if (roomId !== this.id) { return }
+                    switch(event) {
+                        case 'onJoinRoom':
+                            if (listener.onJoinRoom) {
                                 listener.onJoinRoom(this, new StringeeRoomUser(data.userInfo));
-                                break;
-                            case 'onLeaveRoom':
+                            }
+                            break;
+                        case 'onLeaveRoom':
+                            if (listener.onLeaveRoom) {
                                 listener.onLeaveRoom(this, new StringeeRoomUser(data.userInfo));
-                                break;
-                            case 'onAddVideoTrack':
+                            }
+                            break;
+                        case 'onAddVideoTrack':
+                            if (listener.onAddVideoTrack) {
                                 listener.onAddVideoTrack(this, new StringeeVideoTrackInfo(data.trackInfo));
-                                break;
-                            case 'onRemoveVideoTrack':
+                            }
+                            break;
+                        case 'onRemoveVideoTrack':
+                            if (listener.onRemoveVideoTrack) {
                                 listener.onRemoveVideoTrack(this, new StringeeVideoTrackInfo(data.trackInfo));
-                                break;
-                            case 'onReceiptRoomMessage':
+                            }
+                            break;
+                        case 'onReceiptRoomMessage':
+                            if (listener.onReceiptRoomMessage) {
                                 listener.onReceiptRoomMessage(this, new StringeeRoomUser(data.fromUser), data.msg);
-                                break;
-                            case 'onTrackReadyToPlay':
-                                let track = new StringeeVideoTrack(data.track);
-                                track.roomId = this.id;
+                            }
+                            break;
+                        case 'onTrackReadyToPlay':
+                            let track = new StringeeVideoTrack(data.track);
+                            track.roomId = this.id;
+                            if (listener.onTrackReadyToPlay) {
                                 listener.onTrackReadyToPlay(this, track)
-                                break;
-                            case 'onTrackMediaStateChange':
+                            }
+                            break;
+                        case 'onTrackMediaStateChange':
+                            if (listener.onTrackMediaStateChange) {
                                 listener.onTrackMediaStateChange(
                                     this,
                                     data.mediaType === 1 ? 'audio' : 'video',
@@ -65,17 +80,18 @@ export default class StringeeVideoRoom {
                                     data.from,
                                     new StringeeVideoTrackInfo(data.trackInfo)
                                 )
-                                break;
-                            default:
-                                break;
-                        }
-                        this.subscriptions.push(emitterSubscription);
-                        this.events.push(event);
-                        RNStringeeVideoRoom.setNativeEvent(this.id, event);
-
+                            }
+                            break;
+                        default:
+                            break;
                     }
-                )
-            }
+                    
+                }
+            )
+            this.subscriptions.push(emitterSubscription);
+            this.events.push(event);
+            RNStringeeVideoRoom.setNativeEvent(this.id, event);
+            console.log('register event', event)
         })
 
     }
@@ -102,7 +118,7 @@ export default class StringeeVideoRoom {
         RNStringeeVideoRoom.subscribe(this.id, trackInfo, option, (status, code, message, track) => {
             if (status) {
                 let response = new StringeeVideoTrack(track);
-                response.roomId = roomId;
+                response.roomId = this.id;
                 resolve(response);
             } else {
                 reject(new StringeeError(code, message, 'subscribe'));

@@ -23,7 +23,6 @@
         _clientWrappers = [[NSMutableDictionary alloc] init];
         _callWrappers = [[NSMutableDictionary alloc] init];
         _call2Wrappers = [[NSMutableDictionary alloc] init];
-        _roomWrappers = [[NSMutableDictionary alloc] init];
         uuids = [[NSMutableDictionary alloc] init];
         callObs = [[CXCallObserver alloc] init];
         [callObs setDelegate:self queue:nil];

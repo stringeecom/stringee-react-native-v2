@@ -100,7 +100,7 @@ NSString *const videoViewName = @"STRINGEE-VIDEO-VIEW";
     }
     
     if (!hasDisplayed) {
-        RCTLogError(@"Stringee Error | Render StringeeVideoView Error with track %@", _videoTrack);
+        RCTLogError(@"Stringee Error | Render StringeeVideoView Error");
     }
 }
 

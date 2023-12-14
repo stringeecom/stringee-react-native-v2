@@ -22,22 +22,17 @@ RCT_EXPORT_METHOD(joinRoom:(NSString *)clientUUID roomToken:(NSString *)roomToke
         callback(@[
             @(false),
             @(-1),
-            @"Client is not connected",
-            RCTNullIfNil(nil),
-            RCTNullIfNil(nil),
-            RCTNullIfNil(nil)
+            @"Client is not connected"
         ]);
         return;
     }
+    NSLog(@"client: %@ -  %@ - %d",clientUUID, client.userId, client.hasConnected);
     
     if (![RCTConvert isValid:roomToken]) {
         callback(@[
             @(false),
             @(-2),
-            @"room token cant not be null or empty",
-            RCTNullIfNil(nil),
-            RCTNullIfNil(nil),
-            RCTNullIfNil(nil)
+            @"room token cant not be null or empty"
         ]);
         return;
     }
@@ -46,7 +41,6 @@ RCT_EXPORT_METHOD(joinRoom:(NSString *)clientUUID roomToken:(NSString *)roomToke
         if ([RCTConvert isValid:room.roomId]) {
             RNRoomWrapper *wrapper = [[RNRoomWrapper alloc] initWithRoom:room];
             [RNStringeeInstanceManager.instance.roomWrappers setObject:wrapper forKey:room.roomId];
-            NSLog(@"join room ok with id: %@", room.roomId);
         }
             callback(@[
                 @(status),
@@ -65,20 +59,17 @@ RCT_EXPORT_METHOD(createLocalVideoTrack:(NSString *)clientUUID roomId:(NSString 
         callback(@[
             @(false),
             @(-1),
-            @"Client is not connected",
-            RCTNullIfNil(nil)
+            @"Client is not connected"
         ]);
         return;
     }
     RNRoomWrapper *wrapper = [RNStringeeInstanceManager.instance.roomWrappers objectForKey:roomId];
-    NSLog(@"get room with id: %@", roomId);
-
+    
     if (wrapper == nil) {
         callback(@[
             @(false),
             @(-1),
-            @"Room is not found",
-            RCTNullIfNil(nil)
+            @"Room is not found"
         ]);
         return;
     }

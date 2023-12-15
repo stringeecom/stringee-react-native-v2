@@ -10,6 +10,7 @@
 @interface RNRoomWrapper : NSObject <StringeeVideoRoomDelegate, StringeeVideoTrackDelegate>
 
 @property (nonatomic) StringeeVideoRoom *room;
+@property (nonatomic) NSString *uuid;
 @property (strong, nonatomic) NSMutableDictionary<NSString *, StringeeVideoTrack *> *videoTrack;
 
 - (instancetype) initWithRoom:(StringeeVideoRoom *)room;

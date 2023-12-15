@@ -18,84 +18,91 @@ const NSString *faildMessage = @"Faild";
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(mute:(NSDictionary *)rnTrack isMute:(NSNumber *)isMute callback:(RCTResponseSenderBlock)callback) {
-    StringeeVideoTrack *track = [RCTConvert searchTrackOnRoom:rnTrack];
-    if (track == nil) {
+RCT_EXPORT_METHOD(mute:(NSDictionary *)rnTrack isMute:(nonnull NSNumber *)isMute callback:(RCTResponseSenderBlock)callback) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        StringeeVideoTrack *track = [RCTConvert searchTrackOnRoom:rnTrack];
+        if (track == nil) {
+            callback(@[
+                @(false),
+                @(-1),
+                @"Track is not found"
+            ]);
+        }
+        BOOL response = [track mute:[isMute isEqualToNumber:@(1)]];
         callback(@[
-            @(false),
-            @(-1),
-            @"Track is not found"
+            @(response),
+            @(response ? 1 : -1),
+            response ? successMessage : faildMessage
         ]);
-    }
-    BOOL response = [track mute:[isMute isEqualToNumber:@(1)]];
-    callback(@[
-        @(response),
-        @(response ? 1 : -1),
-        response ? successMessage : faildMessage
-    ]);
+    });
 }
 
-RCT_EXPORT_METHOD(enableVideo:(NSDictionary *)rnTrack isOn:(NSNumber *)isOn callback:(RCTResponseSenderBlock)callback) {
-    StringeeVideoTrack *track = [RCTConvert searchTrackOnRoom:rnTrack];
-    if (track == nil) {
+RCT_EXPORT_METHOD(enableVideo:(NSDictionary *)rnTrack isOn:(nonnull NSNumber *)isOn callback:(RCTResponseSenderBlock)callback) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        StringeeVideoTrack *track = [RCTConvert searchTrackOnRoom:rnTrack];
+        if (track == nil) {
+            callback(@[
+                @(false),
+                @(-1),
+                @"Track is not found"
+            ]);
+        }
+        BOOL response = [track enableLocalVideo:[isOn isEqualToNumber:@(1)]];
         callback(@[
-            @(false),
-            @(-1),
-            @"Track is not found"
+            @(response),
+            @(response ? 1 : -1),
+            response ? successMessage : faildMessage
         ]);
-    }
-    BOOL response = [track enableLocalVideo:[isOn isEqualToNumber:@(1)]];
-    callback(@[
-        @(response),
-        @(response ? 1 : -1),
-        response ? successMessage : faildMessage
-    ]);
+    });
 }
 
-RCT_EXPORT_METHOD(switchCamera:(NSDictionary *)rnTrack isOn:(NSNumber *)isOn callback:(RCTResponseSenderBlock)callback) {
-    StringeeVideoTrack *track = [RCTConvert searchTrackOnRoom:rnTrack];
-    if (track == nil) {
+RCT_EXPORT_METHOD(switchCamera:(NSDictionary *)rnTrack callback:(RCTResponseSenderBlock)callback) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        StringeeVideoTrack *track = [RCTConvert searchTrackOnRoom:rnTrack];
+        if (track == nil) {
+            callback(@[
+                @(false),
+                @(-1),
+                @"Track is not found"
+            ]);
+        }
+        BOOL response = [track switchCamera];
         callback(@[
-            @(false),
-            @(-1),
-            @"Track is not found"
+            @(response),
+            @(response ? 1 : -1),
+            response ? successMessage : faildMessage
         ]);
-    }
-    BOOL response = [track switchCamera];
-    callback(@[
-        @(response),
-        @(response ? 1 : -1),
-        response ? successMessage : faildMessage
-    ]);
+    });
 }
 
 RCT_EXPORT_METHOD(release:(NSDictionary *)rnTrack callback:(RCTResponseSenderBlock)callback) {
-    NSString *roomId = rnTrack[@"roomId"];
-    if ([RCTConvert isValid:roomId]) {
-        RNRoomWrapper *wrapper = [RNStringeeInstanceManager.instance.roomWrappers objectForKey: roomId];
-        NSString *localId = rnTrack[@"localId"];
-        NSString *serverId = rnTrack[@"serverId"];
-        
-        if ([RCTConvert isValid:localId]) {
-            [wrapper.videoTrack removeObjectForKey:localId];
-        }
-        if ([RCTConvert isValid:serverId]) {
-            [wrapper.videoTrack removeObjectForKey:serverId];
-        }
-        callback(@[
-            @(YES),
-            @(0),
-            successMessage
-        ]);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *roomId = rnTrack[@"roomId"];
+        if ([RCTConvert isValid:roomId]) {
+            RNRoomWrapper *wrapper = [RNStringeeInstanceManager.instance.roomWrappers objectForKey: roomId];
+            NSString *localId = rnTrack[@"localId"];
+            NSString *serverId = rnTrack[@"serverId"];
+            
+            if ([RCTConvert isValid:localId]) {
+                [wrapper.videoTrack removeObjectForKey:localId];
+            }
+            if ([RCTConvert isValid:serverId]) {
+                [wrapper.videoTrack removeObjectForKey:serverId];
+            }
+            callback(@[
+                @(YES),
+                @(0),
+                successMessage
+            ]);
 
-    }else {
-        callback(@[
-            @(false),
-            @(-1),
-            @"Only support release track on room"
-        ]);
-    }
-    
+        }else {
+            callback(@[
+                @(false),
+                @(-1),
+                @"Only support release track on room"
+            ]);
+        }
+    });
 }
 
 @end

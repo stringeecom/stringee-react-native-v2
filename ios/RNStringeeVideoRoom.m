@@ -84,6 +84,36 @@ RCT_EXPORT_METHOD(subscribe:(NSString *)roomId trackInfo:(NSDictionary *)trackIn
     }];
 }
 
+RCT_EXPORT_METHOD(unsubscribe:(NSString *)roomId track:(NSDictionary *)track callback:(RCTResponseSenderBlock)callback) {
+    RNRoomWrapper *wrapper = [self searchRoomWithId:roomId];
+    if (wrapper == nil) {
+        callback(@[
+            @(false),
+            @(-1),
+            @"Room is not found"
+        ]);
+        return;
+    }
+    StringeeVideoTrack *rnTrack = [RCTConvert searchTrackOnRoom:track];
+    if (rnTrack == nil) {
+        callback(@[
+            @(false),
+            @(-1),
+            @"Track is not found"
+        ]);
+    }
+    [wrapper.room unsubscribe:rnTrack completion:^(BOOL status, int code, NSString *message) {
+        callback(@[
+            @(status),
+            @(code),
+            RCTNullIfNil(message)
+        ]);
+    }];
+    
+}
+
+
+
 RCT_EXPORT_METHOD(publish: (NSString *)roomId track:(NSDictionary *)track callback:(RCTResponseSenderBlock)callback) {
     RNRoomWrapper *wrapper = [self searchRoomWithId:roomId];
     if (wrapper == nil) {
@@ -136,7 +166,7 @@ RCT_EXPORT_METHOD(unpublish: (NSString *)roomId track:(NSDictionary *)track call
     }];
 }
 
-RCT_EXPORT_METHOD(leave:(NSString *)roomId isLeaveAll:(NSNumber *)isLeaveAll callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(leave:(NSString *)roomId isLeaveAll:(nonnull NSNumber *)isLeaveAll callback:(RCTResponseSenderBlock)callback) {
     RNRoomWrapper *wrapper = [self searchRoomWithId:roomId];
     if (wrapper == nil) {
         callback(@[
@@ -153,6 +183,26 @@ RCT_EXPORT_METHOD(leave:(NSString *)roomId isLeaveAll:(NSNumber *)isLeaveAll cal
             RCTNullIfNil(message),
         ]);
     }];
+}
+
+RCT_EXPORT_METHOD(setSpeaker:(NSString *)roomId isOn:(nonnull NSNumber *)isOn callback:(RCTResponseSenderBlock)callback) {
+    RNRoomWrapper *wrapper = [self searchRoomWithId:roomId];
+    if (wrapper == nil) {
+        callback(@[
+            @(false),
+            @(-1),
+            @"Room is not found"
+        ]);
+    }
+    
+    BOOL response = [StringeeAudioManager.instance setLoudspeaker:[isOn isEqual: @(1)]];
+    
+    callback(@[
+        @(response),
+        @(response ? 1 : -1),
+        response ? @"Success" : @"Fail"
+    ]);
+    
 }
 
 RCT_EXPORT_METHOD(sendMessage:(NSString *)roomId msg:(NSDictionary *)msg callback:(RCTResponseSenderBlock)callback) {

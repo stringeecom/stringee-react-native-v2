@@ -375,12 +375,13 @@
     return response;
 }
 
-+ (NSDictionary *)StringeeVideoRoom:(StringeeVideoRoom *)room {
++ (NSDictionary *)StringeeVideoRoom:(StringeeVideoRoom *)room roomUUID:(NSString *)roomUUID {
     if (!room) return RCTNullIfNil(nil);
     
     return @{
         @"id" : RCTNullIfNil(room.roomId),
-        @"recored" : @(room.record)
+        @"recored" : @(room.record),
+        @"uuid" : roomUUID,
     };
 }
 
@@ -533,7 +534,7 @@
 }
 
 + (StringeeVideoTrack *)searchTrackOnRoom:(NSDictionary *)info {
-    NSString *roomId = [info objectForKey: @"roomId"];
+    NSString *roomId = [info objectForKey: @"roomUUID"];
     RNRoomWrapper *wrapper = [RNStringeeInstanceManager.instance.roomWrappers objectForKey: roomId];
     return [self searchTrackWithInfo:info data:wrapper.videoTrack];
 }

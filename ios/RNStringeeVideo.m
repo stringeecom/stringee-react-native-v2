@@ -38,18 +38,16 @@ RCT_EXPORT_METHOD(joinRoom:(NSString *)clientUUID roomToken:(NSString *)roomToke
     }
     
     [StringeeVideo joinRoom:client roomToken:roomToken completion:^(BOOL status, int code, NSString * message, StringeeVideoRoom * room, NSArray<StringeeVideoTrackInfo *> * tracks, NSArray<StringeeRoomUserInfo *> * users) {
-        if ([RCTConvert isValid:room.roomId]) {
-            RNRoomWrapper *wrapper = [[RNRoomWrapper alloc] initWithRoom:room];
-            [RNStringeeInstanceManager.instance.roomWrappers setObject:wrapper forKey:room.roomId];
-        }
-            callback(@[
-                @(status),
-                @(code),
-                RCTNullIfNil(message),
-                [RCTConvert StringeeVideoRoom:room],
-                [RCTConvert StringeeVideoTrackInfos:tracks],
-                [RCTConvert StringeeRoomUserInfos:users]
-            ]);
+        RNRoomWrapper *wrapper = [[RNRoomWrapper alloc] initWithRoom:room];
+        callback(@[
+            @(status),
+            @(code),
+            RCTNullIfNil(message),
+            [RCTConvert StringeeVideoRoom:room roomUUID: wrapper.uuid],
+            [RCTConvert StringeeVideoTrackInfos:tracks],
+            [RCTConvert StringeeRoomUserInfos:users]
+        ]);
+            
     }];
 }
 

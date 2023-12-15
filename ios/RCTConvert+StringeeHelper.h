@@ -28,7 +28,7 @@
 
 + (NSDictionary *)StringeeChatRequest:(StringeeChatRequest *)request;
 
-+ (NSDictionary *)StringeeVideoRoom:(StringeeVideoRoom *)room;
++ (NSDictionary *)StringeeVideoRoom:(StringeeVideoRoom *)room roomUUID:(NSString *)roomUUID;
 
 + (NSDictionary *)StringeeVideoTrackInfo:(StringeeVideoTrackInfo *)trackInfo;
 

@@ -42,7 +42,3 @@ export const createLocalVideoTrack = (room: StringeeVideoRoom , option: Stringee
         }
     })
 })
-
-export const releaseRoom = (videoRoom: StringeeVideoRoom): void => {
-    RNStrigneeVideo.releaseRoom(videoRoom.uuid);
-}

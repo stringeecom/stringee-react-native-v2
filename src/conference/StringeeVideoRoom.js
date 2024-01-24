@@ -117,7 +117,16 @@ export default class StringeeVideoRoom {
     })
 
     leave = (isLeaveAll: boolean): Promise<void> => new Promise((resolve, reject) => {
-        RNStringeeVideoRoom.leave(this.uuid,isLeaveAll, normalCallbackHandle(resolve, reject, 'leave'));
+        RNStringeeVideoRoom.leave(this.uuid,isLeaveAll, (status, code, message) => {
+            if (status) {
+                NativeModules.RNStrigneeVideo.releaseRoom(videoRoom.uuid);
+            }
+            if (status) {
+                resolve();
+            } else {
+                reject(new StringeeError(code, message, 'leave'));
+            }
+        });
     })
 
     sendMessage = (msg: any): Promise<void> => new Promise((resolve, reject) => {

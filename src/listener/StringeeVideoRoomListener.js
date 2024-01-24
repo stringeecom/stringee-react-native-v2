@@ -1,6 +1,7 @@
-import { StringeeVideoRoom, StringeeVideoTrackInfo } from '../conference'
 import { StringeeRoomUser } from '../video/StringeeRoomUser'
 import { StringeeVideoTrack } from '../video/StringeeVideoTrack';
+import StringeeVideoRoom from "../conference/StringeeVideoRoom";
+import StringeeVideoTrackInfo from "../conference/StringeeVideoTrackInfo";
 
 export default class StringeeVideoRoomListener {
     onJoinRoom: (room: StringeeVideoRoom, user: StringeeRoomUser) => void;

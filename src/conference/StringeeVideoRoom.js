@@ -109,7 +109,7 @@ export default class StringeeVideoRoom {
             } else {
                 reject(new StringeeError(code, message, 'subscribe'));
             }
-        }); 
+        });
     })
 
     unsubscribe = (track: StringeeVideoTrack): Promise<void> => new Promise((resolve, reject) => {
@@ -119,7 +119,7 @@ export default class StringeeVideoRoom {
     leave = (isLeaveAll: boolean): Promise<void> => new Promise((resolve, reject) => {
         RNStringeeVideoRoom.leave(this.uuid,isLeaveAll, (status, code, message) => {
             if (status) {
-                NativeModules.RNStrigneeVideo.releaseRoom(videoRoom.uuid);
+                NativeModules.RNStringeeVideo.releaseRoom(this.uuid);
             }
             if (status) {
                 resolve();
@@ -131,5 +131,9 @@ export default class StringeeVideoRoom {
 
     sendMessage = (msg: any): Promise<void> => new Promise((resolve, reject) => {
         RNStringeeVideoRoom.sendMessage(this.uuid, msg, normalCallbackHandle(resolve, reject, 'sendMessage'));
+    })
+
+    setSpeaker = (isOn): Promise<void> => new Promise((resolve, reject) => {
+        RNStringeeVideoRoom.setSpeaker(this.uuid, isOn, normalCallbackHandle(resolve, reject, 'setSpeaker'))
     })
 }

@@ -21,9 +21,9 @@ export const joinRoom = (client: StringeeClient, roomToken: string): Promise<any
             resolve(
                 {
                     room: new StringeeVideoRoom(client, room),
-                    tracks: tracks.map(item => {return new StringeeVideoTrackInfo(item)}),
+                    trackInfos: tracks.map(item => {return new StringeeVideoTrackInfo(item)}) ?? [],
                     users:  users.map(item => {return new StringeeRoomUser(item)})
-                }               
+                }
             )
         } else {
             reject(new StringeeError(code, message, 'joinRoom'));

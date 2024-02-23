@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import {
+  Dimensions,
   findNodeHandle,
   Platform,
   requireNativeComponent,
   UIManager,
   View,
-} from 'react-native';
+} from "react-native";
 import React, {Component} from 'react';
 import {StringeeVideoScalingType, StringeeVideoTrack} from '../index';
 import {isIOS} from './helpers/StringeeHelper';
@@ -28,6 +29,8 @@ class StringeeVideoView extends Component {
     this.videoTrack = props.videoTrack;
   }
 
+
+
   componentDidUpdate(prevProps) {
     if (
       this.props.uuid !== prevProps.uuid ||
@@ -36,9 +39,7 @@ class StringeeVideoView extends Component {
       (this.props.videoTrack &&
         prevProps.videoTrack &&
         (this.props.videoTrack.localId !== prevProps.videoTrack.localId ||
-          this.props.videoTrack.serverId !== prevProps.videoTrack.serverId)) ||
-      this.props.style.width !== prevProps.style.width ||
-      this.props.style.height !== prevProps.style.height
+          this.props.videoTrack.serverId !== prevProps.videoTrack.serverId))
     ) {
       this.reload();
     }
@@ -56,23 +57,28 @@ class StringeeVideoView extends Component {
   }
 
   reload() {
-    const reloadCommand = isIOS
-      ? UIManager.RNStringeeVideoView.Commands.reload
-      : UIManager.RNStringeeVideoView.Commands.reload.toString();
-    const params = {
-      width: this.props.style.width,
-      height: this.props.style.height,
-      uuid: this.props.uuid,
-      local: this.props.local,
-      scalingType: this.props.scalingType,
-      videoTrack: this.props.videoTrack,
-    };
-    UIManager.dispatchViewManagerCommand(this.viewId, reloadCommand, [params]);
+    if (this.props) {
+      const reloadCommand = isIOS
+        ? UIManager.RNStringeeVideoView.Commands.reload
+        : UIManager.RNStringeeVideoView.Commands.reload.toString();
+      const params = {
+        width: this.props.style.width,
+        height: this.props.style.height,
+        uuid: this.props.uuid,
+        local: this.props.local,
+        scalingType: this.props.scalingType,
+        videoTrack: this.props.videoTrack,
+      };
+      UIManager.dispatchViewManagerCommand(this.viewId, reloadCommand, [params]);
+    }
   }
 
   render(): React.ReactNode {
     return (
-      <View style={this.props.style}>
+      <View
+        style={this.props.style}
+        onLayout={this.reload}
+      >
         <RCTStringeeVideoView
           {...this.props}
           uuid={this.uuid}

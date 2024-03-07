@@ -77,7 +77,6 @@ The Stringee Android SDK requires some permissions from your AndroidManifest
     ...
     }
     ```
-
 ## Migrate to stringee-react-native-v2
 
 To migrate an existing app to stringee-react-native-v2, follow [Migrate to stringee-react-native-v2](https://github.com/stringeecom/stringee-react-native-v2/blob/master/MIGRATEGUIDE.md).

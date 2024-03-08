@@ -11,7 +11,9 @@ import com.stringee.exception.StringeeError;
 import com.stringee.listener.StatusListener;
 import com.stringee.video.StringeeVideoTrack;
 import com.stringeereactnative.common.Constant;
+import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.common.Utils;
+import com.stringeereactnative.common.VideoTrackManager;
 import com.stringeereactnative.wrapper.StringeeClientWrapper;
 
 import org.json.JSONException;
@@ -23,14 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class StringeeCall2Wrapper extends StringeeCall2.StringeeCallListener implements StringeeAudioManager.AudioManagerEvents {
+public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEvents, StringeeCall2.StringeeCallListener {
     private final List<String> events = new ArrayList<>();
     private final ReactContext reactContext;
     private StringeeCall2 stringeeCall2;
     private final String uuid;
     private StringeeClientWrapper clientWrapper;
     private Callback makeCallCallback;
-    private Map<String, StringeeVideoTrack> videoTrackMap = new HashMap<>();
 
     public StringeeCall2Wrapper(String uuid, ReactContext reactContext) {
         this.reactContext = reactContext;
@@ -118,12 +119,13 @@ public class StringeeCall2Wrapper extends StringeeCall2.StringeeCallListener imp
 
     @Override
     public void onLocalTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
-        videoTrackMap.put(stringeeVideoTrack.getLocalId(), stringeeVideoTrack);
+        VideoTrackManager videoTrackManager = new VideoTrackManager(clientWrapper, stringeeVideoTrack, stringeeVideoTrack.getId(), true);
+        StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
         if (Utils.containsEvent(events, Constant.CALL2_ON_LOCAL_TRACK_ADDED)) {
             // Data
             WritableMap data = Arguments.createMap();
             data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putMap(Constant.KEY_VIDEO_TRACK, Utils.getVideoTrackMap(stringeeVideoTrack));
+            data.putMap(Constant.KEY_VIDEO_TRACK, Utils.getVideoTrackMap(videoTrackManager));
 
             // Event data
             WritableMap eventData = Arguments.createMap();
@@ -140,12 +142,13 @@ public class StringeeCall2Wrapper extends StringeeCall2.StringeeCallListener imp
 
     @Override
     public void onRemoteTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
-        videoTrackMap.put(stringeeVideoTrack.getId(), stringeeVideoTrack);
+        VideoTrackManager videoTrackManager = new VideoTrackManager(clientWrapper, stringeeVideoTrack, stringeeVideoTrack.getId(), true);
+        StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
         if (Utils.containsEvent(events, Constant.CALL2_ON_REMOTE_TRACK_ADDED)) {
             // Data
             WritableMap data = Arguments.createMap();
             data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putMap(Constant.KEY_VIDEO_TRACK, Utils.getVideoTrackMap(stringeeVideoTrack));
+            data.putMap(Constant.KEY_VIDEO_TRACK, Utils.getVideoTrackMap(videoTrackManager));
 
             // Event data
             WritableMap eventData = Arguments.createMap();
@@ -233,10 +236,6 @@ public class StringeeCall2Wrapper extends StringeeCall2.StringeeCallListener imp
         if (!Utils.isStringEmpty(event)) {
             events.remove(event);
         }
-    }
-
-    public Map<String, StringeeVideoTrack> getVideoTrackMap() {
-        return videoTrackMap;
     }
 
     public void makeCall(String from, String to, boolean isVideoCall, String customData, String resolution, Callback callback) {
@@ -485,7 +484,7 @@ public class StringeeCall2Wrapper extends StringeeCall2.StringeeCallListener imp
                     jsonObject.put("packetsReceived", stringeeCallStats.callPacketsReceived);
                     jsonObject.put("timeStamp", stringeeCallStats.timeStamp);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Utils.reportException(StringeeCall2Wrapper.class, e);
                 }
                 callback.invoke(true, 0, "Success", jsonObject.toString());
             }

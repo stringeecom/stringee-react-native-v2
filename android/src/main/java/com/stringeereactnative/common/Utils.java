@@ -5,13 +5,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -24,13 +28,16 @@ import com.stringee.messaging.Message;
 import com.stringee.messaging.Queue;
 import com.stringee.messaging.User;
 import com.stringee.video.RemoteParticipant;
+import com.stringee.video.StringeeRoom;
 import com.stringee.video.StringeeVideoTrack;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class Utils {
     public static Bundle jsonToBundle(String text) throws JSONException {
@@ -38,7 +45,7 @@ public class Utils {
         Bundle bundle = new Bundle();
         Iterator<String> iterator = jsonObject.keys();
         while (iterator.hasNext()) {
-            String key = (String) iterator.next();
+            String key = iterator.next();
             String value = jsonObject.getString(key);
             bundle.putString(key, value);
         }
@@ -69,7 +76,7 @@ public class Utils {
                 WritableMap lastMsgMap = Arguments.fromBundle(bundle);
                 conversationMap.putMap("text", lastMsgMap);
             } catch (JSONException e) {
-                e.printStackTrace();
+                reportException(Utils.class, e);
             }
         }
         List<User> participants = conversation.getParticipants();
@@ -143,7 +150,7 @@ public class Utils {
                 try {
                     contentMap = Arguments.fromBundle(jsonToBundle(message.getText()));
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    reportException(Utils.class, e);
                 }
                 break;
 
@@ -232,10 +239,11 @@ public class Utils {
         return queueMap;
     }
 
-    public static WritableMap getVideoTrackMap(StringeeVideoTrack stringeeVideoTrack) {
+    public static WritableMap getVideoTrackMap(VideoTrackManager trackManager) {
+        StringeeVideoTrack stringeeVideoTrack = trackManager.getVideoTrack();
         WritableMap videoTrackMap = Arguments.createMap();
-        videoTrackMap.putString("localId", stringeeVideoTrack.getLocalId());
-        videoTrackMap.putString("serverId", stringeeVideoTrack.getId());
+        videoTrackMap.putString("localId", trackManager.getLocalId());
+        videoTrackMap.putString("serverId", stringeeVideoTrack.getId() != null ? stringeeVideoTrack.getId() : "");
         videoTrackMap.putBoolean("isLocal", stringeeVideoTrack.isLocal());
         videoTrackMap.putBoolean("audio", stringeeVideoTrack.audioEnabled());
         videoTrackMap.putBoolean("video", stringeeVideoTrack.videoEnabled());
@@ -247,12 +255,55 @@ public class Utils {
         return videoTrackMap;
     }
 
+    public static WritableMap getLocalVideoTrackMap(VideoTrackManager trackManager, String clientId) {
+        StringeeVideoTrack stringeeVideoTrack = trackManager.getVideoTrack();
+        WritableMap videoTrackMap = Arguments.createMap();
+        videoTrackMap.putString("localId", trackManager.getLocalId());
+        videoTrackMap.putString("serverId", stringeeVideoTrack.getId() != null ? stringeeVideoTrack.getId() : "");
+        videoTrackMap.putBoolean("isLocal", stringeeVideoTrack.isLocal());
+        videoTrackMap.putBoolean("audio", stringeeVideoTrack.audioEnabled());
+        videoTrackMap.putBoolean("video", stringeeVideoTrack.videoEnabled());
+        videoTrackMap.putBoolean("screen", stringeeVideoTrack.isScreenCapture());
+        videoTrackMap.putInt("trackType", stringeeVideoTrack.getTrackType().getValue());
+        WritableMap roomUserMap = Arguments.createMap();
+        roomUserMap.putString("userId", clientId);
+        videoTrackMap.putMap("publisher", roomUserMap);
+        return videoTrackMap;
+    }
+
+
+    public static WritableMap getVideoTrackInfoMap(StringeeVideoTrack stringeeVideoTrack) {
+        WritableMap videoTrackMap = Arguments.createMap();
+        videoTrackMap.putString("id", stringeeVideoTrack.getLocalId());
+        videoTrackMap.putBoolean("audio", stringeeVideoTrack.audioEnabled());
+        videoTrackMap.putBoolean("video", stringeeVideoTrack.videoEnabled());
+        videoTrackMap.putBoolean("screen", stringeeVideoTrack.isScreenCapture());
+        WritableMap roomUserMap = Arguments.createMap();
+        roomUserMap.putString("userId", stringeeVideoTrack.getUserId());
+        videoTrackMap.putMap("publisher", roomUserMap);
+        return videoTrackMap;
+    }
+
+    public static WritableMap getRoomMap(StringeeRoom stringeeRoom, String uuid) {
+        WritableMap queueMap = Arguments.createMap();
+        queueMap.putString("id", stringeeRoom.getId());
+        queueMap.putBoolean("recorded", stringeeRoom.isRecorded());
+        queueMap.putString("uuid", uuid);
+        return queueMap;
+    }
+
+    public static WritableMap getRoomUserMap(RemoteParticipant remoteParticipant) {
+        WritableMap queueMap = Arguments.createMap();
+        queueMap.putString("userId", remoteParticipant.getId());
+        return queueMap;
+    }
+
     public static boolean isStringEmpty(@Nullable CharSequence text) {
         if (text != null) {
             if (text.toString().equalsIgnoreCase("null")) {
                 return true;
             } else {
-                return text.toString().trim().length() == 0;
+                return text.toString().trim().isEmpty();
             }
         } else {
             return true;
@@ -324,6 +375,18 @@ public class Utils {
         });
     }
 
+    public static void setBluetoothSco(boolean on) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
+                if (audioManager != null) {
+                    audioManager.setBluetoothScoOn(on);
+                }
+            }
+        });
+    }
+
     public static int dpiToPx(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
@@ -342,5 +405,13 @@ public class Utils {
 
     public static void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap eventData) {
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, eventData);
+    }
+
+    public static <T> void reportException(@NonNull Class<T> clazz, Exception exception) {
+        Log.e("Stringee exception", clazz.getName(), exception);
+    }
+
+    public static String createLocalId() {
+        return "android-" + UUID.randomUUID().toString() + "-" + System.currentTimeMillis();
     }
 }

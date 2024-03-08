@@ -1,27 +1,27 @@
-import {EmitterSubscription, NativeEventEmitter, NativeModules, Platform} from 'react-native';
+import {EmitterSubscription, NativeEventEmitter, Platform} from 'react-native';
 import {
   CallType,
   clientEvents,
-  RNStringeeClient,
-  stringeeClientEvents,
   isIOS,
   normalCallbackHandle,
+  RNStringeeClient,
+  stringeeClientEvents,
 } from './helpers/StringeeHelper';
 import {
   ChangeType,
   ChatRequest,
   Conversation,
   ConversationOption,
+  LiveChatTicketParam,
   Message,
   ObjectType,
   StringeeCall,
   StringeeCall2,
   StringeeClientListener,
+  StringeeError,
   StringeeServerAddress,
   User,
   UserInfo,
-  LiveChatTicketParam,
-  StringeeError,
 } from '../index';
 
 class StringeeClient {
@@ -276,7 +276,11 @@ class StringeeClient {
     packageNames: Array<string>,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      const callback = normalCallbackHandle(resolve, reject, 'registerPushAndDeleteOthers')
+      const callback = normalCallbackHandle(
+        resolve,
+        reject,
+        'registerPushAndDeleteOthers',
+      );
       if (isIOS) {
         RNStringeeClient.registerPushAndDeleteOthers(
           this.uuid,
@@ -308,7 +312,7 @@ class StringeeClient {
       RNStringeeClient.unregisterPushToken(
         this.uuid,
         deviceToken,
-        normalCallbackHandle(resolve, reject, 'unregisterPush')
+        normalCallbackHandle(resolve, reject, 'unregisterPush'),
       );
     });
   }
@@ -325,7 +329,7 @@ class StringeeClient {
         this.uuid,
         toUserId,
         message,
-        normalCallbackHandle(resolve, reject, 'sendCustomMessage')
+        normalCallbackHandle(resolve, reject, 'sendCustomMessage'),
       );
     });
   }
@@ -601,7 +605,9 @@ class StringeeClient {
             }
             resolve(returnConversations);
           } else {
-            reject(new StringeeError(code, message, 'getAllConversationsAfter'));
+            reject(
+              new StringeeError(code, message, 'getAllConversationsAfter'),
+            );
           }
         },
       );
@@ -681,7 +687,9 @@ class StringeeClient {
             }
             resolve(returnConversations);
           } else {
-            reject(new StringeeError(code, message, 'getAllConversationsBefore'));
+            reject(
+              new StringeeError(code, message, 'getAllConversationsBefore'),
+            );
           }
         },
       );
@@ -719,7 +727,9 @@ class StringeeClient {
             }
             resolve(returnConversations);
           } else {
-            reject(new StringeeError(code, message, 'getLastUnreadConversations'));
+            reject(
+              new StringeeError(code, message, 'getLastUnreadConversations'),
+            );
           }
         },
       );
@@ -759,7 +769,9 @@ class StringeeClient {
             }
             resolve(returnConversations);
           } else {
-            reject(new StringeeError(code, message, 'getUnreadConversationsAfter'));
+            reject(
+              new StringeeError(code, message, 'getUnreadConversationsAfter'),
+            );
           }
         },
       );
@@ -799,7 +811,9 @@ class StringeeClient {
             }
             resolve(returnConversations);
           } else {
-            reject(new StringeeError(code, message, 'getUnreadConversationsBefore'));
+            reject(
+              new StringeeError(code, message, 'getUnreadConversationsBefore'),
+            );
           }
         },
       );
@@ -840,7 +854,9 @@ class StringeeClient {
           if (status) {
             resolve(count);
           } else {
-            reject(new StringeeError(code, message, 'getUnreadConversationCount'));
+            reject(
+              new StringeeError(code, message, 'getUnreadConversationCount'),
+            );
           }
         },
       );
@@ -853,7 +869,10 @@ class StringeeClient {
    */
   clearDb(): Promise<void> {
     return new Promise((resolve, reject) => {
-      RNStringeeClient.clearDb(this.uuid, normalCallbackHandle(resolve, reject, 'clearDb'))
+      RNStringeeClient.clearDb(
+        this.uuid,
+        normalCallbackHandle(resolve, reject, 'clearDb'),
+      );
     });
   }
 
@@ -944,7 +963,7 @@ class StringeeClient {
       RNStringeeClient.updateUserInfo2(
         this.uuid,
         JSON.stringify(userInfo),
-        normalCallbackHandle(resolve, reject, 'updateUserInfo')
+        normalCallbackHandle(resolve, reject, 'updateUserInfo'),
       );
     });
   }
@@ -964,7 +983,9 @@ class StringeeClient {
             conversation.stringeeClient = this;
             resolve(new Conversation(conversation));
           } else {
-            reject(new StringeeError(code, message, 'createLiveChatConversation'));
+            reject(
+              new StringeeError(code, message, 'createLiveChatConversation'),
+            );
           }
         },
       );
@@ -983,7 +1004,13 @@ class StringeeClient {
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (liveChatTicketParam === undefined) {
-        reject(new StringeeError(-1, 'liveChatTicketParam is undefined', 'createLiveChatTicket'));
+        reject(
+          new StringeeError(
+            -1,
+            'liveChatTicketParam is undefined',
+            'createLiveChatTicket',
+          ),
+        );
         return;
       }
       RNStringeeClient.createLiveChatTicket(

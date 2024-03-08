@@ -220,7 +220,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void makeCall(String from, String to, boolean isVideoCall, String customData, String resolution, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -251,7 +251,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void initAnswer(Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -272,7 +272,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void answer(Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -297,7 +297,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
         Utils.stopAudioManager();
 
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -320,7 +320,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
         Utils.stopAudioManager();
 
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -341,7 +341,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void enableVideo(boolean enabled, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -357,7 +357,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void mute(boolean isMute, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -373,7 +373,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void sendCallInfo(JSONObject info, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -397,7 +397,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void sendDTMF(String key, final Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -421,7 +421,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void switchCamera(Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
@@ -445,12 +445,12 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void getCallStats(final Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 
         if (stringeeCall == null) {
-            callback.invoke(false, -3, "The call is not found.", "");
+            callback.invoke(false, -3, "The call is not found.");
             return;
         }
 
@@ -464,7 +464,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
                     jsonObject.put("packetsReceived", stringeeCallStats.callPacketsReceived);
                     jsonObject.put("timeStamp", stringeeCallStats.timeStamp);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Utils.reportException(StringeeCallWrapper.class, e);
                 }
                 callback.invoke(true, 0, "Success", jsonObject.toString());
             }
@@ -478,7 +478,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     public void resumeVideo(Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
         }
 

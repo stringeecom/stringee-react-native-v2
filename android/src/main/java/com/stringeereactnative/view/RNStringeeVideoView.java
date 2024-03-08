@@ -8,14 +8,17 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.stringee.video.StringeeVideoTrack;
 import com.stringee.video.TextureViewRenderer;
 import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.common.Utils;
+import com.stringeereactnative.common.VideoTrackManager;
 import com.stringeereactnative.wrapper.call.StringeeCall2Wrapper;
 import com.stringeereactnative.wrapper.call.StringeeCallWrapper;
+import com.stringeereactnative.wrapper.conference.StringeeVideoRoomWrapper;
 
 import org.webrtc.RendererCommon.ScalingType;
 
@@ -47,15 +50,19 @@ public class RNStringeeVideoView extends FrameLayout {
         isLocal = local;
     }
 
-    public void setScalingType(String scalingType) {
-        switch (scalingType) {
-            case "fit":
-                this.scalingType = ScalingType.SCALE_ASPECT_FIT;
-                break;
-            case "fill":
-            default:
-                this.scalingType = ScalingType.SCALE_ASPECT_FILL;
-                break;
+    public void setScalingType(@Nullable String scalingType) {
+        if (Utils.isStringEmpty(scalingType)) {
+            this.scalingType = ScalingType.SCALE_ASPECT_FILL;
+        } else {
+            switch (scalingType) {
+                case "fit":
+                    this.scalingType = ScalingType.SCALE_ASPECT_FIT;
+                    break;
+                case "fill":
+                default:
+                    this.scalingType = ScalingType.SCALE_ASPECT_FILL;
+                    break;
+            }
         }
     }
 
@@ -71,20 +78,45 @@ public class RNStringeeVideoView extends FrameLayout {
         FrameLayout layout = new FrameLayout(getContext());
 
         if (!Utils.isMapEmpty(videoTrackMap)) {
-            StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
-            if (call2Wrapper != null) {
-                boolean isLocal = videoTrackMap.getBoolean("isLocal");
-                String trackId = isLocal ? videoTrackMap.getString("localId") : videoTrackMap.getString("serverId");
-                if (!Utils.isStringEmpty(trackId)) {
-                    StringeeVideoTrack stringeeVideoTrack = call2Wrapper.getVideoTrackMap().get(trackId);
+            boolean isLocal = videoTrackMap.getBoolean("isLocal");
+            String trackId = isLocal ? videoTrackMap.getString("localId") : videoTrackMap.getString("serverId");
+            if (!Utils.isStringEmpty(trackId)) {
+                VideoTrackManager trackManager = StringeeManager.getInstance().getTracksMap().get(trackId);
+                if (trackManager != null) {
+                    StringeeVideoTrack stringeeVideoTrack = trackManager.getVideoTrack();
                     if (stringeeVideoTrack != null) {
-                        TextureViewRenderer videoView = stringeeVideoTrack.getView2(getContext());
-                        if (videoView != null) {
-                            if (videoView.getParent() != null) {
-                                ((ViewGroup) videoView.getParent()).removeView(videoView);
+                        String roomUUID = videoTrackMap.getString("roomUUID");
+                        if (!trackManager.isForCall() && !Utils.isStringEmpty(roomUUID)) {
+                            StringeeVideoRoomWrapper roomWrapper = StringeeManager.getInstance().getRoomMap().get(roomUUID);
+                            if (roomWrapper != null) {
+                                trackManager.setListener(roomWrapper, new StringeeVideoTrack.Listener() {
+                                    @Override
+                                    public void onMediaAvailable() {
+                                        TextureViewRenderer videoView = stringeeVideoTrack.getView2(getContext());
+                                        if (videoView != null) {
+                                            if (videoView.getParent() != null) {
+                                                ((ViewGroup) videoView.getParent()).removeView(videoView);
+                                            }
+                                            layout.addView(videoView, layoutParams);
+                                            stringeeVideoTrack.renderView2(scalingType);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onMediaStateChange(StringeeVideoTrack.MediaState mediaState) {
+
+                                    }
+                                });
                             }
-                            layout.addView(videoView, layoutParams);
-                            stringeeVideoTrack.renderView2(scalingType);
+                        } else {
+                            TextureViewRenderer videoView = stringeeVideoTrack.getView2(getContext());
+                            if (videoView != null) {
+                                if (videoView.getParent() != null) {
+                                    ((ViewGroup) videoView.getParent()).removeView(videoView);
+                                }
+                                layout.addView(videoView, layoutParams);
+                                stringeeVideoTrack.renderView2(scalingType);
+                            }
                         }
                     }
                 }

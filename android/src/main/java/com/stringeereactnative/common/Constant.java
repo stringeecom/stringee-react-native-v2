@@ -6,6 +6,7 @@ public class Constant {
     public static String MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED = "StringeeClient is not initialized or connected";
     public static String MESSAGE_STRINGEE_CALL_NOT_INITIALIZED = "StringeeCall is not initialized";
     public static String MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED = "StringeeCall2 is not initialized";
+    public static String MESSAGE_STRINGEE_ROOM_NOT_INITIALIZED = "StringeeVideoRoom is not initialized";
 
     // Key
     public static String KEY_UUID = "uuid";
@@ -41,6 +42,11 @@ public class Constant {
     public static String KEY_MEDIA_TYPE = "mediaType";
     public static String KEY_ENABLE = "enable";
     public static String KEY_VIDEO_TRACK = "videoTrack";
+    public static String KEY_USER_INFO = "userInfo";
+    public static String KEY_TRACK_INFO = "trackInfo";
+    public static String KEY_FROM_USER = "fromUser";
+    public static String KEY_MSG = "msg";
+    public static String KEY_TRACK = "track";
 
     // Client events
     public static String CLIENT_ON_CONNECTED = "onConnectionConnected";
@@ -79,4 +85,12 @@ public class Constant {
 
     // Audio event
     public static String AUDIO_ON_AUDIO_DEVICE_CHANGE = "onAudioDeviceChange";
+
+    // Room event
+    public static String ROOM_ON_JOIN_ROOM = "onJoinRoom";
+    public static String ROOM_ON_LEAVE_ROOM = "onLeaveRoom";
+    public static String ROOM_ON_ADD_VIDEO_TRACK = "onAddVideoTrack";
+    public static String ROOM_ON_REMOVE_VIDEO_TRACK = "onRemoveVideoTrack";
+    public static String ROOM_ON_RECEIPT_ROOM_MESSAGE = "onReceiptRoomMessage";
+    public static String ROOM_ON_TRACK_READY_TO_PLAY = "onTrackReadyToPlay";
 }

@@ -1,7 +1,9 @@
-export class LiveChatTicketParam {
+class LiveChatTicketParam {
   name: string;
   email: string;
   phone: string;
   note: string;
   constructor() {}
 }
+
+export {LiveChatTicketParam};

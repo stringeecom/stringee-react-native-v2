@@ -1,9 +1,4 @@
-import {
-  EmitterSubscription,
-  NativeEventEmitter,
-  NativeModules,
-  Platform,
-} from 'react-native';
+import {EmitterSubscription, NativeEventEmitter, Platform} from 'react-native';
 import {
   callEvents,
   getAudioDevice,
@@ -13,6 +8,7 @@ import {
   isAndroid,
   isIOS,
   normalCallbackHandle,
+  RNStringeeCall,
   stringeeCallEvents,
 } from '../helpers/StringeeHelper';
 import {
@@ -22,8 +18,6 @@ import {
   VideoResolution,
   StringeeError,
 } from '../../index';
-
-const RNStringeeCall = NativeModules.RNStringeeCall;
 
 class StringeeCall {
   stringeeClient: StringeeClient;
@@ -62,10 +56,10 @@ class StringeeCall {
       this.uuid = props.uuid;
     } else {
       this.uuid =
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15) +
-          Math.random().toString(36).substring(2, 15);
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
 
       RNStringeeCall.createWrapper(this.uuid, this.stringeeClient.uuid);
     }
@@ -88,68 +82,68 @@ class StringeeCall {
       stringeeCallEvents.forEach(event => {
         if (listener[event] && callEvents[Platform.OS][event]) {
           let emitterSubscription: EmitterSubscription =
-              this.eventEmitter.addListener(
-                  callEvents[Platform.OS][event],
-                  ({uuid, data}) => {
-                    if (uuid !== this.uuid) {
-                      return;
-                    }
-                    if (data !== undefined) {
-                      if (data.callId !== undefined) {
-                        this.callId = data.callId;
-                      }
-                    }
-                    switch (event) {
-                      case 'onChangeSignalingState':
-                        listener.onChangeSignalingState(
-                            this,
-                            getSignalingState(data.code),
-                            data.reason,
-                            data.sipCode,
-                            data.sipReason,
-                        );
-                        break;
-                      case 'onChangeMediaState':
-                        listener.onChangeMediaState(
-                            this,
-                            getMediaState(data.code),
-                            data.description,
-                        );
-                        break;
-                      case 'onReceiveLocalStream':
-                        listener.onReceiveLocalStream(this);
-                        break;
-                      case 'onReceiveRemoteStream':
-                        listener.onReceiveRemoteStream(this);
-                        break;
-                      case 'onReceiveDtmfDigit':
-                        listener.onReceiveDtmfDigit(this, data.dtmf);
-                        break;
-                      case 'onReceiveCallInfo':
-                        listener.onReceiveCallInfo(this, data.data);
-                        break;
-                      case 'onHandleOnAnotherDevice':
-                        listener.onHandleOnAnotherDevice(
-                            this,
-                            getSignalingState(data.code),
-                            data.description,
-                        );
-                        break;
-                      case 'onAudioDeviceChange':
-                        listener.onAudioDeviceChange(
-                            this,
-                            getAudioDevice(data.selectedAudioDevice),
-                            getListAudioDevice(data.availableAudioDevices),
-                        );
-                        break;
-                    }
-                  },
-              );
+            this.eventEmitter.addListener(
+              callEvents[Platform.OS][event],
+              ({uuid, data}) => {
+                if (uuid !== this.uuid) {
+                  return;
+                }
+                if (data !== undefined) {
+                  if (data.callId !== undefined) {
+                    this.callId = data.callId;
+                  }
+                }
+                switch (event) {
+                  case 'onChangeSignalingState':
+                    listener.onChangeSignalingState(
+                      this,
+                      getSignalingState(data.code),
+                      data.reason,
+                      data.sipCode,
+                      data.sipReason,
+                    );
+                    break;
+                  case 'onChangeMediaState':
+                    listener.onChangeMediaState(
+                      this,
+                      getMediaState(data.code),
+                      data.description,
+                    );
+                    break;
+                  case 'onReceiveLocalStream':
+                    listener.onReceiveLocalStream(this);
+                    break;
+                  case 'onReceiveRemoteStream':
+                    listener.onReceiveRemoteStream(this);
+                    break;
+                  case 'onReceiveDtmfDigit':
+                    listener.onReceiveDtmfDigit(this, data.dtmf);
+                    break;
+                  case 'onReceiveCallInfo':
+                    listener.onReceiveCallInfo(this, data.data);
+                    break;
+                  case 'onHandleOnAnotherDevice':
+                    listener.onHandleOnAnotherDevice(
+                      this,
+                      getSignalingState(data.code),
+                      data.description,
+                    );
+                    break;
+                  case 'onAudioDeviceChange':
+                    listener.onAudioDeviceChange(
+                      this,
+                      getAudioDevice(data.selectedAudioDevice),
+                      getListAudioDevice(data.availableAudioDevices),
+                    );
+                    break;
+                }
+              },
+            );
           this.subscriptions.push(emitterSubscription);
           this.events.push(callEvents[Platform.OS][event]);
           RNStringeeCall.setNativeEvent(
-              this.uuid,
-              callEvents[Platform.OS][event],
+            this.uuid,
+            callEvents[Platform.OS][event],
           );
         }
       });
@@ -186,16 +180,16 @@ class StringeeCall {
     };
     return new Promise((resolve, reject) => {
       RNStringeeCall.makeCall(
-          this.uuid,
-          JSON.stringify(makeCallParam),
-          (status, code, message, callId, customData) => {
-            this.callId = callId;
-            if (status) {
-              resolve();
-            } else {
-              reject(new StringeeError(code, message, 'makeCall'));
-            }
-          },
+        this.uuid,
+        JSON.stringify(makeCallParam),
+        (status, code, message, callId, customData) => {
+          this.callId = callId;
+          if (status) {
+            resolve();
+          } else {
+            reject(new StringeeError(code, message, 'makeCall'));
+          }
+        },
       );
     });
   }
@@ -207,8 +201,8 @@ class StringeeCall {
   initAnswer(): Promise<void> {
     return new Promise((resolve, reject) => {
       RNStringeeCall.initAnswer(
-          this.uuid,
-          normalCallbackHandle(resolve, reject, 'initAnswer'),
+        this.uuid,
+        normalCallbackHandle(resolve, reject, 'initAnswer'),
       );
     });
   }
@@ -230,7 +224,13 @@ class StringeeCall {
           }
         });
       } else {
-        reject(new StringeeError(-9, 'Encountered an error while processing your request', 'answer'));
+        reject(
+          new StringeeError(
+            -9,
+            'Encountered an error while processing your request',
+            'answer',
+          ),
+        );
       }
     });
   }
@@ -242,8 +242,8 @@ class StringeeCall {
   hangup() {
     return new Promise((resolve, reject) => {
       RNStringeeCall.hangup(
-          this.uuid,
-          normalCallbackHandle(resolve, reject, 'hangup'),
+        this.uuid,
+        normalCallbackHandle(resolve, reject, 'hangup'),
       );
     });
   }
@@ -255,8 +255,8 @@ class StringeeCall {
   reject(): Promise<void> {
     return new Promise((resolve, reject) => {
       RNStringeeCall.reject(
-          this.uuid,
-          normalCallbackHandle(resolve, reject, 'reject'),
+        this.uuid,
+        normalCallbackHandle(resolve, reject, 'reject'),
       );
     });
   }
@@ -269,9 +269,9 @@ class StringeeCall {
   sendDTMF(dtmf: string): Promise<void> {
     return new Promise((resolve, reject) => {
       RNStringeeCall.sendDTMF(
-          this.uuid,
-          dtmf,
-          normalCallbackHandle(resolve, reject, 'sendDTMF'),
+        this.uuid,
+        dtmf,
+        normalCallbackHandle(resolve, reject, 'sendDTMF'),
       );
     });
   }
@@ -284,9 +284,9 @@ class StringeeCall {
   sendCallInfo(callInfo: string): Promise<void> {
     return new Promise((resolve, reject) => {
       RNStringeeCall.sendCallInfo(
-          this.uuid,
-          callInfo,
-          normalCallbackHandle(resolve, reject, 'sendCallInfo'),
+        this.uuid,
+        callInfo,
+        normalCallbackHandle(resolve, reject, 'sendCallInfo'),
       );
     });
   }
@@ -314,8 +314,8 @@ class StringeeCall {
   switchCamera(): Promise<void> {
     return new Promise((resolve, reject) => {
       RNStringeeCall.switchCamera(
-          this.uuid,
-          normalCallbackHandle(resolve, reject, 'switchCamera'),
+        this.uuid,
+        normalCallbackHandle(resolve, reject, 'switchCamera'),
       );
     });
   }
@@ -328,9 +328,9 @@ class StringeeCall {
   enableVideo(enabled: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
       RNStringeeCall.enableVideo(
-          this.uuid,
-          enabled,
-          normalCallbackHandle(resolve, reject, 'enableVideo'),
+        this.uuid,
+        enabled,
+        normalCallbackHandle(resolve, reject, 'enableVideo'),
       );
     });
   }
@@ -343,9 +343,9 @@ class StringeeCall {
   mute(mute: boolean) {
     return new Promise((resolve, reject) => {
       RNStringeeCall.mute(
-          this.uuid,
-          mute,
-          normalCallbackHandle(resolve, reject, 'mute'),
+        this.uuid,
+        mute,
+        normalCallbackHandle(resolve, reject, 'mute'),
       );
     });
   }
@@ -358,9 +358,9 @@ class StringeeCall {
   setSpeakerphoneOn(on: boolean) {
     return new Promise((resolve, reject) => {
       RNStringeeCall.setSpeakerphoneOn(
-          this.uuid,
-          on,
-          normalCallbackHandle(resolve, reject, 'setSpeakerphoneOn'),
+        this.uuid,
+        on,
+        normalCallbackHandle(resolve, reject, 'setSpeakerphoneOn'),
       );
     });
   }
@@ -374,11 +374,11 @@ class StringeeCall {
     return new Promise((resolve, reject) => {
       if (!isAndroid) {
         resolve(
-            new StringeeError(
-                -10,
-                'This function only for android',
-                'resumeVideo',
-            ),
+          new StringeeError(
+            -10,
+            'This function only for android',
+            'resumeVideo',
+          ),
         );
       } else {
         RNStringeeCall.resumeVideo(this.uuid, (status, code, message) => {
@@ -396,7 +396,7 @@ class StringeeCall {
     return new Promise((resolve, reject) => {
       if (!isIOS) {
         reject(
-            new StringeeError(-10, 'This function only for ios', 'generateUUID'),
+          new StringeeError(-10, 'This function only for ios', 'generateUUID'),
         );
       } else {
         RNStringeeCall.generateUUID(this.callId, this.serial ?? 1, uuid => {

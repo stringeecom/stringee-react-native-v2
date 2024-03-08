@@ -151,7 +151,7 @@ public class RNStringeeClientModule extends ReactContextBaseJavaModule {
             JSONObject jsonObject = new JSONObject(msg);
             clientWrapper.sendCustomMessage(toUser, jsonObject, callback);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Utils.reportException(RNStringeeClientModule.class, e);
             callback.invoke(false, -2, "message is not in JSON format");
         }
     }
@@ -791,7 +791,7 @@ public class RNStringeeClientModule extends ReactContextBaseJavaModule {
 
             clientWrapper.updateUserInfo2(user, callback);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Utils.reportException(RNStringeeClientModule.class, e);
             callback.invoke(false, -2, "userInfo not in JSON format");
         }
     }

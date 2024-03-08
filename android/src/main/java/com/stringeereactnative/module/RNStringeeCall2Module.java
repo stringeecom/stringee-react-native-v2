@@ -9,7 +9,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.stringeereactnative.common.Constant;
 import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.wrapper.call.StringeeCall2Wrapper;
-import com.stringeereactnative.wrapper.call.StringeeCallWrapper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +25,7 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createWrapper(String uuid, String clientUUID) {
+    public void createWrapper(final String uuid, final String clientUUID) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
             call2Wrapper = new StringeeCall2Wrapper(uuid, getReactApplicationContext());
@@ -36,10 +35,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void makeCall(String uuid, String params, Callback callback) {
+    public void makeCall(final String uuid, final String params, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -52,15 +51,15 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
             String resolution = jsonObject.optString(Constant.KEY_VIDEO_RESOLUTION);
             call2Wrapper.makeCall(from, to, isVideoCall, customData, resolution, callback);
         } catch (JSONException e) {
-            callback.invoke(false, -4, "The parameters format is invalid.", "");
+            callback.invoke(false, -4, "The parameters format is invalid.");
         }
     }
 
     @ReactMethod
-    public void initAnswer(String uuid, Callback callback) {
+    public void initAnswer(final String uuid, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -68,10 +67,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void answer(String uuid, Callback callback) {
+    public void answer(final String uuid, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -79,10 +78,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void reject(String uuid, Callback callback) {
+    public void reject(final String uuid, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -90,10 +89,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void hangup(String uuid, Callback callback) {
+    public void hangup(final String uuid, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -101,10 +100,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void enableVideo(String uuid, boolean enabled, Callback callback) {
+    public void enableVideo(final String uuid, final boolean enabled, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -112,10 +111,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void mute(String uuid, boolean isMute, Callback callback) {
+    public void mute(final String uuid, final boolean isMute, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -123,10 +122,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void switchCamera(String uuid, Callback callback) {
+    public void switchCamera(final String uuid, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -134,10 +133,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getCallStats(String uuid, final Callback callback) {
+    public void getCallStats(final String uuid, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -145,20 +144,20 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setSpeakerphoneOn(String uuid, boolean on, Callback callback) {
+    public void setSpeakerphoneOn(final String uuid, final boolean on, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
         call2Wrapper.setSpeakerphoneOn(on, callback);
     }
 
     @ReactMethod
-    public void resumeVideo(String uuid, Callback callback) {
+    public void resumeVideo(final String uuid, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -166,10 +165,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void sendCallInfo(String uuid, String info, Callback callback) {
+    public void sendCallInfo(final String uuid, final String info, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -182,10 +181,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void sendDTMF(String uuid, String dtmf, Callback callback) {
+    public void sendDTMF(final String uuid, final String dtmf, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -193,10 +192,10 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setAutoSendTrackMediaStateChangeEvent(String uuid, boolean autoSendTrackMediaStateChangeEvent, Callback callback) {
+    public void setAutoSendTrackMediaStateChangeEvent(final String uuid, final boolean autoSendTrackMediaStateChangeEvent, final Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED);
             return;
         }
 
@@ -204,7 +203,7 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void clean(String uuid) {
+    public void clean(final String uuid) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper != null) {
             StringeeManager.getInstance().getCall2Map().remove(uuid);
@@ -212,7 +211,7 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setNativeEvent(String uuid, String event) {
+    public void setNativeEvent(final String uuid, final String event) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper != null) {
             call2Wrapper.setNativeEvent(event);
@@ -220,7 +219,7 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void removeNativeEvent(String uuid, String event) {
+    public void removeNativeEvent(final String uuid, final String event) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper != null) {
             call2Wrapper.removeNativeEvent(event);
@@ -228,12 +227,12 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void addListener(String eventName) {
+    public void addListener(final String eventName) {
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
     @ReactMethod
-    public void removeListeners(Integer count) {
+    public void removeListeners(final Integer count) {
         // Keep: Required for RN built in Event Emitter Calls.
     }
 }

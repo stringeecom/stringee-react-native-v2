@@ -1734,7 +1734,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                 conversation.getMessages(stringeeClient, msgIds, new CallbackListener<List<Message>>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
-                        if (messages.size() > 0) {
+                        if (!messages.isEmpty()) {
                             WritableMap param = Utils.getMessageMap(messages.get(0));
                             callback.invoke(true, 0, "Success", param);
                         }

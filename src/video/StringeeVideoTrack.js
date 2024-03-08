@@ -1,11 +1,9 @@
+import {StringeeRoomUser, TrackType} from '../../index';
 import {
-  NativeModules,
-} from 'react-native';
-
-import {TrackType, StringeeRoomUser, StringeeError} from '../../index';
-import {getTrackType, normalCallbackHandle} from '../helpers/StringeeHelper';
-
-const RNStringeeVideoTrack = NativeModules.RNStringeeVideoTrack;
+  getTrackType,
+  normalCallbackHandle,
+  RNStringeeVideoTrack,
+} from '../helpers/StringeeHelper';
 
 class StringeeVideoTrack {
   localId: string;
@@ -27,24 +25,42 @@ class StringeeVideoTrack {
     this.screen = props.screen;
     this.trackType = getTrackType(props.trackType);
     this.publisher = new StringeeRoomUser(props.publisher);
-    this.roomUUID = "";
+    this.roomUUID = '';
   }
 
-  mute = (isMute: boolean): Promise<void> => new Promise((resolve, reject) => {
-    RNStringeeVideoTrack.mute(this, isMute, normalCallbackHandle(resolve, reject, 'mute'));
-  })
+  mute = (isMute: boolean): Promise<void> =>
+    new Promise((resolve, reject) => {
+      RNStringeeVideoTrack.mute(
+        this,
+        isMute,
+        normalCallbackHandle(resolve, reject, 'mute'),
+      );
+    });
 
-  enableVideo = (isEnable: boolean): Promise<void> => new Promise((resolve, reject) => {
-    RNStringeeVideoTrack.enableVideo(this, isEnable, normalCallbackHandle(resolve, reject, 'enableVideo'));
-  })
+  enableVideo = (isEnable: boolean): Promise<void> =>
+    new Promise((resolve, reject) => {
+      RNStringeeVideoTrack.enableVideo(
+        this,
+        isEnable,
+        normalCallbackHandle(resolve, reject, 'enableVideo'),
+      );
+    });
 
-  switchCamera = (): Promise<void> => new Promise((resolve, reject) => {
-    RNStringeeVideoTrack.switchCamera(this, normalCallbackHandle(resolve, reject, 'switchCamera'))
-  })
+  switchCamera = (): Promise<void> =>
+    new Promise((resolve, reject) => {
+      RNStringeeVideoTrack.switchCamera(
+        this,
+        normalCallbackHandle(resolve, reject, 'switchCamera'),
+      );
+    });
 
-  release = (): Promise<void>  => new Promise((resolve, reject) => {
-    RNStringeeVideoTrack.release(this, normalCallbackHandle(resolve, reject, 'release'));
-  })
+  release = (): Promise<void> =>
+    new Promise((resolve, reject) => {
+      RNStringeeVideoTrack.release(
+        this,
+        normalCallbackHandle(resolve, reject, 'release'),
+      );
+    });
 }
 
 export {StringeeVideoTrack};

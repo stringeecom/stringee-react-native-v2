@@ -1,20 +1,19 @@
-import { StringeeRoomUser } from "../video/StringeeRoomUser";
+import {StringeeRoomUser} from '../../index';
 
+class StringeeVideoTrackInfo {
+  id: string;
+  audio: boolean;
+  video: boolean;
+  screen: boolean;
+  publisher: StringeeRoomUser;
 
-export default class StringeeVideoTrackInfo {
-    id: string;
-    audio: boolean;
-    video: boolean;
-    screen: boolean;
-    player: boolean;
-    publisher: StringeeRoomUser
-
-    constructor(probs) {
-        this.id = probs.id;
-        this.audio = probs.audio;
-        this.video = probs.video;
-        this.screen = probs.screen;
-        this.player = probs.player;
-        this.publisher = new StringeeRoomUser(probs.publisher);
-    }
+  constructor(props) {
+    this.id = props.id;
+    this.audio = props.audio;
+    this.video = props.video;
+    this.screen = props.screen;
+    this.publisher = new StringeeRoomUser(props.publisher);
+  }
 }
+
+export {StringeeVideoTrackInfo};

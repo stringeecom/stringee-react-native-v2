@@ -9,10 +9,12 @@ import com.facebook.react.uimanager.ViewManager;
 import com.stringeereactnative.module.RNStringeeCall2Module;
 import com.stringeereactnative.module.RNStringeeCallModule;
 import com.stringeereactnative.module.RNStringeeClientModule;
+import com.stringeereactnative.module.RNStringeeVideoModule;
+import com.stringeereactnative.module.RNStringeeVideoRoomModule;
+import com.stringeereactnative.module.RNStringeeVideoTrackModule;
 import com.stringeereactnative.view.RNStringeeVideoViewManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RNStringeeReactPackage implements ReactPackage {
@@ -25,6 +27,9 @@ public class RNStringeeReactPackage implements ReactPackage {
         modules.add(new RNStringeeClientModule(reactContext));
         modules.add(new RNStringeeCallModule(reactContext));
         modules.add(new RNStringeeCall2Module(reactContext));
+        modules.add(new RNStringeeVideoModule(reactContext));
+        modules.add(new RNStringeeVideoRoomModule(reactContext));
+        modules.add(new RNStringeeVideoTrackModule(reactContext));
 
         return modules;
     }
@@ -32,7 +37,7 @@ public class RNStringeeReactPackage implements ReactPackage {
     @NonNull
     @Override
     public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
-        return Arrays.<ViewManager>asList(
+        return List.of(
                 new RNStringeeVideoViewManager(reactContext)
         );
     }

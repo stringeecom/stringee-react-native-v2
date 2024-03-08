@@ -2,6 +2,12 @@ import {NativeModules, Platform} from 'react-native';
 import {StringeeError} from '../../index';
 
 const RNStringeeClient = NativeModules.RNStringeeClient;
+const RNStringeeCall = NativeModules.RNStringeeCall;
+const RNStringeeCall2 = NativeModules.RNStringeeCall2;
+const RNStringeeVideo = NativeModules.RNStringeeVideo;
+const RNStringeeVideoRoom = NativeModules.RNStringeeVideoRoom;
+const RNStringeeVideoTrack = NativeModules.RNStringeeVideoTrack;
+
 const isIOS = Platform.OS === 'ios';
 const isAndroid = Platform.OS === 'android';
 
@@ -75,7 +81,7 @@ const callEvents = {
     onHandleOnAnotherDevice: 'didHandleOnAnotherDevice',
     onTrackMediaStateChange: 'trackMediaStateChange',
     onReceiveLocalTrack: 'didAddLocalTrack',
-    onReceiveRemoteTrack: 'didAddRemoteTrack'
+    onReceiveRemoteTrack: 'didAddRemoteTrack',
   },
   android: {
     onChangeSignalingState: 'onSignalingStateChange',
@@ -115,25 +121,14 @@ const stringeeCall2Events = [
   'onAudioDeviceChange',
 ];
 
-const stringeeRoomEvents = {
-  ios: [
-    'onJoinRoom',
-    'onLeaveRoom',
-    'onAddVideoTrack',
-    'onRemoveVideoTrack',
-    'onReceiptRoomMessage',
-    'onTrackReadyToPlay',
-  ],
-  android: [
-    'onJoinRoom',
-    'onLeaveRoom',
-    'onAddVideoTrack',
-    'onRemoveVideoTrack',
-    'onReceiptRoomMessage',
-    'onTrackReadyToPlay',
-    'onTrackMediaStateChange'
-  ]
-}
+const stringeeRoomEvents = [
+  'onJoinRoom',
+  'onLeaveRoom',
+  'onAddVideoTrack',
+  'onRemoveVideoTrack',
+  'onReceiptRoomMessage',
+  'onTrackReadyToPlay',
+];
 
 const StringeeVideoScalingType = {
   fit: 'fit',
@@ -180,7 +175,7 @@ const AudioDevice = {
 const VideoResolution = {
   normal: 'NORMAL',
   hd: 'HD',
-  fullHD : 'FULL_HD'
+  fullHD: 'FULL_HD',
 };
 
 const CallType = {
@@ -294,6 +289,11 @@ export {
   VideoResolution,
   CallType,
   RNStringeeClient,
+  RNStringeeCall,
+  RNStringeeCall2,
+  RNStringeeVideo,
+  RNStringeeVideoRoom,
+  RNStringeeVideoTrack,
   isIOS,
   isAndroid,
   TrackType,
@@ -304,5 +304,5 @@ export {
   getListAudioDevice,
   getAudioDevice,
   getTrackType,
-  stringeeRoomEvents
+  stringeeRoomEvents,
 };

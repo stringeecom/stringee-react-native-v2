@@ -1,4 +1,4 @@
-export class NewMessageInfo {
+class NewMessageInfo {
   convId: string;
   type: number;
   message: {
@@ -41,3 +41,5 @@ export class NewMessageInfo {
     this.message = props.message;
   }
 }
+
+export {NewMessageInfo};

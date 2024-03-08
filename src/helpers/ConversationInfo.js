@@ -1,6 +1,8 @@
-export class ConversationInfo {
+class ConversationInfo {
   name: string;
   avatar: string;
 
   constructor() {}
 }
+
+export {ConversationInfo};

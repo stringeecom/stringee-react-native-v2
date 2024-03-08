@@ -1,4 +1,4 @@
-export class UserInfo {
+class UserInfo {
   name: string;
   email: string;
   avatar: string;
@@ -12,3 +12,5 @@ export class UserInfo {
   userAgent: string;
   constructor() {}
 }
+
+export {UserInfo};

@@ -117,7 +117,7 @@ public class RNStringeeVideoModule extends ReactContextBaseJavaModule {
 
         if (stringeeVideoTrack != null) {
             String localId = Utils.createLocalId();
-            VideoTrackManager videoTrackManager = new VideoTrackManager(clientWrapper, stringeeVideoTrack, localId, false);
+            VideoTrackManager videoTrackManager = new VideoTrackManager(stringeeVideoTrack, localId, false);
             StringeeManager.getInstance().getTracksMap().put(localId, videoTrackManager);
             callback.invoke(true, 0, "Success", Utils.getLocalVideoTrackMap(videoTrackManager, clientWrapper.getStringeeClient().getUserId()));
         }

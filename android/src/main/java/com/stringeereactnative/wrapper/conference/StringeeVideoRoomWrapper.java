@@ -51,7 +51,7 @@ public class StringeeVideoRoomWrapper implements StringeeRoomListener, StringeeA
             userMaps.pushMap(Utils.getRoomUserMap(remoteParticipant));
             for (StringeeVideoTrack videoTrack : remoteParticipant.getVideoTracks()) {
                 trackMaps.pushMap(Utils.getVideoTrackInfoMap(videoTrack));
-                VideoTrackManager videoTrackManager = new VideoTrackManager(clientWrapper, videoTrack, false);
+                VideoTrackManager videoTrackManager = new VideoTrackManager(videoTrack, false);
                 StringeeManager.getInstance().getTracksMap().put(videoTrack.getId(), videoTrackManager);
             }
         }

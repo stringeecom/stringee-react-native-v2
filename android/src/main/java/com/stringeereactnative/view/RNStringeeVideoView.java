@@ -16,7 +16,6 @@ import com.stringee.video.TextureViewRenderer;
 import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.common.Utils;
 import com.stringeereactnative.common.VideoTrackManager;
-import com.stringeereactnative.wrapper.call.StringeeCall2Wrapper;
 import com.stringeereactnative.wrapper.call.StringeeCallWrapper;
 import com.stringeereactnative.wrapper.conference.StringeeVideoRoomWrapper;
 

@@ -1,11 +1,12 @@
 package com.stringeereactnative.wrapper.conference;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.stringee.call.StringeeCall;
 import com.stringee.common.StringeeAudioManager;
 import com.stringee.exception.StringeeError;
 import com.stringee.listener.StatusListener;
@@ -51,7 +52,8 @@ public class StringeeVideoRoomWrapper implements StringeeRoomListener, StringeeA
             userMaps.pushMap(Utils.getRoomUserMap(remoteParticipant));
             for (StringeeVideoTrack videoTrack : remoteParticipant.getVideoTracks()) {
                 trackMaps.pushMap(Utils.getVideoTrackInfoMap(videoTrack));
-                VideoTrackManager videoTrackManager = new VideoTrackManager(videoTrack, false);
+                VideoTrackManager videoTrackManager = VideoTrackManager.create(videoTrack);
+                videoTrackManager.setRoomWrapper(this);
                 StringeeManager.getInstance().getTracksMap().put(videoTrack.getId(), videoTrackManager);
             }
         }
@@ -107,6 +109,9 @@ public class StringeeVideoRoomWrapper implements StringeeRoomListener, StringeeA
 
     @Override
     public void onVideoTrackAdded(StringeeRoom stringeeRoom, StringeeVideoTrack stringeeVideoTrack) {
+        VideoTrackManager videoTrackManager = VideoTrackManager.create(stringeeVideoTrack);
+        videoTrackManager.setRoomWrapper(this);
+        StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
         if (Utils.containsEvent(events, Constant.ROOM_ON_ADD_VIDEO_TRACK)) {
             // Data
             WritableMap data = Arguments.createMap();
@@ -122,6 +127,10 @@ public class StringeeVideoRoomWrapper implements StringeeRoomListener, StringeeA
 
     @Override
     public void onVideoTrackRemoved(StringeeRoom stringeeRoom, StringeeVideoTrack stringeeVideoTrack) {
+        VideoTrackManager videoTrackManager = StringeeManager.getInstance().getTracksMap().get(stringeeVideoTrack.getId());
+        if (videoTrackManager != null) {
+            StringeeManager.getInstance().getTracksMap().remove(stringeeVideoTrack.getId());
+        }
         if (Utils.containsEvent(events, Constant.ROOM_ON_REMOVE_VIDEO_TRACK)) {
             // Data
             WritableMap data = Arguments.createMap();
@@ -173,7 +182,8 @@ public class StringeeVideoRoomWrapper implements StringeeRoomListener, StringeeA
         }
     }
 
-    public void sendTrackReadyToPlayEvent(VideoTrackManager trackManager){
+    public void sendTrackReadyToPlayEvent(VideoTrackManager trackManager) {
+        Log.d("Stringee", "sendTrackReadyToPlayEvent: " + trackManager.toString());
         if (Utils.containsEvent(events, Constant.ROOM_ON_TRACK_READY_TO_PLAY)) {
             // Data
             WritableMap data = Arguments.createMap();
@@ -339,5 +349,6 @@ public class StringeeVideoRoomWrapper implements StringeeRoomListener, StringeeA
         if (stringeeRoom != null) {
             StringeeVideo.release(stringeeRoom);
         }
+        StringeeManager.getInstance().getRoomMap().remove(uuid);
     }
 }

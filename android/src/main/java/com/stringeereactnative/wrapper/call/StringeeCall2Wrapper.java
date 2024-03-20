@@ -119,7 +119,7 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     @Override
     public void onLocalTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
-        VideoTrackManager videoTrackManager = new VideoTrackManager(stringeeVideoTrack, stringeeVideoTrack.getId(), true);
+        VideoTrackManager videoTrackManager = VideoTrackManager.create(stringeeVideoTrack);
         StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
         if (Utils.containsEvent(events, Constant.CALL2_ON_LOCAL_TRACK_ADDED)) {
             // Data
@@ -142,7 +142,7 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     @Override
     public void onRemoteTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
-        VideoTrackManager videoTrackManager = new VideoTrackManager(stringeeVideoTrack, stringeeVideoTrack.getId(), true);
+        VideoTrackManager videoTrackManager = VideoTrackManager.create(stringeeVideoTrack);
         StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
         if (Utils.containsEvent(events, Constant.CALL2_ON_REMOTE_TRACK_ADDED)) {
             // Data

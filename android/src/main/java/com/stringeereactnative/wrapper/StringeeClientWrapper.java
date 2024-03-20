@@ -492,7 +492,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.createConversation(participants, convOptions, new CallbackListener<Conversation>() {
+        stringeeClient.createConversation(participants, convOptions, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 WritableMap params = Utils.getConversationMap(conversation);
@@ -512,7 +512,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 WritableMap params = Utils.getConversationMap(conversation);
@@ -532,7 +532,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLocalConversations(userId, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getLocalConversations(userId, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -556,7 +556,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLastConversations(count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getLastConversations(count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -580,7 +580,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationsBefore((long) datetime, count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getConversationsBefore((long) datetime, count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -604,7 +604,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationsAfter((long) datetime, count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getConversationsAfter((long) datetime, count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -628,7 +628,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(final Conversation conversation) {
                 if (conversation.isGroup()) {
@@ -663,10 +663,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.addParticipants(stringeeClient, users, new CallbackListener<List<User>>() {
+                conversation.addParticipants(stringeeClient, users, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<User> users) {
                         WritableArray params = Arguments.createArray();
@@ -698,10 +698,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.removeParticipants(stringeeClient, users, new CallbackListener<List<User>>() {
+                conversation.removeParticipants(stringeeClient, users, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<User> users) {
                         WritableArray params = Arguments.createArray();
@@ -733,7 +733,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.sendMessage(stringeeClient, message, new StatusListener() {
@@ -778,10 +778,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getLocalMessages(stringeeClient, count, new CallbackListener<List<Message>>() {
+                conversation.getLocalMessages(stringeeClient, count, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         WritableArray params = Arguments.createArray();
@@ -812,10 +812,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getLastMessages(stringeeClient, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<List<Message>>() {
+                conversation.getLastMessages(stringeeClient, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         WritableArray params = Arguments.createArray();
@@ -846,10 +846,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessagesAfter(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<List<Message>>() {
+                conversation.getMessagesAfter(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         WritableArray params = Arguments.createArray();
@@ -880,10 +880,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessagesBefore(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<List<Message>>() {
+                conversation.getMessagesBefore(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         WritableArray params = Arguments.createArray();
@@ -933,7 +933,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.markAllAsRead(stringeeClient, new StatusListener() {
@@ -966,7 +966,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.updateConversation(stringeeClient, name, avatar, new StatusListener() {
@@ -995,7 +995,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationByUserId(userId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationByUserId(userId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 WritableMap params = Utils.getConversationMap(conversation);
@@ -1015,7 +1015,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getTotalUnread(new CallbackListener<Integer>() {
+        stringeeClient.getTotalUnread(new CallbackListener<>() {
             @Override
             public void onSuccess(Integer count) {
                 callback.invoke(true, 0, "Success", count);
@@ -1034,7 +1034,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLastUnreadConversations(count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getLastUnreadConversations(count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -1058,7 +1058,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getUnreadConversationsBefore((long) datetime, count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getUnreadConversationsBefore((long) datetime, count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -1082,7 +1082,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getUnreadConversationsAfter((long) datetime, count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getUnreadConversationsAfter((long) datetime, count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -1106,7 +1106,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLastConversations(count, true, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getLastConversations(count, true, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -1130,7 +1130,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationsBefore((long) datetime, count, true, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getConversationsBefore((long) datetime, count, true, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -1154,7 +1154,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationsAfter((long) datetime, count, true, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getConversationsAfter((long) datetime, count, true, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -1178,10 +1178,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getLastMessages(stringeeClient, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<List<Message>>() {
+                conversation.getLastMessages(stringeeClient, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         WritableArray params = Arguments.createArray();
@@ -1212,10 +1212,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessagesAfter(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<List<Message>>() {
+                conversation.getMessagesAfter(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         WritableArray params = Arguments.createArray();
@@ -1246,10 +1246,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessagesBefore(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<List<Message>>() {
+                conversation.getMessagesBefore(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         WritableArray params = Arguments.createArray();
@@ -1280,7 +1280,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getChatProfile(widgetKey, new CallbackListener<ChatProfile>() {
+        stringeeClient.getChatProfile(widgetKey, new CallbackListener<>() {
             @Override
             public void onSuccess(ChatProfile chatProfile) {
                 WritableMap params = Utils.getChatProfileMap(chatProfile);
@@ -1301,7 +1301,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLiveChatToken(widgetKey, name, email, new CallbackListener<String>() {
+        stringeeClient.getLiveChatToken(widgetKey, name, email, new CallbackListener<>() {
             @Override
             public void onSuccess(String token) {
                 callback.invoke(true, 0, "Success", token);
@@ -1361,7 +1361,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getUserInfo(userIdList, new CallbackListener<List<User>>() {
+        stringeeClient.getUserInfo(userIdList, new CallbackListener<>() {
             @Override
             public void onSuccess(List<User> users) {
                 WritableArray params = Arguments.createArray();
@@ -1386,7 +1386,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.createLiveChat(queueId, new CallbackListener<Conversation>() {
+        stringeeClient.createLiveChat(queueId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 WritableMap params = Utils.getConversationMap(conversation);
@@ -1407,13 +1407,13 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getChatRequests(new CallbackListener<List<ChatRequest>>() {
+        stringeeClient.getChatRequests(new CallbackListener<>() {
             @Override
             public void onSuccess(List<ChatRequest> chatRequestList) {
                 for (int i = 0; i < chatRequestList.size(); i++) {
                     ChatRequest chatRequest = chatRequestList.get(i);
                     if (convId.equals(chatRequest.getConvId())) {
-                        chatRequest.accept(stringeeClient, new CallbackListener<Conversation>() {
+                        chatRequest.accept(stringeeClient, new CallbackListener<>() {
                             @Override
                             public void onSuccess(Conversation conversation) {
                                 callback.invoke(true, 0, "Success");
@@ -1444,7 +1444,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getChatRequests(new CallbackListener<List<ChatRequest>>() {
+        stringeeClient.getChatRequests(new CallbackListener<>() {
             @Override
             public void onSuccess(List<ChatRequest> chatRequestList) {
                 for (int i = 0; i < chatRequestList.size(); i++) {
@@ -1501,7 +1501,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.sendChatTranscriptTo(stringeeClient, email, domain, new StatusListener() {
@@ -1532,7 +1532,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.endChat(stringeeClient, new StatusListener() {
@@ -1563,7 +1563,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.beginTyping(stringeeClient, new StatusListener() {
@@ -1594,7 +1594,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.endTyping(stringeeClient, new StatusListener() {
@@ -1624,10 +1624,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<List<Message>>() {
+                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         messages.get(0).pinOrUnpin(stringeeClient, pinOrUnpin, new StatusListener() {
@@ -1666,10 +1666,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<List<Message>>() {
+                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         messages.get(0).edit(stringeeClient, newContent, new StatusListener() {
@@ -1728,10 +1728,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<List<Message>>() {
+                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         if (!messages.isEmpty()) {

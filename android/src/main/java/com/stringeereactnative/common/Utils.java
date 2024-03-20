@@ -14,8 +14,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -31,7 +29,6 @@ import com.stringee.video.RemoteParticipant;
 import com.stringee.video.StringeeRoom;
 import com.stringee.video.StringeeVideoTrack;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -240,41 +237,23 @@ public class Utils {
     }
 
     public static WritableMap getVideoTrackMap(VideoTrackManager trackManager) {
-        StringeeVideoTrack stringeeVideoTrack = trackManager.getVideoTrack();
         WritableMap videoTrackMap = Arguments.createMap();
         videoTrackMap.putString("localId", trackManager.getLocalId());
-        videoTrackMap.putString("serverId", stringeeVideoTrack.getId() != null ? stringeeVideoTrack.getId() : "");
-        videoTrackMap.putBoolean("isLocal", stringeeVideoTrack.isLocal());
-        videoTrackMap.putBoolean("audio", stringeeVideoTrack.audioEnabled());
-        videoTrackMap.putBoolean("video", stringeeVideoTrack.videoEnabled());
-        videoTrackMap.putBoolean("screen", stringeeVideoTrack.isScreenCapture());
-        videoTrackMap.putInt("trackType", stringeeVideoTrack.getTrackType().getValue());
+        videoTrackMap.putString("serverId", trackManager.getServerId());
+        videoTrackMap.putBoolean("isLocal", trackManager.isLocal());
+        videoTrackMap.putBoolean("audio", trackManager.audioEnabled());
+        videoTrackMap.putBoolean("video", trackManager.videoEnabled());
+        videoTrackMap.putBoolean("screen", trackManager.isScreenCapture());
+        videoTrackMap.putInt("trackType", trackManager.getTrackType().getValue());
         WritableMap roomUserMap = Arguments.createMap();
-        roomUserMap.putString("userId", stringeeVideoTrack.getUserId());
+        roomUserMap.putString("userId", trackManager.getPublisher());
         videoTrackMap.putMap("publisher", roomUserMap);
         return videoTrackMap;
     }
-
-    public static WritableMap getLocalVideoTrackMap(VideoTrackManager trackManager, String clientId) {
-        StringeeVideoTrack stringeeVideoTrack = trackManager.getVideoTrack();
-        WritableMap videoTrackMap = Arguments.createMap();
-        videoTrackMap.putString("localId", trackManager.getLocalId());
-        videoTrackMap.putString("serverId", stringeeVideoTrack.getId() != null ? stringeeVideoTrack.getId() : "");
-        videoTrackMap.putBoolean("isLocal", stringeeVideoTrack.isLocal());
-        videoTrackMap.putBoolean("audio", stringeeVideoTrack.audioEnabled());
-        videoTrackMap.putBoolean("video", stringeeVideoTrack.videoEnabled());
-        videoTrackMap.putBoolean("screen", stringeeVideoTrack.isScreenCapture());
-        videoTrackMap.putInt("trackType", stringeeVideoTrack.getTrackType().getValue());
-        WritableMap roomUserMap = Arguments.createMap();
-        roomUserMap.putString("userId", clientId);
-        videoTrackMap.putMap("publisher", roomUserMap);
-        return videoTrackMap;
-    }
-
 
     public static WritableMap getVideoTrackInfoMap(StringeeVideoTrack stringeeVideoTrack) {
         WritableMap videoTrackMap = Arguments.createMap();
-        videoTrackMap.putString("id", stringeeVideoTrack.getLocalId());
+        videoTrackMap.putString("id", stringeeVideoTrack.getId());
         videoTrackMap.putBoolean("audio", stringeeVideoTrack.audioEnabled());
         videoTrackMap.putBoolean("video", stringeeVideoTrack.videoEnabled());
         videoTrackMap.putBoolean("screen", stringeeVideoTrack.isScreenCapture());

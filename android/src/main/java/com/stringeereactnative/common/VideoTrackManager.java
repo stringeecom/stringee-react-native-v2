@@ -1,7 +1,5 @@
 package com.stringeereactnative.common;
 
-import android.util.Log;
-
 import com.stringee.video.StringeeVideoTrack;
 import com.stringee.video.StringeeVideoTrack.Listener;
 import com.stringee.video.StringeeVideoTrack.MediaState;
@@ -9,67 +7,80 @@ import com.stringeereactnative.wrapper.conference.StringeeVideoRoomWrapper;
 
 public class VideoTrackManager implements Listener {
     private StringeeVideoRoomWrapper roomWrapper;
-    private final String localId;
-    private final StringeeVideoTrack videoTrack;
-    private boolean mediaAvailable = false;
-    private final boolean forCall;
-    private Listener listener;
+    private String localId;
+    private String publisher;
+    private StringeeVideoTrack videoTrack;
 
-    public VideoTrackManager(StringeeVideoTrack videoTrack, boolean forCall) {
-        this.videoTrack = videoTrack;
-        this.localId = videoTrack.getLocalId();
-        this.forCall = forCall;
-        videoTrack.setListener(this);
-        if (forCall) {
-            mediaAvailable = true;
-        }
+    public static VideoTrackManager create(StringeeVideoTrack videoTrack) {
+        VideoTrackManager videoTrackManager = new VideoTrackManager();
+        videoTrackManager.setVideoTrack(videoTrack);
+        return videoTrackManager;
     }
 
-    public VideoTrackManager(StringeeVideoTrack videoTrack, String localId, boolean forCall) {
-        this.videoTrack = videoTrack;
-        this.localId = localId;
-        this.forCall = forCall;
-        videoTrack.setListener(this);
-        if (forCall) {
-            mediaAvailable = true;
-        }
-    }
-
-    public void setListener(StringeeVideoRoomWrapper roomWrapper, Listener listener) {
-        this.listener = listener;
-        this.roomWrapper = roomWrapper;
-        if (mediaAvailable) {
-            if (listener != null) {
-                listener.onMediaAvailable();
-            }
-        }
-    }
-
-    public boolean isForCall() {
-        return forCall;
+    public static VideoTrackManager create(StringeeVideoTrack videoTrack, String localId, String publisher) {
+        VideoTrackManager videoTrackManager = new VideoTrackManager();
+        videoTrackManager.setVideoTrack(videoTrack);
+        videoTrackManager.setLocalId(localId);
+        videoTrackManager.setPublisher(publisher);
+        return videoTrackManager;
     }
 
     public StringeeVideoTrack getVideoTrack() {
         return videoTrack;
     }
 
-    public String getLocalId() {
-        return localId;
+    public void setVideoTrack(StringeeVideoTrack videoTrack) {
+        this.videoTrack = videoTrack;
+        this.videoTrack.setListener(this);
     }
 
-    public VideoTrackManager getThis() {
-        return this;
+    public String getLocalId() {
+        return Utils.isStringEmpty(localId) ? videoTrack != null ? videoTrack.getId() : "" : localId;
+    }
+
+    public void setLocalId(String localId) {
+        this.localId = localId;
+    }
+
+    public String getServerId() {
+        return videoTrack != null ? videoTrack.getId() : "";
+    }
+
+    public String getPublisher() {
+        return Utils.isStringEmpty(publisher) ? videoTrack != null ? videoTrack.getUserId() : "" : publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public boolean isLocal() {
+        return videoTrack != null && videoTrack.isLocal();
+    }
+
+    public boolean audioEnabled() {
+        return videoTrack != null && videoTrack.audioEnabled();
+    }
+
+    public boolean videoEnabled() {
+        return videoTrack != null && videoTrack.videoEnabled();
+    }
+
+    public boolean isScreenCapture() {
+        return videoTrack != null && videoTrack.isScreenCapture();
+    }
+
+    public StringeeVideoTrack.TrackType getTrackType() {
+        return videoTrack != null ? videoTrack.getTrackType() : StringeeVideoTrack.TrackType.PLAYER;
+    }
+
+    public void setRoomWrapper(StringeeVideoRoomWrapper roomWrapper) {
+        this.roomWrapper = roomWrapper;
     }
 
     @Override
     public void onMediaAvailable() {
-        mediaAvailable = true;
-        if (listener != null) {
-            listener.onMediaAvailable();
-        }
-
-        Log.d("Stringee", "trackReadyToPlay: " + (videoTrack.isLocal() ? localId : videoTrack.getId()));
-        if (!forCall && roomWrapper != null) {
+        if (roomWrapper != null) {
             roomWrapper.sendTrackReadyToPlayEvent(this);
         }
     }

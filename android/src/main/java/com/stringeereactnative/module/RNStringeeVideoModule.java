@@ -9,7 +9,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.stringee.exception.StringeeError;
 import com.stringee.listener.StatusListener;
-import com.stringee.video.StringeeRoom;
 import com.stringee.video.StringeeVideo;
 import com.stringee.video.StringeeVideoTrack;
 import com.stringee.video.VideoDimensions;
@@ -18,11 +17,7 @@ import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.common.Utils;
 import com.stringeereactnative.common.VideoTrackManager;
 import com.stringeereactnative.wrapper.StringeeClientWrapper;
-import com.stringeereactnative.wrapper.call.StringeeCall2Wrapper;
 import com.stringeereactnative.wrapper.conference.StringeeVideoRoomWrapper;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.UUID;
 
@@ -59,7 +54,7 @@ public class RNStringeeVideoModule extends ReactContextBaseJavaModule {
             return;
         }
 
-        StringeeVideoRoomWrapper roomWrapper = StringeeManager.getInstance().getRoomMap().get(uuid);
+        StringeeVideoRoomWrapper roomWrapper = StringeeManager.getInstance().getRoomMap().get(roomUUID);
         if (roomWrapper == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_ROOM_NOT_INITIALIZED);
             return;
@@ -117,9 +112,10 @@ public class RNStringeeVideoModule extends ReactContextBaseJavaModule {
 
         if (stringeeVideoTrack != null) {
             String localId = Utils.createLocalId();
-            VideoTrackManager videoTrackManager = new VideoTrackManager(stringeeVideoTrack, localId, false);
+            VideoTrackManager videoTrackManager = VideoTrackManager.create(stringeeVideoTrack, localId, clientWrapper.getStringeeClient().getUserId());
+            callback.invoke(true, 0, "Success", Utils.getVideoTrackMap(videoTrackManager));
+            videoTrackManager.setRoomWrapper(roomWrapper);
             StringeeManager.getInstance().getTracksMap().put(localId, videoTrackManager);
-            callback.invoke(true, 0, "Success", Utils.getLocalVideoTrackMap(videoTrackManager, clientWrapper.getStringeeClient().getUserId()));
         }
     }
 

@@ -115,6 +115,7 @@ public class RNStringeeVideoTrackModule extends ReactContextBaseJavaModule {
             videoTrackManager.getVideoTrack().switchCamera(new StatusListener() {
                 @Override
                 public void onSuccess() {
+                    isFrontCamera = !isFrontCamera;
                     callback.invoke(true, 0, "Success");
                 }
 

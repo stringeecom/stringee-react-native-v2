@@ -60,8 +60,8 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
                         boolean isLocal = newProps.getBoolean("local");
                         String scalingType = newProps.getString("scalingType");
                         ReadableMap videoTrackMap = newProps.getMap("videoTrack");
-                        root.setWidth(width);
-                        root.setHeight(height);
+                        root.setPropsWidth(width);
+                        root.setPropsHeight(height);
                         root.setUUID(uuid);
                         root.setLocal(isLocal);
                         root.setScalingType(scalingType);
@@ -75,12 +75,12 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
 
     @ReactProp(name = ViewProps.WIDTH)
     public void setWidth(RNStringeeVideoView view, int width) {
-        view.setWidth(width);
+        view.setPropsWidth(width);
     }
 
     @ReactProp(name = ViewProps.HEIGHT)
     public void setHeight(RNStringeeVideoView view, int height) {
-        view.setHeight(height);
+        view.setPropsHeight(height);
     }
 
     @ReactProp(name = "uuid")

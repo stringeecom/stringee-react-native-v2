@@ -54,18 +54,30 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
                 case COMMAND_RELOAD:
                     if (args.size() > 0) {
                         ReadableMap newProps = args.getMap(0);
-                        int width = newProps.getInt("width");
-                        int height = newProps.getInt("height");
-                        String uuid = newProps.getString("uuid");
-                        boolean isLocal = newProps.getBoolean("local");
-                        String scalingType = newProps.getString("scalingType");
-                        ReadableMap videoTrackMap = newProps.getMap("videoTrack");
-                        root.setPropsWidth(width);
-                        root.setPropsHeight(height);
-                        root.setUUID(uuid);
-                        root.setLocal(isLocal);
-                        root.setScalingType(scalingType);
-                        root.setVideoTrackMap(videoTrackMap);
+                        if (newProps.hasKey("width")) {
+                            int width = newProps.getInt("width");
+                            root.setPropsWidth(width);
+                        }
+                        if (newProps.hasKey("height")) {
+                            int height = newProps.getInt("height");
+                            root.setPropsHeight(height);
+                        }
+                        if (newProps.hasKey("uuid")) {
+                            String uuid = newProps.getString("uuid");
+                            root.setUUID(uuid);
+                        }
+                        if (newProps.hasKey("local")) {
+                            boolean isLocal = newProps.getBoolean("local");
+                            root.setLocal(isLocal);
+                        }
+                        if (newProps.hasKey("scalingType")) {
+                            String scalingType = newProps.getString("scalingType");
+                            root.setScalingType(scalingType);
+                        }
+                        if (newProps.hasKey("videoTrack")) {
+                            ReadableMap videoTrackMap = newProps.getMap("videoTrack");
+                            root.setVideoTrackMap(videoTrackMap);
+                        }
                         root.createView();
                     }
                     break;

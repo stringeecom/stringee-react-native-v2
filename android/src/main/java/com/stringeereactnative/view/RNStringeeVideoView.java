@@ -1,526 +1,148 @@
-package com.stringeereactnative.wrapper.call;
+package com.stringeereactnative.view;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.stringee.call.StringeeCall2;
-import com.stringee.common.StringeeAudioManager;
-import com.stringee.exception.StringeeError;
-import com.stringee.listener.StatusListener;
+import android.content.Context;
+import android.view.Choreographer;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.ReadableMap;
 import com.stringee.video.StringeeVideoTrack;
-import com.stringeereactnative.common.Constant;
+import com.stringee.video.TextureViewRenderer;
 import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.common.Utils;
 import com.stringeereactnative.common.VideoTrackManager;
-import com.stringeereactnative.wrapper.StringeeClientWrapper;
+import com.stringeereactnative.wrapper.call.StringeeCallWrapper;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.webrtc.RendererCommon.ScalingType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+public class RNStringeeVideoView extends FrameLayout {
+    private int propsWidth = 0;
+    private int propsHeight = 0;
+    private String uuid;
+    private boolean isLocal = false;
+    private ScalingType scalingType = ScalingType.SCALE_ASPECT_FILL;
+    private ReadableMap videoTrackMap;
 
-public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEvents, StringeeCall2.StringeeCallListener {
-    private final List<String> events = new ArrayList<>();
-    private final ReactContext reactContext;
-    private StringeeCall2 stringeeCall2;
-    private final String uuid;
-    private StringeeClientWrapper clientWrapper;
-    private Callback makeCallCallback;
+    public RNStringeeVideoView(@NonNull Context context) {
+        super(context);
+    }
 
-    public StringeeCall2Wrapper(String uuid, ReactContext reactContext) {
-        this.reactContext = reactContext;
+    public void setPropsWidth(int propsWidth) {
+        this.propsWidth = Utils.dpiToPx(getContext(), propsWidth);
+    }
+
+    public void setPropsHeight(int propsHeight) {
+        this.propsHeight = Utils.dpiToPx(getContext(), propsHeight);
+    }
+
+    public void setUUID(String uuid) {
         this.uuid = uuid;
     }
 
-    public void setStringeeCall2(StringeeCall2 stringeeCall2) {
-        this.stringeeCall2 = stringeeCall2;
-        if (this.stringeeCall2 != null) {
-            this.stringeeCall2.setCallListener(this);
-        }
+    public void setLocal(boolean local) {
+        isLocal = local;
     }
 
-    public void setClientWrapper(StringeeClientWrapper clientWrapper) {
-        this.clientWrapper = clientWrapper;
-    }
-
-    @Override
-    public void onSignalingStateChange(StringeeCall2 stringeeCall2, StringeeCall2.SignalingState signalingState, String reason, int sipCode, String sipReason) {
-        if (signalingState == StringeeCall2.SignalingState.CALLING) {
-            makeCallCallback.invoke(true, 0, "Success", stringeeCall2.getCallId(), stringeeCall2.getCustomDataFromYourServer());
-        }
-
-        if (Utils.containsEvent(events, Constant.CALL2_ON_SIGNALING_STATE_CHANGE)) {
-            // Data
-            WritableMap data = Arguments.createMap();
-            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putInt(Constant.KEY_CODE, signalingState.getValue());
-            data.putString(Constant.KEY_REASON, reason);
-            data.putInt(Constant.KEY_SIP_CODE, sipCode);
-            data.putString(Constant.KEY_SIP_REASON, sipReason);
-
-            // Event data
-            WritableMap eventData = Arguments.createMap();
-            eventData.putString(Constant.KEY_UUID, uuid);
-            eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_SIGNALING_STATE_CHANGE, eventData);
-        }
-    }
-
-    @Override
-    public void onError(StringeeCall2 stringeeCall2, int code, String desc) {
-        makeCallCallback.invoke(false, code, desc, stringeeCall2.getCallId(), stringeeCall2.getCustomDataFromYourServer());
-    }
-
-    @Override
-    public void onHandledOnAnotherDevice(StringeeCall2 stringeeCall2, StringeeCall2.SignalingState signalingState, String description) {
-        if (Utils.containsEvent(events, Constant.CALL2_ON_HANDLE_ON_ANOTHER_DEVICE)) {
-            // Data
-            WritableMap data = Arguments.createMap();
-            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putInt(Constant.KEY_CODE, signalingState.getValue());
-            data.putString(Constant.KEY_DESCRIPTION, description);
-
-            // Event data
-            WritableMap eventData = Arguments.createMap();
-            eventData.putString(Constant.KEY_UUID, uuid);
-            eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_HANDLE_ON_ANOTHER_DEVICE, eventData);
-        }
-    }
-
-    @Override
-    public void onMediaStateChange(StringeeCall2 stringeeCall2, StringeeCall2.MediaState mediaState) {
-        if (Utils.containsEvent(events, Constant.CALL2_ON_MEDIA_STATE_CHANGE)) {
-            // Data
-            WritableMap data = Arguments.createMap();
-            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putInt(Constant.KEY_CODE, mediaState.getValue());
-            String description = mediaState == StringeeCall2.MediaState.CONNECTED ? "Connected" : "Disconnected";
-            data.putString(Constant.KEY_DESCRIPTION, description);
-
-            // Event data
-            WritableMap eventData = Arguments.createMap();
-            eventData.putString(Constant.KEY_UUID, uuid);
-            eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_MEDIA_STATE_CHANGE, eventData);
-        }
-    }
-
-    @Override
-    public void onLocalStream(StringeeCall2 stringeeCall2) {
-
-    }
-
-    @Override
-    public void onLocalTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
-        VideoTrackManager videoTrackManager = VideoTrackManager.create(stringeeVideoTrack);
-        StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
-        if (Utils.containsEvent(events, Constant.CALL2_ON_LOCAL_TRACK_ADDED)) {
-            // Data
-            WritableMap data = Arguments.createMap();
-            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putMap(Constant.KEY_VIDEO_TRACK, Utils.getVideoTrackMap(videoTrackManager));
-
-            // Event data
-            WritableMap eventData = Arguments.createMap();
-            eventData.putString(Constant.KEY_UUID, uuid);
-            eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_LOCAL_TRACK_ADDED, eventData);
-        }
-    }
-
-    @Override
-    public void onRemoteStream(StringeeCall2 stringeeCall2) {
-
-    }
-
-    @Override
-    public void onRemoteTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
-        VideoTrackManager videoTrackManager = VideoTrackManager.create(stringeeVideoTrack);
-        StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
-        if (Utils.containsEvent(events, Constant.CALL2_ON_REMOTE_TRACK_ADDED)) {
-            // Data
-            WritableMap data = Arguments.createMap();
-            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putMap(Constant.KEY_VIDEO_TRACK, Utils.getVideoTrackMap(videoTrackManager));
-
-            // Event data
-            WritableMap eventData = Arguments.createMap();
-            eventData.putString(Constant.KEY_UUID, uuid);
-            eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_REMOTE_TRACK_ADDED, eventData);
-        }
-    }
-
-    @Override
-    public void onVideoTrackAdded(StringeeVideoTrack stringeeVideoTrack) {
-
-    }
-
-    @Override
-    public void onVideoTrackRemoved(StringeeVideoTrack stringeeVideoTrack) {
-
-    }
-
-    @Override
-    public void onCallInfo(StringeeCall2 stringeeCall2, JSONObject jsonObject) {
-        if (Utils.containsEvent(events, Constant.CALL2_ON_CALL_INFO)) {
-            // Data
-            WritableMap data = Arguments.createMap();
-            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putString(Constant.KEY_DATA, jsonObject.toString());
-
-            // Event data
-            WritableMap eventData = Arguments.createMap();
-            eventData.putString(Constant.KEY_UUID, uuid);
-            eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_CALL_INFO, eventData);
-        }
-    }
-
-    @Override
-    public void onTrackMediaStateChange(String from, StringeeVideoTrack.MediaType mediaType, boolean enable) {
-        if (Utils.containsEvent(events, Constant.CALL2_ON_TRACK_MEDIA_STATE_CHANGE)) {
-            // Data
-            WritableMap data = Arguments.createMap();
-            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putString(Constant.KEY_FROM, from);
-            data.putInt(Constant.KEY_MEDIA_TYPE, mediaType.getValue());
-            data.putBoolean(Constant.KEY_ENABLE, enable);
-
-            // Event data
-            WritableMap eventData = Arguments.createMap();
-            eventData.putString(Constant.KEY_UUID, uuid);
-            eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CALL2_ON_TRACK_MEDIA_STATE_CHANGE, eventData);
-        }
-    }
-
-    @Override
-    public void onAudioDeviceChanged(StringeeAudioManager.AudioDevice audioDevice, Set<StringeeAudioManager.AudioDevice> set) {
-        if (Utils.containsEvent(events, Constant.AUDIO_ON_AUDIO_DEVICE_CHANGE)) {
-            List<StringeeAudioManager.AudioDevice> listAvailableDevices = new ArrayList<>(set);
-            WritableArray availableDevicesMap = Arguments.createArray();
-            for (int j = 0; j < listAvailableDevices.size(); j++) {
-                StringeeAudioManager.AudioDevice device = listAvailableDevices.get(j);
-                availableDevicesMap.pushString(device.name());
-            }
-
-            // Data
-            WritableMap data = Arguments.createMap();
-            data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
-            data.putString(Constant.KEY_SELECTED_AUDIO_DEVICE, audioDevice.name());
-            data.putArray(Constant.KEY_AVAILABLE_AUDIO_DEVICE, availableDevicesMap);
-
-            // Event data
-            WritableMap eventData = Arguments.createMap();
-            eventData.putString(Constant.KEY_UUID, uuid);
-            eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.AUDIO_ON_AUDIO_DEVICE_CHANGE, eventData);
-        }
-    }
-
-    public void setNativeEvent(String event) {
-        if (!Utils.isStringEmpty(event)) {
-            events.add(event);
-        }
-    }
-
-    public void removeNativeEvent(String event) {
-        if (!Utils.isStringEmpty(event)) {
-            events.remove(event);
-        }
-    }
-
-    public void makeCall(String from, String to, boolean isVideoCall, String customData, String resolution, Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        makeCallCallback = callback;
-        stringeeCall2 = new StringeeCall2(clientWrapper.getStringeeClient(), from, to);
-        stringeeCall2.setCallListener(this);
-        stringeeCall2.setVideoCall(isVideoCall);
-        if (!Utils.isStringEmpty(customData)) {
-            stringeeCall2.setCustom(customData);
-        }
-        if (!Utils.isStringEmpty(resolution)) {
-            if (resolution.equalsIgnoreCase("NORMAL")) {
-                stringeeCall2.setQuality(StringeeCall2.VideoQuality.QUALITY_480P);
-            } else if (resolution.equalsIgnoreCase("HD")) {
-                stringeeCall2.setQuality(StringeeCall2.VideoQuality.QUALITY_720P);
+    public void setScalingType(@Nullable String scalingType) {
+        if (Utils.isStringEmpty(scalingType)) {
+            this.scalingType = ScalingType.SCALE_ASPECT_FILL;
+        } else {
+            switch (scalingType) {
+                case "fit":
+                    this.scalingType = ScalingType.SCALE_ASPECT_FIT;
+                    break;
+                case "fill":
+                default:
+                    this.scalingType = ScalingType.SCALE_ASPECT_FILL;
+                    break;
             }
         }
-
-        Utils.startAudioManager(reactContext, this);
-
-        stringeeCall2.makeCall(new StatusListener() {
-            @Override
-            public void onSuccess() {
-
-            }
-        });
     }
 
-    public void initAnswer(Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-
-        stringeeCall2.ringing(new StatusListener() {
-            @Override
-            public void onSuccess() {
-
-            }
-        });
-
-        callback.invoke(true, 0, "Success");
+    public void setVideoTrackMap(ReadableMap videoTrackMap) {
+        this.videoTrackMap = videoTrackMap;
     }
 
-    public void answer(Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
+    public void createView() {
+        this.removeAllViews();
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER;
+        FrameLayout layout = new FrameLayout(getContext());
+        layout.removeAllViews();
+        layout.setLayoutParams(new LayoutParams(getWidth(), getHeight()));
+        setupLayout(layout);
 
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-
-        stringeeCall2.answer(new StatusListener() {
-            @Override
-            public void onSuccess() {
-
-            }
-        });
-
-        Utils.startAudioManager(reactContext, this);
-
-        callback.invoke(true, 0, "Success");
-    }
-
-    public void reject(Callback callback) {
-        Utils.stopAudioManager();
-
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-
-        stringeeCall2.reject(new StatusListener() {
-            @Override
-            public void onSuccess() {
-
-            }
-        });
-
-        callback.invoke(true, 0, "Success");
-    }
-
-    public void hangup(Callback callback) {
-        Utils.stopAudioManager();
-
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-
-        stringeeCall2.hangup(new StatusListener() {
-            @Override
-            public void onSuccess() {
-
-            }
-        });
-
-        callback.invoke(true, 0, "Success");
-    }
-
-    public void enableVideo(boolean enabled, Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-
-        stringeeCall2.enableVideo(enabled);
-
-        callback.invoke(true, 0, "Success");
-    }
-
-    public void mute(boolean isMute, Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-
-        stringeeCall2.mute(isMute);
-
-        callback.invoke(true, 0, "Success");
-    }
-
-    public void sendCallInfo(JSONObject info, Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-        stringeeCall2.sendCallInfo(info, new StatusListener() {
-            @Override
-            public void onSuccess() {
-                callback.invoke(true, 0, "Success");
-            }
-
-            @Override
-            public void onError(StringeeError stringeeError) {
-                super.onError(stringeeError);
-                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
-            }
-        });
-    }
-
-    public void sendDTMF(String key, final Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-        stringeeCall2.sendDTMF(key, new StatusListener() {
-            @Override
-            public void onSuccess() {
-                callback.invoke(true, 0, "Success");
-            }
-
-            @Override
-            public void onError(StringeeError error) {
-                super.onError(error);
-                callback.invoke(false, error.getCode(), error.getMessage());
-            }
-        });
-    }
-
-    public void switchCamera(Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-        stringeeCall2.switchCamera(new StatusListener() {
-            @Override
-            public void onSuccess() {
-                callback.invoke(true, 0, "Success");
-            }
-
-            @Override
-            public void onError(StringeeError stringeeError) {
-                super.onError(stringeeError);
-                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
-            }
-        });
-    }
-
-    public void getCallStats(final Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.", "");
-            return;
-        }
-
-        stringeeCall2.getStats(new StringeeCall2.CallStatsListener() {
-            @Override
-            public void onCallStats(StringeeCall2.StringeeCallStats stringeeCallStats) {
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("bytesReceived", stringeeCallStats.callBytesReceived);
-                    jsonObject.put("packetsLost", stringeeCallStats.callPacketsLost);
-                    jsonObject.put("packetsReceived", stringeeCallStats.callPacketsReceived);
-                    jsonObject.put("timeStamp", stringeeCallStats.timeStamp);
-                } catch (JSONException e) {
-                    Utils.reportException(StringeeCall2Wrapper.class, e);
+        if (!Utils.isMapEmpty(videoTrackMap)) {
+            boolean isLocal = videoTrackMap.getBoolean("isLocal");
+            String trackId = isLocal ? videoTrackMap.getString("localId") : videoTrackMap.getString("serverId");
+            if (!Utils.isStringEmpty(trackId)) {
+                VideoTrackManager trackManager = StringeeManager.getInstance().getTracksMap().get(trackId);
+                if (trackManager != null) {
+                    StringeeVideoTrack stringeeVideoTrack = trackManager.getVideoTrack();
+                    if (stringeeVideoTrack != null) {
+                        TextureViewRenderer videoView = stringeeVideoTrack.getView2(getContext());
+                        if (videoView != null) {
+                            if (videoView.getParent() != null) {
+                                ((ViewGroup) videoView.getParent()).removeView(videoView);
+                            }
+                            layout.addView(videoView, layoutParams);
+                            stringeeVideoTrack.renderView2(scalingType);
+                        }
+                    }
                 }
-                callback.invoke(true, 0, "Success", jsonObject.toString());
+            }
+        }
+
+        if (!Utils.isStringEmpty(uuid)) {
+            StringeeCallWrapper callWrapper = StringeeManager.getInstance().getCallMap().get(uuid);
+            if (callWrapper != null) {
+                if (isLocal) {
+                    TextureViewRenderer localView = callWrapper.getLocalView();
+                    if (localView != null) {
+                        if (localView.getParent() != null) {
+                            ((ViewGroup) localView.getParent()).removeView(localView);
+                        }
+                        layout.addView(localView, layoutParams);
+                        callWrapper.renderLocalView(scalingType);
+                    }
+                } else {
+                    TextureViewRenderer remoteView = callWrapper.getRemoteView();
+                    if (remoteView != null) {
+                        if (remoteView.getParent() != null) {
+                            ((ViewGroup) remoteView.getParent()).removeView(remoteView);
+                        }
+                        layout.addView(remoteView, layoutParams);
+                        callWrapper.renderRemoteView(scalingType);
+                    }
+                }
+            }
+        }
+        this.addView(layout);
+    }
+
+    public void setupLayout(View view) {
+        Choreographer.getInstance().postFrameCallback(new Choreographer.FrameCallback() {
+            @Override
+            public void doFrame(long frameTimeNanos) {
+                manuallyLayoutChildren(view);
+                view.getViewTreeObserver().dispatchOnGlobalLayout();
+                Choreographer.getInstance().postFrameCallback(this);
             }
         });
     }
 
-    public void setSpeakerphoneOn(boolean on, Callback callback) {
-        Utils.setSpeakerPhone(on);
-        callback.invoke(true, 0, "Success");
-    }
-
-    public void resumeVideo(Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.");
-            return;
-        }
-
-        stringeeCall2.resumeVideo();
-        callback.invoke(true, 0, "Success");
-    }
-
-    public void setAutoSendTrackMediaStateChangeEvent(boolean autoSendTrackMediaStateChangeEvent, final Callback callback) {
-        if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
-            return;
-        }
-
-        if (stringeeCall2 == null) {
-            callback.invoke(false, -3, "The call is not found.", "");
-            return;
-        }
-
-        stringeeCall2.setAutoSendTrackMediaStateChangeEvent(autoSendTrackMediaStateChangeEvent);
-        callback.invoke(true, 0, "Success");
+    /**
+     * Layout all children properly
+     */
+    public void manuallyLayoutChildren(View view) {
+        int width = propsWidth == 0 ? getWidth() : propsWidth;
+        int height = propsHeight == 0 ? getHeight() : propsHeight;
+        view.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        view.layout(0, 0, width, height);
     }
 }

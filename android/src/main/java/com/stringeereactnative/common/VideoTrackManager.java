@@ -14,6 +14,13 @@ public class VideoTrackManager implements Listener {
     public static VideoTrackManager create(StringeeVideoTrack videoTrack) {
         VideoTrackManager videoTrackManager = new VideoTrackManager();
         videoTrackManager.setVideoTrack(videoTrack);
+        videoTrackManager.setTrackListener();
+        return videoTrackManager;
+    }
+
+    public static VideoTrackManager createForCall(StringeeVideoTrack videoTrack) {
+        VideoTrackManager videoTrackManager = new VideoTrackManager();
+        videoTrackManager.setVideoTrack(videoTrack);
         return videoTrackManager;
     }
 
@@ -22,6 +29,7 @@ public class VideoTrackManager implements Listener {
         videoTrackManager.setVideoTrack(videoTrack);
         videoTrackManager.setLocalId(localId);
         videoTrackManager.setPublisher(publisher);
+        videoTrackManager.setTrackListener();
         return videoTrackManager;
     }
 
@@ -31,6 +39,9 @@ public class VideoTrackManager implements Listener {
 
     public void setVideoTrack(StringeeVideoTrack videoTrack) {
         this.videoTrack = videoTrack;
+    }
+
+    public void setTrackListener(){
         this.videoTrack.setListener(this);
     }
 

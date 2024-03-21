@@ -20,9 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEvents, StringeeCall2.StringeeCallListener {
@@ -119,7 +117,7 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     @Override
     public void onLocalTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
-        VideoTrackManager videoTrackManager = VideoTrackManager.create(stringeeVideoTrack);
+        VideoTrackManager videoTrackManager = VideoTrackManager.createForCall(stringeeVideoTrack);
         StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
         if (Utils.containsEvent(events, Constant.CALL2_ON_LOCAL_TRACK_ADDED)) {
             // Data
@@ -142,7 +140,7 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     @Override
     public void onRemoteTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
-        VideoTrackManager videoTrackManager = VideoTrackManager.create(stringeeVideoTrack);
+        VideoTrackManager videoTrackManager = VideoTrackManager.createForCall(stringeeVideoTrack);
         StringeeManager.getInstance().getTracksMap().put(stringeeVideoTrack.getId(), videoTrackManager);
         if (Utils.containsEvent(events, Constant.CALL2_ON_REMOTE_TRACK_ADDED)) {
             // Data

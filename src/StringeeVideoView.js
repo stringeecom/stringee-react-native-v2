@@ -1,17 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import PropTypes from "prop-types";
+import React, {useEffect, useRef, useState} from 'react';
+import PropTypes from 'prop-types';
 import {
   findNodeHandle,
   requireNativeComponent,
   UIManager,
-  View
-} from "react-native";
-import { StringeeVideoScalingType } from "../index";
-import { isIOS } from "./helpers/StringeeHelper";
+  View,
+} from 'react-native';
+import {StringeeVideoScalingType} from '../index';
+import {isIOS} from './helpers/StringeeHelper';
 
 const StringeeVideoView = props => {
   const ref = useRef(null);
   const [viewId, setViewId] = useState(null);
+  const prevProps = useRef(props);
 
   useEffect(() => {
     const id = findNodeHandle(ref.current);
@@ -20,19 +21,28 @@ const StringeeVideoView = props => {
       UIManager.dispatchViewManagerCommand(
         id,
         UIManager.RNStringeeVideoView.Commands.create.toString(),
-        [id]
+        [],
       );
     }
   }, []);
 
   useEffect(() => {
-    reload();
+    if (
+      props.uuid !== prevProps.current.uuid ||
+      props.local !== prevProps.current.local ||
+      props.scalingType !== prevProps.current.scalingType ||
+      props.videoTrack !== prevProps.current.videoTrack ||
+      props.style.width !== prevProps.current.style.width ||
+      props.style.height !== prevProps.current.style.height
+    ) {
+      reload();
+    }
   }, [
     props.uuid,
     props.local,
     props.scalingType,
     props.videoTrack,
-    props.style
+    props.style,
   ]);
 
   const reload = () => {
@@ -75,12 +85,12 @@ StringeeVideoView.propTypes = {
   local: PropTypes.bool,
   scalingType: PropTypes.oneOf([
     StringeeVideoScalingType.fit,
-    StringeeVideoScalingType.fill
+    StringeeVideoScalingType.fill,
   ]),
   videoTrack: PropTypes.any,
-  ...View.propTypes
+  ...View.propTypes,
 };
 
-const RCTStringeeVideoView = requireNativeComponent("RNStringeeVideoView");
+const RCTStringeeVideoView = requireNativeComponent('RNStringeeVideoView');
 
-export { StringeeVideoView };
+export {StringeeVideoView};

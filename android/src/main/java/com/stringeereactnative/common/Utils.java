@@ -297,7 +297,7 @@ public class Utils {
         }
     }
 
-    public static boolean isListEmpty(@Nullable List list) {
+    public static boolean isListEmpty(@Nullable List<?> list) {
         if (list != null) {
             return list.isEmpty();
         } else {
@@ -319,49 +319,37 @@ public class Utils {
     }
 
     public static void startAudioManager(Context context, AudioManagerEvents events) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                StringeeAudioManager audioManager = StringeeAudioManager.create(context);
-                audioManager.start(events);
-                AudioManager.getInstance().setAudioManager(audioManager);
-            }
+        runOnUiThread(() -> {
+            StringeeAudioManager audioManager = StringeeAudioManager.create(context);
+            audioManager.start(events);
+            AudioManager.getInstance().setAudioManager(audioManager);
         });
     }
 
     public static void stopAudioManager() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
-                if (audioManager != null) {
-                    audioManager.stop();
-                    AudioManager.getInstance().setAudioManager(null);
-                }
+        runOnUiThread(() -> {
+            StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
+            if (audioManager != null) {
+                audioManager.stop();
+                AudioManager.getInstance().setAudioManager(null);
             }
         });
     }
 
     public static void setSpeakerPhone(boolean on) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
-                if (audioManager != null) {
-                    audioManager.setSpeakerphoneOn(on);
-                }
+        runOnUiThread(() -> {
+            StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
+            if (audioManager != null) {
+                audioManager.setSpeakerphoneOn(on);
             }
         });
     }
 
     public static void setBluetoothSco(boolean on) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
-                if (audioManager != null) {
-                    audioManager.setBluetoothScoOn(on);
-                }
+        runOnUiThread(() -> {
+            StringeeAudioManager audioManager = AudioManager.getInstance().getAudioManager();
+            if (audioManager != null) {
+                audioManager.setBluetoothScoOn(on);
             }
         });
     }

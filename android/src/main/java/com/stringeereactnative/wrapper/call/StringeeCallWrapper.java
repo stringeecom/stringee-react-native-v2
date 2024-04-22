@@ -226,7 +226,7 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
         makeCallCallback = callback;
         stringeeCall = new StringeeCall(clientWrapper.getStringeeClient(), from, to);
-        stringeeCall.setCallListener(this);
+
         stringeeCall.setVideoCall(isVideoCall);
         if (!Utils.isStringEmpty(customData)) {
             stringeeCall.setCustom(customData);
@@ -239,12 +239,11 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
             }
         }
 
-        Utils.startAudioManager(reactContext, this);
-
+        stringeeCall.setCallListener(this);
         stringeeCall.makeCall(new StatusListener() {
             @Override
             public void onSuccess() {
-
+                Utils.startAudioManager(reactContext, StringeeCallWrapper.this);
             }
         });
     }
@@ -263,11 +262,15 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
         stringeeCall.ringing(new StatusListener() {
             @Override
             public void onSuccess() {
+                callback.invoke(true, 0, "Success");
+            }
 
+            @Override
+            public void onError(StringeeError stringeeError) {
+                super.onError(stringeeError);
+                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
             }
         });
-
-        callback.invoke(true, 0, "Success");
     }
 
     public void answer(Callback callback) {
@@ -284,18 +287,19 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
         stringeeCall.answer(new StatusListener() {
             @Override
             public void onSuccess() {
+                Utils.startAudioManager(reactContext, StringeeCallWrapper.this);
+                callback.invoke(true, 0, "Success");
+            }
 
+            @Override
+            public void onError(StringeeError stringeeError) {
+                super.onError(stringeeError);
+                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
             }
         });
-
-        Utils.startAudioManager(reactContext, this);
-
-        callback.invoke(true, 0, "Success");
     }
 
     public void reject(Callback callback) {
-        Utils.stopAudioManager();
-
         if (clientWrapper == null || !clientWrapper.isConnected()) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
@@ -313,12 +317,12 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
             }
         });
 
+        Utils.stopAudioManager();
+
         callback.invoke(true, 0, "Success");
     }
 
     public void hangup(Callback callback) {
-        Utils.stopAudioManager();
-
         if (clientWrapper == null || !clientWrapper.isConnected()) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED);
             return;
@@ -335,6 +339,8 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
             }
         });
+
+        Utils.stopAudioManager();
 
         callback.invoke(true, 0, "Success");
     }
@@ -454,20 +460,17 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
             return;
         }
 
-        stringeeCall.getStats(new StringeeCall.CallStatsListener() {
-            @Override
-            public void onCallStats(StringeeCall.StringeeCallStats stringeeCallStats) {
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("bytesReceived", stringeeCallStats.callBytesReceived);
-                    jsonObject.put("packetsLost", stringeeCallStats.callPacketsLost);
-                    jsonObject.put("packetsReceived", stringeeCallStats.callPacketsReceived);
-                    jsonObject.put("timeStamp", stringeeCallStats.timeStamp);
-                } catch (JSONException e) {
-                    Utils.reportException(StringeeCallWrapper.class, e);
-                }
-                callback.invoke(true, 0, "Success", jsonObject.toString());
+        stringeeCall.getStats(stringeeCallStats -> {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("bytesReceived", stringeeCallStats.callBytesReceived);
+                jsonObject.put("packetsLost", stringeeCallStats.callPacketsLost);
+                jsonObject.put("packetsReceived", stringeeCallStats.callPacketsReceived);
+                jsonObject.put("timeStamp", stringeeCallStats.timeStamp);
+            } catch (JSONException e) {
+                Utils.reportException(StringeeCallWrapper.class, e);
             }
+            callback.invoke(true, 0, "Success", jsonObject.toString());
         });
     }
 

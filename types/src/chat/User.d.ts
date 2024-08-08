@@ -1,5 +1,5 @@
 export class User {
-    constructor(props: any);
+    constructor(props?: any);
     userId: string;
     name: string;
     avatar: string;

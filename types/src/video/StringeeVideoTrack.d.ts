@@ -1,5 +1,5 @@
 export class StringeeVideoTrack {
-    constructor(props: any);
+    constructor(props?: any);
     localId: string;
     serverId: string;
     isLocal: boolean;

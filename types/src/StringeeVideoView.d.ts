@@ -1,7 +1,8 @@
-import { ViewStyle } from 'react-native';
+import { ViewStyle } from "react-native";
 import { StringeeVideoScalingType, StringeeVideoTrack } from "../index";
+import type * as React from "react";
 
-export class StringeeVideoView {
+export class StringeeVideoView extends React.Component<StringeeVideoViewProps> {
   constructor(props: any);
 
   uuid: string;
@@ -12,12 +13,10 @@ export class StringeeVideoView {
   viewId: any;
 }
 
-export namespace StringeeVideoView {
-  let propTypes: {
-    uuid: string;
-    local: boolean;
-    scalingType: StringeeVideoScalingType;
-    videoTrack: any;
-    style: ViewStyle;
-  };
+export interface StringeeVideoViewProps {
+  uuid?: string;
+  local?: boolean;
+  scalingType?: StringeeVideoScalingType;
+  videoTrack?: any;
+  style?: ViewStyle;
 }

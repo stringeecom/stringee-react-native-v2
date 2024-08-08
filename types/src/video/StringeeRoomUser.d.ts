@@ -1,4 +1,4 @@
 export class StringeeRoomUser {
-    constructor(props: any);
+    constructor(props?: any);
     userId: string;
 }

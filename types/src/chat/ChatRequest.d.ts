@@ -1,5 +1,5 @@
 export class ChatRequest {
-    constructor(props: any);
+    constructor(props?: any);
     convId: string;
     channelType: number;
     type: number;

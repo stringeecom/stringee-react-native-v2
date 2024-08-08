@@ -1,5 +1,5 @@
 export class Message {
-    constructor(props: any);
+    constructor(props?: any);
     localId: string;
     id: string;
     conversationId: string;

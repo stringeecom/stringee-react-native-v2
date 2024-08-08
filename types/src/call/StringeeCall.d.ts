@@ -5,7 +5,7 @@ export class StringeeCall {
    * @param {string} props.from From number
    * @param {string} props.to To number
    */
-  constructor(props: {
+  constructor(props?: {
     stringeeClient: StringeeClient;
     from: string;
     to: string;

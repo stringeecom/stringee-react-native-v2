@@ -1,5 +1,5 @@
 export class Conversation {
-    constructor(props: any);
+    constructor(props?: any);
     id: string;
     name: string;
     isGroup: boolean;

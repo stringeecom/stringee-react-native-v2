@@ -5,7 +5,7 @@ export class StringeeClient {
    * @param {string} props.baseUrl base url
    * @param {string} props.stringeeXBaseUrl base url for live chat
    */
-  constructor(props: {
+  constructor(props?: {
     baseUrl: string;
     stringeeXBaseUrl: string;
     serverAddresses: Array<StringeeServerAddress>;

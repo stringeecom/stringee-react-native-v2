@@ -248,4 +248,4 @@ export class StringeeClient {
   createLiveChatTicket(widgetKey: string, liveChatTicketParam: LiveChatTicketParam): Promise<void>;
 }
 
-import { Conversation, ConversationOption, LiveChatTicketParam, StringeeClientListener, StringeeServerAddress, User, UserInfo } from "../index";
+import { Conversation, ConversationOption, LiveChatTicketParam, StringeeClientListener, StringeeServerAddress, User, UserInfo } from "../../index";

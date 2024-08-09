@@ -73,4 +73,4 @@ export class StringeeCall2Listener {
   onTrackMediaStateChange: (stringeeCall2: StringeeCall2, from: string, mediaType: MediaType, enable: boolean) => void;
 }
 
-import { AudioDevice, MediaState, MediaType, SignalingState, StringeeCall2, StringeeVideoTrack } from "../../index";
+import { AudioDevice, MediaState, MediaType, SignalingState, StringeeCall2, StringeeVideoTrack } from "../../../index";

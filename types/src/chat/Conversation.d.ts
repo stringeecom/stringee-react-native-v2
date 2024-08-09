@@ -151,8 +151,8 @@ export class Conversation {
      */
     sendChatTranscript(email: string, domain: string): Promise<any>;
 }
-import { User } from '../../index';
-import { Message } from '../../index';
-import { StringeeClient } from '../../index';
-import { ConversationInfo } from '../../index';
-import { NewMessageInfo } from '../../index';
+import { User } from '../../../index';
+import { Message } from '../../../index';
+import { StringeeClient } from '../../../index';
+import { ConversationInfo } from '../../../index';
+import { NewMessageInfo } from '../../../index';

@@ -134,4 +134,4 @@ export class StringeeCall2 {
   clean(): void;
 }
 
-import { CallType, StringeeCall2Listener, StringeeClient, VideoResolution } from "../../index";
+import { CallType, StringeeCall2Listener, StringeeClient, VideoResolution } from "../../../index";

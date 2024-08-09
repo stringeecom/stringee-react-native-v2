@@ -9,4 +9,4 @@ export class StringeeVideoTrack {
     trackType: TrackType;
     publisher: StringeeRoomUser;
 }
-import { StringeeRoomUser, TrackType } from "../../index";
+import { StringeeRoomUser, TrackType } from "../../../index";

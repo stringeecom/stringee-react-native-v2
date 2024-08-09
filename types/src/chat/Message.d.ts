@@ -23,4 +23,4 @@ export class Message {
      */
     editMessage(newContent: string): Promise<void>;
 }
-import { StringeeClient } from '../../index';
+import { StringeeClient } from '../../../index';

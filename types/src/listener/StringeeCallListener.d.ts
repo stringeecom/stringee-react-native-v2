@@ -62,4 +62,4 @@ export class StringeeCallListener {
   onAudioDeviceChange: (stringeeCall: StringeeCall, selectedAudioDevice: AudioDevice, availableAudioDevices: Array<AudioDevice>) => void;
 }
 
-import { AudioDevice, MediaState, SignalingState, StringeeCall } from "../../index";
+import { AudioDevice, MediaState, SignalingState, StringeeCall } from "../../../index";

@@ -1,5 +1,5 @@
 import { ViewStyle } from "react-native";
-import { StringeeVideoScalingType, StringeeVideoTrack } from "../index";
+import { StringeeVideoScalingType, StringeeVideoTrack } from "../../index";
 import type * as React from "react";
 
 export class StringeeVideoView extends React.Component<StringeeVideoViewProps> {

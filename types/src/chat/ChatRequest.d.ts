@@ -17,4 +17,4 @@ export class ChatRequest {
      */
     rejectChatRequest(): Promise<void>;
 }
-import { StringeeClient } from '../../index';
+import { StringeeClient } from '../../../index';

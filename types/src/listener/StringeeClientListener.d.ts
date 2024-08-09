@@ -115,4 +115,4 @@ export class StringeeClientListener {
   onUserEndTyping: (stringeeClient: StringeeClient, convId: string, userId: string, displayName: string) => void;
 }
 
-import { ChangeType, ChatRequest, ObjectType, StringeeCall, StringeeCall2, StringeeClient } from "../../index";
+import { ChangeType, ChatRequest, ObjectType, StringeeCall, StringeeCall2, StringeeClient } from "../../../index";

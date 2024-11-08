@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class StringeeCall2Wrapper extends StringeeCall2.StringeeCallListener implements StringeeAudioManager.AudioManagerEvents {
+public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEvents, StringeeCall2.StringeeCallListener {
     private final List<String> events = new ArrayList<>();
     private final ReactContext reactContext;
     private StringeeCall2 stringeeCall2;

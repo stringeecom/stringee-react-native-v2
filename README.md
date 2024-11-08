@@ -86,3 +86,7 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 ### Version 1.0.0
 ##### Features:
 - Publish new sdk for react native
+
+### Version 1.0.1
+##### Features:
+- Upgrade android native sdk

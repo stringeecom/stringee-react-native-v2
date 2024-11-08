@@ -2,10 +2,16 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            // Matches the RN Hello World template
+            // https://github.com/facebook/react-native/blob/1e8f3b11027fe0a7514b4fc97d0798d3c64bc895/local-cli/templates/HelloWorld/android/build.gradle#L21
+            url "$projectDir/../node_modules/react-native/android"
+        }
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:4.2.2")
+        classpath("com.android.tools.build:gradle:7.4.2")
     }
 }
 
@@ -34,6 +40,6 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation 'com.facebook.react:react-native:+'
-//    implementation 'com.stringee.sdk.android:stringee-android-sdk:2.1.1'
+    implementation 'com.stringee.sdk.android:stringee-android-sdk:2.1.2'
     implementation 'com.android.volley:volley:1.2.1'
 }

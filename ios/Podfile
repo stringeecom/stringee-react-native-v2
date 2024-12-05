@@ -1,0 +1,7 @@
+# TODO: - remove this after update native sdk
+def stringee_github
+    pod 'Stringee', :git => 'https://github.com/stringeecom/Stringee-iOS-SDK.git', branch: 'taipv/fix-capture-request-react-native'
+end
+target 'RNStringee' do
+    stringee_github
+end

@@ -32,6 +32,9 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 - (instancetype) initWithIdentifier:(NSString *)identifier clientUUID:(NSString *)clientUUID; {
+#ifdef DEBUG
+    NSLog(@"[RNStringee] RNCall2Wrapper initWithIdentifier");
+#endif
     self = [super init];
     if (self) {
         jsEvents = [[NSMutableArray alloc] init];
@@ -57,6 +60,7 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 - (void)didChangeSignalingState2:(StringeeCall2 *)stringeeCall2 signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
+    NSLog(@"[RNStringee] RNCall2Wrapper didChangeSignalingState2");
     if ([jsEvents containsObject:didChangeSignalingState]) {
         [rnCall2 sendEventWithName:didChangeSignalingState body:@{
             @"uuid" : _identifier,
@@ -78,7 +82,7 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 - (void)didChangeMediaState2:(StringeeCall2 *)stringeeCall2 mediaState:(MediaState)mediaState {
-
+    NSLog(@"[RNStringee] RNCall2Wrapper didChangeMediaState2");
     if ([jsEvents containsObject:didChangeMediaState]) {
         switch (mediaState) {
             case MediaStateConnected:
@@ -110,6 +114,7 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 
 
 - (void)didAddTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
+    NSLog(@"[RNStringee] RNCall2Wrapper didAddTrack2");
     [[RNStringeeInstanceManager instance].call2VideoTracks setObject:track forKey:stringeeCall2.callId];
     if ([jsEvents containsObject:didReceiveRemoteStream]) {
         [rnCall2 sendEventWithName:didReceiveRemoteStream body:@{
@@ -120,6 +125,7 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 - (void)didHandleOnAnotherDevice2:(StringeeCall2 *)stringeeCall2 signalingState:(SignalingState)signalingState reason:(NSString *)reason sipCode:(int)sipCode sipReason:(NSString *)sipReason {
+    NSLog(@"[RNStringee] RNCall2Wrapper didHandleOnAnotherDevice2");
     if ([jsEvents containsObject:didHandleOnAnotherDevice]) {
         [rnCall2 sendEventWithName:didHandleOnAnotherDevice body:@{
             @"uuid" : _identifier,
@@ -151,6 +157,7 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 -(void)didAddLocalTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
+    NSLog(@"[RNStringee] RNCall2Wrapper didAddLocalTrack2");
     if ([RCTConvert isValid:track.serverId]) {
         _videoTrack[track.serverId] = track;
     }else if ([RCTConvert isValid:track.localId]) {
@@ -179,6 +186,9 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 -(void)didAddRemoteTrack2:(StringeeCall2 *)stringeeCall2 track:(StringeeVideoTrack *)track {
+#ifdef DEBUG
+    NSLog(@"[RNStringee] RNCall2Wrapper didAddRemoteTrack2");
+#endif
     if ([RCTConvert isValid:track.serverId]) {
         _videoTrack[track.serverId] = track;
     }else if ([RCTConvert isValid:track.localId]) {

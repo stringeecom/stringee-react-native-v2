@@ -42,10 +42,11 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
     }
 
     @Override
-    public void receiveCommand(@NonNull RNStringeeVideoView root, int commandId, @Nullable ReadableArray args) {
+    public void receiveCommand(@NonNull RNStringeeVideoView root, String commandId, @Nullable ReadableArray args) {
         super.receiveCommand(root, commandId, args);
+        int commandIdInt = Integer.parseInt(commandId);
         if (args != null) {
-            switch (commandId) {
+            switch (commandIdInt) {
                 case COMMAND_CREATE:
                     root.createView();
                     break;

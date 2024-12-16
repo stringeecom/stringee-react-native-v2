@@ -96,5 +96,5 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 - Upgrade iOS native SDK
 
 ### Version 1.0.3
-##### Features:
+##### Fix bug:
 - Fix bug VideoView in Android

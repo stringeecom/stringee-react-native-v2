@@ -130,31 +130,6 @@ RCT_EXPORT_METHOD(makeCall:(NSString *)uuid parameters:(NSString *)parameters ca
     }
 }
 
-RCT_EXPORT_METHOD(setVideoResolution:(NSString *)uuid videoResolution:(NSString *)videoResolution callback:(RCTResponseSenderBlock)callback) {
-
-    if (!uuid.length) {
-        callback(@[@(NO), @(-2), @"The uuid is invalid."]);
-        return;
-    }
-
-    StringeeCall2 *call = [[RNStringeeInstanceManager instance].call2Wrappers objectForKey:uuid].call;
-
-    if (!call) {
-        callback(@[@(NO), @(-3), @"The call is not found."]);
-        return;
-    }
-
-    NSLog(@"setVideoResolution: %@", videoResolution);
-
-    if ([videoResolution isEqualToString:@"NORMAL"]) {
-        call.videoResolution = VideoResolution_Normal;
-    } else if ([videoResolution isEqualToString:@"HD"]) {
-        call.videoResolution = VideoResolution_HD;
-    }
-    callback(@[@(YES), @(0), @"Success"]);
-
-}
-
 RCT_EXPORT_METHOD(initAnswer:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
     RNCall2Wrapper *wrapper = [RNStringeeInstanceManager.instance.call2Wrappers objectForKey:uuid];
     if (wrapper == nil) {
@@ -177,9 +152,16 @@ RCT_EXPORT_METHOD(initAnswer:(NSString *)uuid callback:(RCTResponseSenderBlock)c
     }
 }
 
-RCT_EXPORT_METHOD(answer:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(answer:(NSString *)uuid videoResolution:(NSString *)videoResolution callback:(RCTResponseSenderBlock)callback) {
     if (uuid.length) {
         StringeeCall2 *call = [[RNStringeeInstanceManager instance].call2Wrappers objectForKey:uuid].call;
+
+        if ([videoResolution isEqualToString:@"NORMAL"]) {
+            call.videoResolution = VideoResolution_Normal;
+        } else if ([videoResolution isEqualToString:@"HD"]) {
+            call.videoResolution = VideoResolution_HD;
+        }
+
         if (call) {
             [call answerCallWithCompletionHandler:^(BOOL status, int code, NSString *message) {
                 callback(@[@(status), @(code), message]);

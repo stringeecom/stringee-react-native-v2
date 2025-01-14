@@ -217,6 +217,21 @@ class StringeeCall2 {
   }
 
   /**
+   * Set video resolution.
+   * @function setVideoResolution
+   */
+  setVideoResolution(videoResolution: VideoResolution): Promise<void> {
+    this.videoResolution = videoResolution;
+    return new Promise((resolve, reject) => {
+      RNStringeeCall2.setVideoResolution(
+          this.uuid,
+          videoResolution,
+          normalCallbackHandle(resolve, reject, 'setVideoResolution'),
+      );
+    });
+  }
+
+  /**
    * Initializes an answer. Must be implemented before you can answer a call.
    * @function initAnswer
    */

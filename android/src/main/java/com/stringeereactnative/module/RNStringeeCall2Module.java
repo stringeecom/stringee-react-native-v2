@@ -68,14 +68,14 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void answer(String uuid, Callback callback) {
+    public void answer(String uuid, String resolution, Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
             return;
         }
 
-        call2Wrapper.answer(callback);
+        call2Wrapper.answer(resolution, callback);
     }
 
     @ReactMethod

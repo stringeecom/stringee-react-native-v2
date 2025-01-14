@@ -291,7 +291,7 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
         callback.invoke(true, 0, "Success");
     }
 
-    public void answer(Callback callback) {
+    public void answer(String resolution, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
@@ -300,6 +300,14 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
         if (stringeeCall2 == null) {
             callback.invoke(false, -3, "The call is not found.");
             return;
+        }
+
+        if (!Utils.isStringEmpty(resolution)) {
+            if (resolution.equalsIgnoreCase("NORMAL")) {
+                stringeeCall2.setQuality(StringeeCall2.VideoQuality.QUALITY_480P);
+            } else if (resolution.equalsIgnoreCase("HD")) {
+                stringeeCall2.setQuality(StringeeCall2.VideoQuality.QUALITY_720P);
+            }
         }
 
         stringeeCall2.answer(new StatusListener() {

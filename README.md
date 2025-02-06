@@ -100,5 +100,5 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 - Fix bug VideoView in Android
 
 ### Version 1.0.4
-##### Fix bug:
-- Fix bugs
+##### Improve:
+- Improved photo quality taken on some iOS devices

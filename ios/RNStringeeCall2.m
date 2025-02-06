@@ -152,9 +152,16 @@ RCT_EXPORT_METHOD(initAnswer:(NSString *)uuid callback:(RCTResponseSenderBlock)c
     }
 }
 
-RCT_EXPORT_METHOD(answer:(NSString *)uuid callback:(RCTResponseSenderBlock)callback) {
+RCT_EXPORT_METHOD(answer:(NSString *)uuid videoResolution:(NSString *)videoResolution callback:(RCTResponseSenderBlock)callback) {
     if (uuid.length) {
         StringeeCall2 *call = [[RNStringeeInstanceManager instance].call2Wrappers objectForKey:uuid].call;
+
+        if ([videoResolution isEqualToString:@"NORMAL"]) {
+            call.videoResolution = VideoResolution_Normal;
+        } else if ([videoResolution isEqualToString:@"HD"]) {
+            call.videoResolution = VideoResolution_HD;
+        }
+
         if (call) {
             [call answerCallWithCompletionHandler:^(BOOL status, int code, NSString *message) {
                 callback(@[@(status), @(code), message]);

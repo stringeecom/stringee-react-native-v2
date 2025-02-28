@@ -45,10 +45,14 @@ static NSString *didAddRemoteTrack         = @"didAddRemoteTrack";
 }
 
 - (void)setNativeEvent:(NSString *)event {
+    NSLog(@"[Stringee] setNativeEvent setNativeEvent: %@", event);
+    NSLog(@"[Stringee] setNativeEvent jsEvents: %@", jsEvents);
     [jsEvents addObject:event];
+    NSLog(@"[Stringee] setNativeEvent jsEvents after add object: %@", jsEvents);
 }
 
 - (void)removeNativeEvent:(NSString *)event {
+    NSLog(@"[Stringee] removeNativeEvent removeNativeEvent: %@", event);
     int index = -1;
     index = (int)[jsEvents indexOfObject:event];
     if (index >= 0) {

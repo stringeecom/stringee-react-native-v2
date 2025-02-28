@@ -58,7 +58,7 @@ RCT_EXPORT_METHOD(clean:(NSString *)uuid) {
 RCT_EXPORT_METHOD(setNativeEvent:(NSString *)uuid event:(NSString *)event) {
     RNCallWrapper *callWrapper = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid];
     if (callWrapper == nil) {
-        RCTLog(@"setNativeEvent: -1 wrapper not found");
+        RCTLog(@"[Stringee] setNativeEvent: -1 wrapper not found");
         return;
     }
     [callWrapper setNativeEvent:event];
@@ -67,7 +67,7 @@ RCT_EXPORT_METHOD(setNativeEvent:(NSString *)uuid event:(NSString *)event) {
 RCT_EXPORT_METHOD(removeNativeEvent:(NSString *)uuid event:(NSString *)event) {
     RNCallWrapper *callWrapper = [RNStringeeInstanceManager.instance.callWrappers objectForKey:uuid];
     if (callWrapper == nil) {
-        RCTLog(@"removeNativeEvent: -1 wrapper not found");
+        RCTLog(@"[Stringee] removeNativeEvent: -1 wrapper not found");
         return;
     }
     [callWrapper removeNativeEvent:event];

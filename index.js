@@ -13,15 +13,16 @@ import {
   ObjectType,
   SignalingState,
   MediaState,
-  AudioDevice,
   MediaType,
   VideoResolution,
   CallType,
   TrackType,
+  AudioType,
 } from './src/helpers/StringeeHelper';
 import {StringeeClientListener} from './src/listener/StringeeClientListener';
 import {StringeeCallListener} from './src/listener/StringeeCallListener';
 import {StringeeCall2Listener} from './src/listener/StringeeCall2Listener';
+import {StringeeAudioListener} from './src/listener/StringeeAudioListener';
 import {ConversationOption} from './src/helpers/ConversationOption';
 import {UserInfo} from './src/helpers/UserInfo';
 import {ConversationInfo} from './src/helpers/ConversationInfo';
@@ -30,6 +31,8 @@ import {LiveChatTicketParam} from './src/helpers/LiveChatTicketParam';
 import {StringeeError} from './src/helpers/StringeeError';
 import {StringeeRoomUser} from './src/video/StringeeRoomUser';
 import {StringeeVideoTrack} from './src/video/StringeeVideoTrack';
+import {AudioDevice} from './src/helpers/AudioDevice';
+import {StringeeAudioManager} from './src/audio/StringeeAudioManager';
 
 export {
   StringeeClient,
@@ -47,6 +50,7 @@ export {
   StringeeClientListener,
   StringeeCallListener,
   StringeeCall2Listener,
+  StringeeAudioListener,
   SignalingState,
   MediaState,
   AudioDevice,
@@ -62,4 +66,6 @@ export {
   StringeeRoomUser,
   StringeeVideoTrack,
   TrackType,
+  AudioType,
+  StringeeAudioManager,
 };

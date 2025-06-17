@@ -72,19 +72,6 @@ class StringeeCallListener {
     signalingState: SignalingState,
     description: string,
   ) => void;
-  /**
-   * Invoked when device change audio device.
-   * This event only invoked in android.
-   * @function onAudioDeviceChange
-   * @param {StringeeCall} stringeeCall
-   * @param {AudioDevice} selectedAudioDevice Audio device was selected
-   * @param {Array<AudioDevice>} availableAudioDevices List available audio devices on your android device
-   */
-  onAudioDeviceChange: (
-    stringeeCall: StringeeCall,
-    selectedAudioDevice: AudioDevice,
-    availableAudioDevices: Array<AudioDevice>,
-  ) => void;
 }
 
 export {StringeeCallListener};

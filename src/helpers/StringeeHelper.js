@@ -75,7 +75,7 @@ const callEvents = {
     onHandleOnAnotherDevice: 'didHandleOnAnotherDevice',
     onTrackMediaStateChange: 'trackMediaStateChange',
     onReceiveLocalTrack: 'didAddLocalTrack',
-    onReceiveRemoteTrack: 'didAddRemoteTrack'
+    onReceiveRemoteTrack: 'didAddRemoteTrack',
   },
   android: {
     onChangeSignalingState: 'onSignalingStateChange',
@@ -87,7 +87,6 @@ const callEvents = {
     onReceiveDtmfDigit: 'onDTMF',
     onReceiveCallInfo: 'onCallInfo',
     onHandleOnAnotherDevice: 'onHandledOnAnotherDevice',
-    onAudioDeviceChange: 'onAudioDeviceChange', ///only for android
     onTrackMediaStateChange: 'onTrackMediaStateChange',
   },
 };
@@ -100,7 +99,6 @@ const stringeeCallEvents = [
   'onReceiveDtmfDigit',
   'onReceiveCallInfo',
   'onHandleOnAnotherDevice',
-  'onAudioDeviceChange',
 ];
 
 const stringeeCall2Events = [
@@ -112,8 +110,9 @@ const stringeeCall2Events = [
   'onReceiveCallInfo',
   'onHandleOnAnotherDevice',
   'onTrackMediaStateChange',
-  'onAudioDeviceChange',
 ];
+
+const stringeeAudioEvents = 'onAudioDeviceChange';
 
 const StringeeVideoScalingType = {
   fit: 'fit',
@@ -124,6 +123,16 @@ const MediaType = {
   audio: 'audio',
   video: 'video',
 };
+
+function getMediaType(code: number): MediaType {
+  switch (code) {
+    case 2:
+      return MediaType.video;
+    case 1:
+    default:
+      return MediaType.audio;
+  }
+}
 
 const ObjectType = {
   conversation: 'conversation',
@@ -144,18 +153,36 @@ const SignalingState = {
   ended: 'ended',
 };
 
+function getSignalingState(code: number): SignalingState {
+  switch (code) {
+    case 0:
+      return SignalingState.calling;
+    case 1:
+      return SignalingState.ringing;
+    case 2:
+      return SignalingState.answered;
+    case 3:
+      return SignalingState.busy;
+    case 4:
+    default:
+      return SignalingState.ended;
+  }
+}
+
 const MediaState = {
   connected: 'connected',
   disconnected: 'disconnected',
 };
 
-const AudioDevice = {
-  speakerPhone: 'speakerPhone',
-  wiredHeadset: 'wiredHeadset',
-  earpiece: 'earpiece',
-  bluetooth: 'bluetooth',
-  none: 'none',
-};
+function getMediaState(code: number): MediaState {
+  switch (code) {
+    case 0:
+      return MediaState.connected;
+    case 1:
+    default:
+      return MediaState.disconnected;
+  }
+}
 
 const VideoResolution = {
   normal: 'NORMAL',
@@ -175,63 +202,41 @@ const TrackType = {
   player: 'player',
 };
 
-function getSignalingState(code: number): SignalingState {
+function getTrackType(code: number): TrackType {
   switch (code) {
-    case 0:
-      return SignalingState.calling;
     case 1:
-      return SignalingState.ringing;
+      return TrackType.screen;
     case 2:
-      return SignalingState.answered;
+      return TrackType.player;
+    case 0:
+    default:
+      return TrackType.camera;
+  }
+}
+
+const AudioType = {
+  speakerPhone: 'speakerPhone',
+  wiredHeadset: 'wiredHeadset',
+  earpiece: 'earpiece',
+  bluetooth: 'bluetooth',
+  other: 'other',
+  none: '',
+};
+
+function getAudioType(value: number): AudioType {
+  switch (value) {
+    case 0:
+      return AudioType.speakerPhone;
+    case 1:
+      return AudioType.wiredHeadset;
+    case 2:
+      return AudioType.earpiece;
     case 3:
-      return SignalingState.busy;
+      return AudioType.bluetooth;
     case 4:
+      return AudioType.other;
     default:
-      return SignalingState.ended;
-  }
-}
-
-function getMediaState(code: number): MediaState {
-  switch (code) {
-    case 0:
-      return MediaState.connected;
-    case 1:
-    default:
-      return MediaState.disconnected;
-  }
-}
-
-function getAudioDevice(audioDevice: string): AudioDevice {
-  switch (audioDevice) {
-    case 'SPEAKER_PHONE':
-      return AudioDevice.speakerPhone;
-    case 'WIRED_HEADSET':
-      return AudioDevice.wiredHeadset;
-    case 'EARPIECE':
-      return AudioDevice.earpiece;
-    case 'BLUETOOTH':
-      return AudioDevice.bluetooth;
-    case 'NONE':
-    default:
-      return AudioDevice.none;
-  }
-}
-
-function getListAudioDevice(audioDevices: Array): Array<AudioDevice> {
-  let availableAudioDevices = [];
-  audioDevices.forEach(audioDevice => {
-    availableAudioDevices.push(getAudioDevice(audioDevice));
-  });
-  return availableAudioDevices;
-}
-
-function getMediaType(code: number): MediaType {
-  switch (code) {
-    case 2:
-      return MediaType.video;
-    case 1:
-    default:
-      return MediaType.audio;
+      return AudioType.none;
   }
 }
 
@@ -245,16 +250,13 @@ const normalCallbackHandle = (resolve, reject, name) => {
   };
 };
 
-function getTrackType(code: number): TrackType {
-  switch (code) {
-    case 1:
-      return TrackType.screen;
-    case 2:
-      return TrackType.player;
-    case 0:
-    default:
-      return TrackType.camera;
-  }
+function genUUID() {
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  );
 }
 
 export {
@@ -267,20 +269,21 @@ export {
   stringeeClientEvents,
   stringeeCallEvents,
   stringeeCall2Events,
+  stringeeAudioEvents,
   SignalingState,
   MediaState,
-  AudioDevice,
   VideoResolution,
   CallType,
   RNStringeeClient,
   isIOS,
   isAndroid,
   TrackType,
+  AudioType,
   normalCallbackHandle,
   getSignalingState,
   getMediaState,
   getMediaType,
-  getListAudioDevice,
-  getAudioDevice,
   getTrackType,
+  getAudioType,
+  genUUID,
 };

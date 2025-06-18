@@ -215,12 +215,12 @@ function getTrackType(code: number): TrackType {
 }
 
 const AudioType = {
-  speakerPhone: 'speakerPhone',
-  wiredHeadset: 'wiredHeadset',
-  earpiece: 'earpiece',
-  bluetooth: 'bluetooth',
-  other: 'other',
-  none: '',
+  speakerPhone: 0,
+  wiredHeadset: 1,
+  earpiece: 2,
+  bluetooth: 3,
+  other: 4,
+  none: -1,
 };
 
 function getAudioType(value: number): AudioType {

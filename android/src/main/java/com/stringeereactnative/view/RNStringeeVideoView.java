@@ -48,14 +48,10 @@ public class RNStringeeVideoView extends FrameLayout {
     }
 
     public void setScalingType(String scalingType) {
-        switch (scalingType) {
-            case "fit":
-                this.scalingType = ScalingType.SCALE_ASPECT_FIT;
-                break;
-            case "fill":
-            default:
-                this.scalingType = ScalingType.SCALE_ASPECT_FILL;
-                break;
+        if (scalingType.equals("fit")) {
+            this.scalingType = ScalingType.SCALE_ASPECT_FIT;
+        } else {
+            this.scalingType = ScalingType.SCALE_ASPECT_FILL;
         }
     }
 
@@ -66,17 +62,22 @@ public class RNStringeeVideoView extends FrameLayout {
     public void createView() {
         setupLayout(this);
         this.removeAllViews();
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams layoutParams =
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
         FrameLayout layout = new FrameLayout(getContext());
 
         if (!Utils.isMapEmpty(videoTrackMap)) {
-            StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
+            StringeeCall2Wrapper call2Wrapper =
+                    StringeeManager.getInstance().getCall2Map().get(uuid);
             if (call2Wrapper != null) {
                 boolean isLocal = videoTrackMap.getBoolean("isLocal");
-                String trackId = isLocal ? videoTrackMap.getString("localId") : videoTrackMap.getString("serverId");
+                String trackId =
+                        isLocal ? videoTrackMap.getString("localId") : videoTrackMap.getString(
+                                "serverId");
                 if (!Utils.isStringEmpty(trackId)) {
-                    StringeeVideoTrack stringeeVideoTrack = call2Wrapper.getVideoTrackMap().get(trackId);
+                    StringeeVideoTrack stringeeVideoTrack =
+                            call2Wrapper.getVideoTrackMap().get(trackId);
                     if (stringeeVideoTrack != null) {
                         TextureViewRenderer videoView = stringeeVideoTrack.getView2(getContext());
                         if (videoView != null) {
@@ -133,7 +134,8 @@ public class RNStringeeVideoView extends FrameLayout {
      * Layout all children properly
      */
     public void manuallyLayoutChildren(View view) {
-        view.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        view.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
 
         view.layout(0, 0, width, height);
     }

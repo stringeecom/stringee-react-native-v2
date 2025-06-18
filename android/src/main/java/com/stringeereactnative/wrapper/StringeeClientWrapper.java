@@ -90,7 +90,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             data.putString(Constant.KEY_TO_ALIAS, stringeeCall.getToAlias());
             data.putInt(Constant.KEY_CALL_TYPE, stringeeCall.isPhoneToAppCall() ? 3 : 1);
             data.putBoolean(Constant.KEY_IS_VIDEO_CALL, stringeeCall.isVideoCall());
-            data.putString(Constant.KEY_CUSTOM_DATA_FROM_SERVER, stringeeCall.getCustomDataFromYourServer());
+            data.putString(Constant.KEY_CUSTOM_DATA_FROM_SERVER,
+                    stringeeCall.getCustomDataFromYourServer());
 
             // Event data
             WritableMap params = Arguments.createMap();
@@ -118,7 +119,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             data.putString(Constant.KEY_TO_ALIAS, stringeeCall2.getToAlias());
             data.putInt(Constant.KEY_CALL_TYPE, 1);
             data.putBoolean(Constant.KEY_IS_VIDEO_CALL, stringeeCall2.isVideoCall());
-            data.putString(Constant.KEY_CUSTOM_DATA_FROM_SERVER, stringeeCall2.getCustomDataFromYourServer());
+            data.putString(Constant.KEY_CUSTOM_DATA_FROM_SERVER,
+                    stringeeCall2.getCustomDataFromYourServer());
 
             // Event data
             WritableMap params = Arguments.createMap();
@@ -200,7 +202,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                     objects.pushMap(Utils.getMessageMap((Message) stringeeChange.getObject()));
                     break;
                 case CONVERSATION:
-                    objects.pushMap(Utils.getConversationMap((Conversation) stringeeChange.getObject()));
+                    objects.pushMap(
+                            Utils.getConversationMap((Conversation) stringeeChange.getObject()));
                     break;
             }
             data.putArray(Constant.KEY_OBJECTS, objects);
@@ -239,7 +242,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             WritableMap eventData = Arguments.createMap();
             eventData.putString(Constant.KEY_UUID, uuid);
             eventData.putMap(Constant.KEY_DATA, data);
-            Utils.sendEvent(reactContext, Constant.CLIENT_ON_RECEIVE_TRANSFER_CHAT_REQUEST, eventData);
+            Utils.sendEvent(reactContext, Constant.CLIENT_ON_RECEIVE_TRANSFER_CHAT_REQUEST,
+                    eventData);
         }
     }
 
@@ -362,7 +366,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         return stringeeClient;
     }
 
-    public void initializeStringeeClient(final List<SocketAddress> socketAddresses, final String baseUrl, final String stringeeXBaseUrl) {
+    public void initializeStringeeClient(final List<SocketAddress> socketAddresses,
+                                         final String baseUrl, final String stringeeXBaseUrl) {
         stringeeClient = new StringeeClient(reactContext);
         // Set socket address
         if (!Utils.isListEmpty(socketAddresses)) {
@@ -428,7 +433,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void registerPushAndDeleteOthers(final String token, final List<String> packages, final Callback callback) {
+    public void registerPushAndDeleteOthers(final String token, final List<String> packages,
+                                            final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
@@ -467,7 +473,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void sendCustomMessage(final String toUser, final JSONObject jsonObject, final Callback callback) {
+    public void sendCustomMessage(final String toUser, final JSONObject jsonObject,
+                                  final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
@@ -486,13 +493,14 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void createConversation(final List<User> participants, final ConversationOptions convOptions, final Callback callback) {
+    public void createConversation(final List<User> participants,
+                                   final ConversationOptions convOptions, final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.createConversation(participants, convOptions, new CallbackListener<Conversation>() {
+        stringeeClient.createConversation(participants, convOptions, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 WritableMap params = Utils.getConversationMap(conversation);
@@ -512,7 +520,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 WritableMap params = Utils.getConversationMap(conversation);
@@ -532,7 +540,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLocalConversations(userId, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getLocalConversations(userId, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -556,7 +564,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLastConversations(count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getLastConversations(count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -574,13 +582,14 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getConversationsBefore(final double datetime, final int count, final Callback callback) {
+    public void getConversationsBefore(final double datetime, final int count,
+                                       final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationsBefore((long) datetime, count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getConversationsBefore((long) datetime, count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -598,13 +607,14 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getConversationsAfter(final double datetime, final int count, final Callback callback) {
+    public void getConversationsAfter(final double datetime, final int count,
+                                      final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationsAfter((long) datetime, count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getConversationsAfter((long) datetime, count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -628,7 +638,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(final Conversation conversation) {
                 if (conversation.isGroup()) {
@@ -657,16 +667,17 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void addParticipants(final String convId, final List<User> users, final Callback callback) {
+    public void addParticipants(final String convId, final List<User> users,
+                                final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.addParticipants(stringeeClient, users, new CallbackListener<List<User>>() {
+                conversation.addParticipants(stringeeClient, users, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<User> users) {
                         WritableArray params = Arguments.createArray();
@@ -692,16 +703,17 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void removeParticipants(final String convId, final List<User> users, final Callback callback) {
+    public void removeParticipants(final String convId, final List<User> users,
+                                   final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.removeParticipants(stringeeClient, users, new CallbackListener<List<User>>() {
+                conversation.removeParticipants(stringeeClient, users, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<User> users) {
                         WritableArray params = Arguments.createArray();
@@ -733,7 +745,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.sendMessage(stringeeClient, message, new StatusListener() {
@@ -749,8 +761,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                         if (Utils.containsEvent(events, Constant.CLIENT_ON_CHANGE)) {
                             // Data
                             WritableMap data = Arguments.createMap();
-                            data.putInt(Constant.KEY_OBJECT_TYPE, StringeeObject.Type.MESSAGE.getValue());
-                            data.putInt(Constant.KEY_CHANGE_TYPE, StringeeChange.Type.DELETE.getValue());
+                            data.putInt(Constant.KEY_OBJECT_TYPE,
+                                    StringeeObject.Type.MESSAGE.getValue());
+                            data.putInt(Constant.KEY_CHANGE_TYPE,
+                                    StringeeChange.Type.DELETE.getValue());
                             WritableArray objects = Arguments.createArray();
                             objects.pushMap(Utils.getMessageMap(message));
                             data.putArray(Constant.KEY_OBJECTS, objects);
@@ -778,10 +792,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getLocalMessages(stringeeClient, count, new CallbackListener<List<Message>>() {
+                conversation.getLocalMessages(stringeeClient, count, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         WritableArray params = Arguments.createArray();
@@ -806,31 +820,33 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getLastMessages(final String convId, final int count, final boolean loadDeletedMsg, final boolean loadDeletedMsgContent, final Callback callback) {
+    public void getLastMessages(final String convId, final int count, final boolean loadDeletedMsg,
+                                final boolean loadDeletedMsgContent, final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getLastMessages(stringeeClient, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<List<Message>>() {
-                    @Override
-                    public void onSuccess(List<Message> messages) {
-                        WritableArray params = Arguments.createArray();
-                        for (int i = 0; i < messages.size(); i++) {
-                            WritableMap param = Utils.getMessageMap(messages.get(i));
-                            params.pushMap(param);
-                        }
-                        callback.invoke(true, 0, "Success", params);
-                    }
+                conversation.getLastMessages(stringeeClient, count, loadDeletedMsg,
+                        loadDeletedMsgContent, false, new CallbackListener<>() {
+                            @Override
+                            public void onSuccess(List<Message> messages) {
+                                WritableArray params = Arguments.createArray();
+                                for (int i = 0; i < messages.size(); i++) {
+                                    WritableMap param = Utils.getMessageMap(messages.get(i));
+                                    params.pushMap(param);
+                                }
+                                callback.invoke(true, 0, "Success", params);
+                            }
 
-                    @Override
-                    public void onError(StringeeError error) {
-                        callback.invoke(false, error.getCode(), error.getMessage());
-                    }
-                });
+                            @Override
+                            public void onError(StringeeError error) {
+                                callback.invoke(false, error.getCode(), error.getMessage());
+                            }
+                        });
             }
 
             @Override
@@ -840,31 +856,34 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getMessagesAfter(final String convId, final int sequence, final int count, final boolean loadDeletedMsg, final boolean loadDeletedMsgContent, final Callback callback) {
+    public void getMessagesAfter(final String convId, final int sequence, final int count,
+                                 final boolean loadDeletedMsg, final boolean loadDeletedMsgContent,
+                                 final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessagesAfter(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<List<Message>>() {
-                    @Override
-                    public void onSuccess(List<Message> messages) {
-                        WritableArray params = Arguments.createArray();
-                        for (int i = 0; i < messages.size(); i++) {
-                            WritableMap param = Utils.getMessageMap(messages.get(i));
-                            params.pushMap(param);
-                        }
-                        callback.invoke(true, 0, "Success", params);
-                    }
+                conversation.getMessagesAfter(stringeeClient, sequence, count, loadDeletedMsg,
+                        loadDeletedMsgContent, false, new CallbackListener<>() {
+                            @Override
+                            public void onSuccess(List<Message> messages) {
+                                WritableArray params = Arguments.createArray();
+                                for (int i = 0; i < messages.size(); i++) {
+                                    WritableMap param = Utils.getMessageMap(messages.get(i));
+                                    params.pushMap(param);
+                                }
+                                callback.invoke(true, 0, "Success", params);
+                            }
 
-                    @Override
-                    public void onError(StringeeError error) {
-                        callback.invoke(false, error.getCode(), error.getMessage());
-                    }
-                });
+                            @Override
+                            public void onError(StringeeError error) {
+                                callback.invoke(false, error.getCode(), error.getMessage());
+                            }
+                        });
             }
 
             @Override
@@ -874,31 +893,34 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getMessagesBefore(final String convId, final int sequence, final int count, final boolean loadDeletedMsg, final boolean loadDeletedMsgContent, final Callback callback) {
+    public void getMessagesBefore(final String convId, final int sequence, final int count,
+                                  final boolean loadDeletedMsg, final boolean loadDeletedMsgContent,
+                                  final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessagesBefore(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, false, new CallbackListener<List<Message>>() {
-                    @Override
-                    public void onSuccess(List<Message> messages) {
-                        WritableArray params = Arguments.createArray();
-                        for (int i = 0; i < messages.size(); i++) {
-                            WritableMap param = Utils.getMessageMap(messages.get(i));
-                            params.pushMap(param);
-                        }
-                        callback.invoke(true, 0, "Success", params);
-                    }
+                conversation.getMessagesBefore(stringeeClient, sequence, count, loadDeletedMsg,
+                        loadDeletedMsgContent, false, new CallbackListener<>() {
+                            @Override
+                            public void onSuccess(List<Message> messages) {
+                                WritableArray params = Arguments.createArray();
+                                for (int i = 0; i < messages.size(); i++) {
+                                    WritableMap param = Utils.getMessageMap(messages.get(i));
+                                    params.pushMap(param);
+                                }
+                                callback.invoke(true, 0, "Success", params);
+                            }
 
-                    @Override
-                    public void onError(StringeeError error) {
-                        callback.invoke(false, error.getCode(), error.getMessage());
-                    }
-                });
+                            @Override
+                            public void onError(StringeeError error) {
+                                callback.invoke(false, error.getCode(), error.getMessage());
+                            }
+                        });
             }
 
             @Override
@@ -908,7 +930,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void deleteMessage(final String convId, final JSONArray messageIds, final Callback callback) {
+    public void deleteMessage(final String convId, final JSONArray messageIds,
+                              final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
@@ -933,7 +956,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.markAllAsRead(stringeeClient, new StatusListener() {
@@ -960,13 +983,14 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         callback.invoke(true, 0, "Success");
     }
 
-    public void updateConversation(final String convId, final String name, final String avatar, final Callback callback) {
+    public void updateConversation(final String convId, final String name, final String avatar,
+                                   final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.updateConversation(stringeeClient, name, avatar, new StatusListener() {
@@ -995,7 +1019,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationByUserId(userId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationByUserId(userId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 WritableMap params = Utils.getConversationMap(conversation);
@@ -1015,7 +1039,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getTotalUnread(new CallbackListener<Integer>() {
+        stringeeClient.getTotalUnread(new CallbackListener<>() {
             @Override
             public void onSuccess(Integer count) {
                 callback.invoke(true, 0, "Success", count);
@@ -1034,7 +1058,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLastUnreadConversations(count, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getLastUnreadConversations(count, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -1052,52 +1076,56 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getUnreadConversationsBefore(final double datetime, final int count, final Callback callback) {
+    public void getUnreadConversationsBefore(final double datetime, final int count,
+                                             final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getUnreadConversationsBefore((long) datetime, count, new CallbackListener<List<Conversation>>() {
-            @Override
-            public void onSuccess(List<Conversation> conversations) {
-                WritableArray params = Arguments.createArray();
-                for (int i = 0; i < conversations.size(); i++) {
-                    WritableMap param = Utils.getConversationMap(conversations.get(i));
-                    params.pushMap(param);
-                }
-                callback.invoke(true, 0, "Success", params);
-            }
+        stringeeClient.getUnreadConversationsBefore((long) datetime, count,
+                new CallbackListener<>() {
+                    @Override
+                    public void onSuccess(List<Conversation> conversations) {
+                        WritableArray params = Arguments.createArray();
+                        for (int i = 0; i < conversations.size(); i++) {
+                            WritableMap param = Utils.getConversationMap(conversations.get(i));
+                            params.pushMap(param);
+                        }
+                        callback.invoke(true, 0, "Success", params);
+                    }
 
-            @Override
-            public void onError(StringeeError error) {
-                callback.invoke(false, error.getCode(), error.getMessage());
-            }
-        });
+                    @Override
+                    public void onError(StringeeError error) {
+                        callback.invoke(false, error.getCode(), error.getMessage());
+                    }
+                });
     }
 
-    public void getUnreadConversationsAfter(final double datetime, final int count, final Callback callback) {
+    public void getUnreadConversationsAfter(final double datetime, final int count,
+                                            final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getUnreadConversationsAfter((long) datetime, count, new CallbackListener<List<Conversation>>() {
-            @Override
-            public void onSuccess(List<Conversation> conversations) {
-                WritableArray params = Arguments.createArray();
-                for (int i = 0; i < conversations.size(); i++) {
-                    WritableMap param = Utils.getConversationMap(conversations.get(i));
-                    params.pushMap(param);
-                }
-                callback.invoke(true, 0, "Success", params);
-            }
+        stringeeClient.getUnreadConversationsAfter((long) datetime, count,
+                new CallbackListener<>() {
+                    @Override
+                    public void onSuccess(List<Conversation> conversations) {
+                        WritableArray params = Arguments.createArray();
+                        for (int i = 0; i < conversations.size(); i++) {
+                            WritableMap param = Utils.getConversationMap(conversations.get(i));
+                            params.pushMap(param);
+                        }
+                        callback.invoke(true, 0, "Success", params);
+                    }
 
-            @Override
-            public void onError(StringeeError error) {
-                callback.invoke(false, error.getCode(), error.getMessage());
-            }
-        });
+                    @Override
+                    public void onError(StringeeError error) {
+                        callback.invoke(false, error.getCode(), error.getMessage());
+                    }
+                });
     }
 
     public void getAllLastConversations(final int count, final Callback callback) {
@@ -1106,7 +1134,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getLastConversations(count, true, new CallbackListener<List<Conversation>>() {
+        stringeeClient.getLastConversations(count, true, new CallbackListener<>() {
             @Override
             public void onSuccess(List<Conversation> conversations) {
                 WritableArray params = Arguments.createArray();
@@ -1124,69 +1152,20 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getAllConversationsBefore(final double datetime, final int count, final Callback callback) {
+    public void getAllConversationsBefore(final double datetime, final int count,
+                                          final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationsBefore((long) datetime, count, true, new CallbackListener<List<Conversation>>() {
-            @Override
-            public void onSuccess(List<Conversation> conversations) {
-                WritableArray params = Arguments.createArray();
-                for (int i = 0; i < conversations.size(); i++) {
-                    WritableMap param = Utils.getConversationMap(conversations.get(i));
-                    params.pushMap(param);
-                }
-                callback.invoke(true, 0, "Success", params);
-            }
-
-            @Override
-            public void onError(StringeeError error) {
-                callback.invoke(false, error.getCode(), error.getMessage());
-            }
-        });
-    }
-
-    public void getAllConversationsAfter(final double datetime, final int count, final Callback callback) {
-        if (stringeeClient == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
-            return;
-        }
-
-        stringeeClient.getConversationsAfter((long) datetime, count, true, new CallbackListener<List<Conversation>>() {
-            @Override
-            public void onSuccess(List<Conversation> conversations) {
-                WritableArray params = Arguments.createArray();
-                for (int i = 0; i < conversations.size(); i++) {
-                    WritableMap param = Utils.getConversationMap(conversations.get(i));
-                    params.pushMap(param);
-                }
-                callback.invoke(true, 0, "Success", params);
-            }
-
-            @Override
-            public void onError(StringeeError error) {
-                callback.invoke(false, error.getCode(), error.getMessage());
-            }
-        });
-    }
-
-    public void getAllLastMessages(final String convId, final int count, final boolean loadDeletedMsg, final boolean loadDeletedMsgContent, final Callback callback) {
-        if (stringeeClient == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
-            return;
-        }
-
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
-            @Override
-            public void onSuccess(Conversation conversation) {
-                conversation.getLastMessages(stringeeClient, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<List<Message>>() {
+        stringeeClient.getConversationsBefore((long) datetime, count, true,
+                new CallbackListener<>() {
                     @Override
-                    public void onSuccess(List<Message> messages) {
+                    public void onSuccess(List<Conversation> conversations) {
                         WritableArray params = Arguments.createArray();
-                        for (int i = 0; i < messages.size(); i++) {
-                            WritableMap param = Utils.getMessageMap(messages.get(i));
+                        for (int i = 0; i < conversations.size(); i++) {
+                            WritableMap param = Utils.getConversationMap(conversations.get(i));
                             params.pushMap(param);
                         }
                         callback.invoke(true, 0, "Success", params);
@@ -1197,30 +1176,22 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                         callback.invoke(false, error.getCode(), error.getMessage());
                     }
                 });
-            }
-
-            @Override
-            public void onError(StringeeError error) {
-                callback.invoke(false, error.getCode(), error.getMessage());
-            }
-        });
     }
 
-    public void getAllMessagesAfter(final String convId, final int sequence, final int count, final boolean loadDeletedMsg, final boolean loadDeletedMsgContent, final Callback callback) {
+    public void getAllConversationsAfter(final double datetime, final int count,
+                                         final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
-            @Override
-            public void onSuccess(Conversation conversation) {
-                conversation.getMessagesAfter(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<List<Message>>() {
+        stringeeClient.getConversationsAfter((long) datetime, count, true,
+                new CallbackListener<>() {
                     @Override
-                    public void onSuccess(List<Message> messages) {
+                    public void onSuccess(List<Conversation> conversations) {
                         WritableArray params = Arguments.createArray();
-                        for (int i = 0; i < messages.size(); i++) {
-                            WritableMap param = Utils.getMessageMap(messages.get(i));
+                        for (int i = 0; i < conversations.size(); i++) {
+                            WritableMap param = Utils.getConversationMap(conversations.get(i));
                             params.pushMap(param);
                         }
                         callback.invoke(true, 0, "Success", params);
@@ -1231,6 +1202,36 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                         callback.invoke(false, error.getCode(), error.getMessage());
                     }
                 });
+    }
+
+    public void getAllLastMessages(final String convId, final int count,
+                                   final boolean loadDeletedMsg,
+                                   final boolean loadDeletedMsgContent, final Callback callback) {
+        if (stringeeClient == null) {
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
+            return;
+        }
+
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
+            @Override
+            public void onSuccess(Conversation conversation) {
+                conversation.getLastMessages(stringeeClient, count, loadDeletedMsg,
+                        loadDeletedMsgContent, true, new CallbackListener<>() {
+                            @Override
+                            public void onSuccess(List<Message> messages) {
+                                WritableArray params = Arguments.createArray();
+                                for (int i = 0; i < messages.size(); i++) {
+                                    WritableMap param = Utils.getMessageMap(messages.get(i));
+                                    params.pushMap(param);
+                                }
+                                callback.invoke(true, 0, "Success", params);
+                            }
+
+                            @Override
+                            public void onError(StringeeError error) {
+                                callback.invoke(false, error.getCode(), error.getMessage());
+                            }
+                        });
             }
 
             @Override
@@ -1240,31 +1241,71 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getAllMessagesBefore(final String convId, final int sequence, final int count, final boolean loadDeletedMsg, final boolean loadDeletedMsgContent, final Callback callback) {
+    public void getAllMessagesAfter(final String convId, final int sequence, final int count,
+                                    final boolean loadDeletedMsg,
+                                    final boolean loadDeletedMsgContent, final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessagesBefore(stringeeClient, sequence, count, loadDeletedMsg, loadDeletedMsgContent, true, new CallbackListener<List<Message>>() {
-                    @Override
-                    public void onSuccess(List<Message> messages) {
-                        WritableArray params = Arguments.createArray();
-                        for (int i = 0; i < messages.size(); i++) {
-                            WritableMap param = Utils.getMessageMap(messages.get(i));
-                            params.pushMap(param);
-                        }
-                        callback.invoke(true, 0, "Success", params);
-                    }
+                conversation.getMessagesAfter(stringeeClient, sequence, count, loadDeletedMsg,
+                        loadDeletedMsgContent, true, new CallbackListener<>() {
+                            @Override
+                            public void onSuccess(List<Message> messages) {
+                                WritableArray params = Arguments.createArray();
+                                for (int i = 0; i < messages.size(); i++) {
+                                    WritableMap param = Utils.getMessageMap(messages.get(i));
+                                    params.pushMap(param);
+                                }
+                                callback.invoke(true, 0, "Success", params);
+                            }
 
-                    @Override
-                    public void onError(StringeeError error) {
-                        callback.invoke(false, error.getCode(), error.getMessage());
-                    }
-                });
+                            @Override
+                            public void onError(StringeeError error) {
+                                callback.invoke(false, error.getCode(), error.getMessage());
+                            }
+                        });
+            }
+
+            @Override
+            public void onError(StringeeError error) {
+                callback.invoke(false, error.getCode(), error.getMessage());
+            }
+        });
+    }
+
+    public void getAllMessagesBefore(final String convId, final int sequence, final int count,
+                                     final boolean loadDeletedMsg,
+                                     final boolean loadDeletedMsgContent, final Callback callback) {
+        if (stringeeClient == null) {
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
+            return;
+        }
+
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
+            @Override
+            public void onSuccess(Conversation conversation) {
+                conversation.getMessagesBefore(stringeeClient, sequence, count, loadDeletedMsg,
+                        loadDeletedMsgContent, true, new CallbackListener<>() {
+                            @Override
+                            public void onSuccess(List<Message> messages) {
+                                WritableArray params = Arguments.createArray();
+                                for (int i = 0; i < messages.size(); i++) {
+                                    WritableMap param = Utils.getMessageMap(messages.get(i));
+                                    params.pushMap(param);
+                                }
+                                callback.invoke(true, 0, "Success", params);
+                            }
+
+                            @Override
+                            public void onError(StringeeError error) {
+                                callback.invoke(false, error.getCode(), error.getMessage());
+                            }
+                        });
             }
 
             @Override
@@ -1280,7 +1321,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getChatProfile(widgetKey, new CallbackListener<ChatProfile>() {
+        stringeeClient.getChatProfile(widgetKey, new CallbackListener<>() {
             @Override
             public void onSuccess(ChatProfile chatProfile) {
                 WritableMap params = Utils.getChatProfileMap(chatProfile);
@@ -1295,13 +1336,14 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getLiveChatToken(final String widgetKey, final String name, final String email, final Callback callback) {
+    public void getLiveChatToken(final String widgetKey, final String name, final String email,
+                                 final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getLiveChatToken(widgetKey, name, email, new CallbackListener<String>() {
+        stringeeClient.getLiveChatToken(widgetKey, name, email, new CallbackListener<>() {
             @Override
             public void onSuccess(String token) {
                 callback.invoke(true, 0, "Success", token);
@@ -1315,7 +1357,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void updateUserInfo(final String name, final String email, final String avatar, final String phone, final Callback callback) {
+    public void updateUserInfo(final String name, final String email, final String avatar,
+                               final String phone, final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
@@ -1361,7 +1404,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getUserInfo(userIdList, new CallbackListener<List<User>>() {
+        stringeeClient.getUserInfo(userIdList, new CallbackListener<>() {
             @Override
             public void onSuccess(List<User> users) {
                 WritableArray params = Arguments.createArray();
@@ -1386,7 +1429,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.createLiveChat(queueId, new CallbackListener<Conversation>() {
+        stringeeClient.createLiveChat(queueId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 WritableMap params = Utils.getConversationMap(conversation);
@@ -1407,13 +1450,13 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getChatRequests(new CallbackListener<List<ChatRequest>>() {
+        stringeeClient.getChatRequests(new CallbackListener<>() {
             @Override
             public void onSuccess(List<ChatRequest> chatRequestList) {
                 for (int i = 0; i < chatRequestList.size(); i++) {
                     ChatRequest chatRequest = chatRequestList.get(i);
                     if (convId.equals(chatRequest.getConvId())) {
-                        chatRequest.accept(stringeeClient, new CallbackListener<Conversation>() {
+                        chatRequest.accept(stringeeClient, new CallbackListener<>() {
                             @Override
                             public void onSuccess(Conversation conversation) {
                                 callback.invoke(true, 0, "Success");
@@ -1422,7 +1465,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                             @Override
                             public void onError(StringeeError stringeeError) {
                                 super.onError(stringeeError);
-                                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
+                                callback.invoke(false, stringeeError.getCode(),
+                                        stringeeError.getMessage());
                             }
                         });
                         break;
@@ -1444,7 +1488,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getChatRequests(new CallbackListener<List<ChatRequest>>() {
+        stringeeClient.getChatRequests(new CallbackListener<>() {
             @Override
             public void onSuccess(List<ChatRequest> chatRequestList) {
                 for (int i = 0; i < chatRequestList.size(); i++) {
@@ -1459,7 +1503,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                             @Override
                             public void onError(StringeeError stringeeError) {
                                 super.onError(stringeeError);
-                                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
+                                callback.invoke(false, stringeeError.getCode(),
+                                        stringeeError.getMessage());
                             }
                         });
                         break;
@@ -1475,36 +1520,16 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void createLiveChatTicket(final String widgetKey, final String name, final String email, final String phone, final String note, final Callback callback) {
+    public void createLiveChatTicket(final String widgetKey, final String name, final String email,
+                                     final String phone, final String note,
+                                     final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.createLiveChatTicket(widgetKey, name, email, note, phone, new StatusListener() {
-            @Override
-            public void onSuccess() {
-                callback.invoke(true, 0, "Success");
-            }
-
-            @Override
-            public void onError(StringeeError stringeeError) {
-                super.onError(stringeeError);
-                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
-            }
-        });
-    }
-
-    public void sendChatTranscript(final String email, final String convId, final String domain, final Callback callback) {
-        if (stringeeClient == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
-            return;
-        }
-
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
-            @Override
-            public void onSuccess(Conversation conversation) {
-                conversation.sendChatTranscriptTo(stringeeClient, email, domain, new StatusListener() {
+        stringeeClient.createLiveChatTicket(widgetKey, name, email, note, phone,
+                new StatusListener() {
                     @Override
                     public void onSuccess() {
                         callback.invoke(true, 0, "Success");
@@ -1516,6 +1541,32 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                         callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
                     }
                 });
+    }
+
+    public void sendChatTranscript(final String email, final String convId, final String domain,
+                                   final Callback callback) {
+        if (stringeeClient == null) {
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
+            return;
+        }
+
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
+            @Override
+            public void onSuccess(Conversation conversation) {
+                conversation.sendChatTranscriptTo(stringeeClient, email, domain,
+                        new StatusListener() {
+                            @Override
+                            public void onSuccess() {
+                                callback.invoke(true, 0, "Success");
+                            }
+
+                            @Override
+                            public void onError(StringeeError stringeeError) {
+                                super.onError(stringeeError);
+                                callback.invoke(false, stringeeError.getCode(),
+                                        stringeeError.getMessage());
+                            }
+                        });
             }
 
             @Override
@@ -1532,7 +1583,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.endChat(stringeeClient, new StatusListener() {
@@ -1563,7 +1614,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.beginTyping(stringeeClient, new StatusListener() {
@@ -1594,7 +1645,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
                 conversation.endTyping(stringeeClient, new StatusListener() {
@@ -1619,29 +1670,32 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void pinMessage(final String convId, final String[] msgIds, final boolean pinOrUnpin, final Callback callback) {
+    public void pinMessage(final String convId, final String[] msgIds, final boolean pinOrUnpin,
+                           final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<List<Message>>() {
+                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
-                        messages.get(0).pinOrUnpin(stringeeClient, pinOrUnpin, new StatusListener() {
-                            @Override
-                            public void onSuccess() {
-                                callback.invoke(true, 0, "Success");
-                            }
+                        messages.get(0)
+                                .pinOrUnpin(stringeeClient, pinOrUnpin, new StatusListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        callback.invoke(true, 0, "Success");
+                                    }
 
-                            @Override
-                            public void onError(StringeeError stringeeError) {
-                                super.onError(stringeeError);
-                                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
-                            }
-                        });
+                                    @Override
+                                    public void onError(StringeeError stringeeError) {
+                                        super.onError(stringeeError);
+                                        callback.invoke(false, stringeeError.getCode(),
+                                                stringeeError.getMessage());
+                                    }
+                                });
                     }
 
                     @Override
@@ -1660,16 +1714,17 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void editMessage(final String convId, final String[] msgIds, final String newContent, final Callback callback) {
+    public void editMessage(final String convId, final String[] msgIds, final String newContent,
+                            final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<List<Message>>() {
+                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
                         messages.get(0).edit(stringeeClient, newContent, new StatusListener() {
@@ -1681,7 +1736,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
                             @Override
                             public void onError(StringeeError stringeeError) {
                                 super.onError(stringeeError);
-                                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
+                                callback.invoke(false, stringeeError.getCode(),
+                                        stringeeError.getMessage());
                             }
                         });
                     }
@@ -1702,7 +1758,8 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void revokeMessage(final String convId, final JSONArray msgArray, final Callback callback) {
+    public void revokeMessage(final String convId, final JSONArray msgArray,
+                              final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
@@ -1722,19 +1779,20 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         });
     }
 
-    public void getMessageById(final String convId, final String[] msgIds, final Callback callback) {
+    public void getMessageById(final String convId, final String[] msgIds,
+                               final Callback callback) {
         if (stringeeClient == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
             return;
         }
 
-        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<>() {
             @Override
             public void onSuccess(Conversation conversation) {
-                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<List<Message>>() {
+                conversation.getMessages(stringeeClient, msgIds, new CallbackListener<>() {
                     @Override
                     public void onSuccess(List<Message> messages) {
-                        if (messages.size() > 0) {
+                        if (!messages.isEmpty()) {
                             WritableMap param = Utils.getMessageMap(messages.get(0));
                             callback.invoke(true, 0, "Success", param);
                         }

@@ -6,6 +6,7 @@ public class Constant {
     public static String MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED = "StringeeClient is not initialized or connected";
     public static String MESSAGE_STRINGEE_CALL_NOT_INITIALIZED = "StringeeCall is not initialized";
     public static String MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED = "StringeeCall2 is not initialized";
+    public static String MESSAGE_STRINGEE_AUDIO_MANAGER_NOT_STARTED = "StringeeAudio is not started";
 
     // Key
     public static String KEY_UUID = "uuid";
@@ -41,6 +42,7 @@ public class Constant {
     public static String KEY_MEDIA_TYPE = "mediaType";
     public static String KEY_ENABLE = "enable";
     public static String KEY_VIDEO_TRACK = "videoTrack";
+    public static String KEY_AUDIO_TYPE = "type";
 
     // Client events
     public static String CLIENT_ON_CONNECTED = "onConnectionConnected";

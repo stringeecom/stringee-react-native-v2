@@ -164,16 +164,6 @@ public class RNStringeeCallModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setSpeakerphoneOn(String uuid, boolean on, Callback callback) {
-        StringeeCallWrapper callWrapper = StringeeManager.getInstance().getCallMap().get(uuid);
-        if (callWrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL_NOT_INITIALIZED, "");
-            return;
-        }
-        callWrapper.setSpeakerphoneOn(on, callback);
-    }
-
-    @ReactMethod
     public void resumeVideo(String uuid, Callback callback) {
         StringeeCallWrapper callWrapper = StringeeManager.getInstance().getCallMap().get(uuid);
         if (callWrapper == null) {

@@ -9,7 +9,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.stringeereactnative.common.Constant;
 import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.wrapper.call.StringeeCall2Wrapper;
-import com.stringeereactnative.wrapper.call.StringeeCallWrapper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +29,8 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
             call2Wrapper = new StringeeCall2Wrapper(uuid, getReactApplicationContext());
-            call2Wrapper.setClientWrapper(StringeeManager.getInstance().getClientMap().get(clientUUID));
+            call2Wrapper.setClientWrapper(
+                    StringeeManager.getInstance().getClientMap().get(clientUUID));
             StringeeManager.getInstance().getCall2Map().put(uuid, call2Wrapper);
         }
     }
@@ -145,16 +145,6 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setSpeakerphoneOn(String uuid, boolean on, Callback callback) {
-        StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
-        if (call2Wrapper == null) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
-            return;
-        }
-        call2Wrapper.setSpeakerphoneOn(on, callback);
-    }
-
-    @ReactMethod
     public void resumeVideo(String uuid, Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
@@ -193,14 +183,17 @@ public class RNStringeeCall2Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setAutoSendTrackMediaStateChangeEvent(String uuid, boolean autoSendTrackMediaStateChangeEvent, Callback callback) {
+    public void setAutoSendTrackMediaStateChangeEvent(String uuid,
+                                                      boolean autoSendTrackMediaStateChangeEvent,
+                                                      Callback callback) {
         StringeeCall2Wrapper call2Wrapper = StringeeManager.getInstance().getCall2Map().get(uuid);
         if (call2Wrapper == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CALL2_NOT_INITIALIZED, "");
             return;
         }
 
-        call2Wrapper.setAutoSendTrackMediaStateChangeEvent(autoSendTrackMediaStateChangeEvent, callback);
+        call2Wrapper.setAutoSendTrackMediaStateChangeEvent(autoSendTrackMediaStateChangeEvent,
+                callback);
     }
 
     @ReactMethod

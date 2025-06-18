@@ -30,7 +30,7 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     private final String uuid;
     private StringeeClientWrapper clientWrapper;
     private Callback makeCallCallback;
-    private Map<String, StringeeVideoTrack> videoTrackMap = new HashMap<>();
+    private final Map<String, StringeeVideoTrack> videoTrackMap = new HashMap<>();
 
     public StringeeCall2Wrapper(String uuid, ReactContext reactContext) {
         this.reactContext = reactContext;
@@ -49,9 +49,12 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     @Override
-    public void onSignalingStateChange(StringeeCall2 stringeeCall2, StringeeCall2.SignalingState signalingState, String reason, int sipCode, String sipReason) {
+    public void onSignalingStateChange(StringeeCall2 stringeeCall2,
+                                       StringeeCall2.SignalingState signalingState, String reason,
+                                       int sipCode, String sipReason) {
         if (signalingState == StringeeCall2.SignalingState.CALLING) {
-            makeCallCallback.invoke(true, 0, "Success", stringeeCall2.getCallId(), stringeeCall2.getCustomDataFromYourServer());
+            makeCallCallback.invoke(true, 0, "Success", stringeeCall2.getCallId(),
+                    stringeeCall2.getCustomDataFromYourServer());
         }
 
         if (Utils.containsEvent(events, Constant.CALL2_ON_SIGNALING_STATE_CHANGE)) {
@@ -73,11 +76,14 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     @Override
     public void onError(StringeeCall2 stringeeCall2, int code, String desc) {
-        makeCallCallback.invoke(false, code, desc, stringeeCall2.getCallId(), stringeeCall2.getCustomDataFromYourServer());
+        makeCallCallback.invoke(false, code, desc, stringeeCall2.getCallId(),
+                stringeeCall2.getCustomDataFromYourServer());
     }
 
     @Override
-    public void onHandledOnAnotherDevice(StringeeCall2 stringeeCall2, StringeeCall2.SignalingState signalingState, String description) {
+    public void onHandledOnAnotherDevice(StringeeCall2 stringeeCall2,
+                                         StringeeCall2.SignalingState signalingState,
+                                         String description) {
         if (Utils.containsEvent(events, Constant.CALL2_ON_HANDLE_ON_ANOTHER_DEVICE)) {
             // Data
             WritableMap data = Arguments.createMap();
@@ -94,13 +100,15 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     @Override
-    public void onMediaStateChange(StringeeCall2 stringeeCall2, StringeeCall2.MediaState mediaState) {
+    public void onMediaStateChange(StringeeCall2 stringeeCall2,
+                                   StringeeCall2.MediaState mediaState) {
         if (Utils.containsEvent(events, Constant.CALL2_ON_MEDIA_STATE_CHANGE)) {
             // Data
             WritableMap data = Arguments.createMap();
             data.putString(Constant.KEY_CALL_ID, stringeeCall2.getCallId());
             data.putInt(Constant.KEY_CODE, mediaState.getValue());
-            String description = mediaState == StringeeCall2.MediaState.CONNECTED ? "Connected" : "Disconnected";
+            String description =
+                    mediaState == StringeeCall2.MediaState.CONNECTED ? "Connected" : "Disconnected";
             data.putString(Constant.KEY_DESCRIPTION, description);
 
             // Event data
@@ -117,7 +125,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     @Override
-    public void onLocalTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
+    public void onLocalTrackAdded(StringeeCall2 stringeeCall2,
+                                  StringeeVideoTrack stringeeVideoTrack) {
         videoTrackMap.put(stringeeVideoTrack.getLocalId(), stringeeVideoTrack);
         if (Utils.containsEvent(events, Constant.CALL2_ON_LOCAL_TRACK_ADDED)) {
             // Data
@@ -139,7 +148,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     @Override
-    public void onRemoteTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
+    public void onRemoteTrackAdded(StringeeCall2 stringeeCall2,
+                                   StringeeVideoTrack stringeeVideoTrack) {
         videoTrackMap.put(stringeeVideoTrack.getId(), stringeeVideoTrack);
         if (Utils.containsEvent(events, Constant.CALL2_ON_REMOTE_TRACK_ADDED)) {
             // Data
@@ -182,7 +192,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     @Override
-    public void onTrackMediaStateChange(String from, StringeeVideoTrack.MediaType mediaType, boolean enable) {
+    public void onTrackMediaStateChange(String from, StringeeVideoTrack.MediaType mediaType,
+                                        boolean enable) {
         if (Utils.containsEvent(events, Constant.CALL2_ON_TRACK_MEDIA_STATE_CHANGE)) {
             // Data
             WritableMap data = Arguments.createMap();
@@ -200,7 +211,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     @Override
-    public void onAudioDeviceChanged(StringeeAudioManager.AudioDevice audioDevice, Set<StringeeAudioManager.AudioDevice> set) {
+    public void onAudioDeviceChanged(StringeeAudioManager.AudioDevice audioDevice,
+                                     Set<StringeeAudioManager.AudioDevice> set) {
         if (Utils.containsEvent(events, Constant.AUDIO_ON_AUDIO_DEVICE_CHANGE)) {
             List<StringeeAudioManager.AudioDevice> listAvailableDevices = new ArrayList<>(set);
             WritableArray availableDevicesMap = Arguments.createArray();
@@ -239,9 +251,11 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
         return videoTrackMap;
     }
 
-    public void makeCall(String from, String to, boolean isVideoCall, String customData, String resolution, Callback callback) {
+    public void makeCall(String from, String to, boolean isVideoCall, String customData,
+                         String resolution, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -260,8 +274,6 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
             }
         }
 
-        Utils.startAudioManager(reactContext, this);
-
         stringeeCall2.makeCall(new StatusListener() {
             @Override
             public void onSuccess() {
@@ -272,7 +284,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     public void initAnswer(Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -293,7 +306,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     public void answer(String resolution, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -317,16 +331,13 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
             }
         });
 
-        Utils.startAudioManager(reactContext, this);
-
         callback.invoke(true, 0, "Success");
     }
 
     public void reject(Callback callback) {
-        Utils.stopAudioManager();
-
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -346,10 +357,10 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     public void hangup(Callback callback) {
-        Utils.stopAudioManager();
 
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -370,7 +381,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     public void enableVideo(boolean enabled, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -386,7 +398,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     public void mute(boolean isMute, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -402,7 +415,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     public void sendCallInfo(JSONObject info, Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -426,7 +440,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     public void sendDTMF(String key, final Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -450,7 +465,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     public void switchCamera(Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -474,7 +490,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     public void getCallStats(final Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -483,31 +500,24 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
             return;
         }
 
-        stringeeCall2.getStats(new StringeeCall2.CallStatsListener() {
-            @Override
-            public void onCallStats(StringeeCall2.StringeeCallStats stringeeCallStats) {
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("bytesReceived", stringeeCallStats.callBytesReceived);
-                    jsonObject.put("packetsLost", stringeeCallStats.callPacketsLost);
-                    jsonObject.put("packetsReceived", stringeeCallStats.callPacketsReceived);
-                    jsonObject.put("timeStamp", stringeeCallStats.timeStamp);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                callback.invoke(true, 0, "Success", jsonObject.toString());
+        stringeeCall2.getStats(stringeeCallStats -> {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("bytesReceived", stringeeCallStats.callBytesReceived);
+                jsonObject.put("packetsLost", stringeeCallStats.callPacketsLost);
+                jsonObject.put("packetsReceived", stringeeCallStats.callPacketsReceived);
+                jsonObject.put("timeStamp", stringeeCallStats.timeStamp);
+            } catch (JSONException e) {
+                Utils.reportException(StringeeCall2Wrapper.class, e);
             }
+            callback.invoke(true, 0, "Success", jsonObject.toString());
         });
-    }
-
-    public void setSpeakerphoneOn(boolean on, Callback callback) {
-        Utils.setSpeakerPhone(on);
-        callback.invoke(true, 0, "Success");
     }
 
     public void resumeVideo(Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 
@@ -520,9 +530,11 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
         callback.invoke(true, 0, "Success");
     }
 
-    public void setAutoSendTrackMediaStateChangeEvent(boolean autoSendTrackMediaStateChangeEvent, final Callback callback) {
+    public void setAutoSendTrackMediaStateChangeEvent(boolean autoSendTrackMediaStateChangeEvent,
+                                                      final Callback callback) {
         if (clientWrapper == null || !clientWrapper.isConnected()) {
-            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
+            callback.invoke(false, -1,
+                    Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED_OR_CONNECTED, "");
             return;
         }
 

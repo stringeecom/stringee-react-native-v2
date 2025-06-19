@@ -1,5 +1,7 @@
 package com.stringeereactnative.module;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Callback;
@@ -33,7 +35,7 @@ public class RNStringeeAudioModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void selectDevice(ReadableMap map, Callback callback) {
-        String audioType = map.getString(Constant.KEY_AUDIO_TYPE);
+        int audioType = map.getInt(Constant.KEY_AUDIO_TYPE);
         StringeeAudioWrapper.getInstance(getReactApplicationContext())
                 .selectDevice(audioType, callback);
     }

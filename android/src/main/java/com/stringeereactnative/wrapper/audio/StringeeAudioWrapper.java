@@ -1,6 +1,7 @@
 package com.stringeereactnative.wrapper.audio;
 
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -113,23 +114,23 @@ public class StringeeAudioWrapper implements StringeeAudioManager.AudioManagerEv
         callback.invoke(true, 0, "Success");
     }
 
-    public void selectDevice(String audioType, Callback callback) {
+    public void selectDevice(int audioType, Callback callback) {
         if (audioManager == null) {
             callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_AUDIO_MANAGER_NOT_STARTED, "");
             return;
         }
         StringeeAudioManager.AudioDevice device;
         switch (audioType) {
-            case "speakerPhone":
+            case 0:
                 device = StringeeAudioManager.AudioDevice.SPEAKER_PHONE;
                 break;
-            case "wiredHeadset":
+            case 1:
                 device = StringeeAudioManager.AudioDevice.WIRED_HEADSET;
                 break;
-            case "earpiece":
+            case 2:
                 device = StringeeAudioManager.AudioDevice.EARPIECE;
                 break;
-            case "bluetooth":
+            case 3:
                 device = StringeeAudioManager.AudioDevice.BLUETOOTH;
                 break;
             default:

@@ -85,17 +85,17 @@ class StringeeAudioManager {
           let emitterSubscription: EmitterSubscription =
             this.eventEmitter.addListener(stringeeAudioEvents, ({data}) => {
               if (data !== undefined) {
-                this._listeners.forEach(listener => {
-                  this._selectedAudioDevice = AudioDevice.fromJson(
-                    data.selectedAudioDevice,
+                this._selectedAudioDevice = AudioDevice.fromJson(
+                  data.selectedAudioDevice,
+                );
+                let audioDevices = data.availableAudioDevices;
+                this._availableAudioDevices.length = 0;
+                audioDevices.forEach(audioDevice => {
+                  this._availableAudioDevices.push(
+                    AudioDevice.fromJson(audioDevice),
                   );
-                  let audioDevices = data.availableAudioDevices;
-                  this._availableAudioDevices.length = 0;
-                  audioDevices.forEach(audioDevice => {
-                    this._availableAudioDevices.push(
-                      AudioDevice.fromJson(audioDevice),
-                    );
-                  });
+                });
+                this._listeners.forEach(listener => {
                   listener.onAudioDeviceChange(
                     this._selectedAudioDevice,
                     this._availableAudioDevices,

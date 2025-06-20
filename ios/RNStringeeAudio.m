@@ -1,58 +1,84 @@
+//
+//  RNStringeeAudio.m
+//  RNStringee
+//
+//  Created by StringeeTeam on 6/20/25.
+//  Copyright © 2025 Stringee. All rights reserved.
+//
+
 #import "RNStringeeAudio.h"
-#import <AVFoundation/AVFoundation.h>
-#import <React/RCTLog.h>
 
-@implementation RNStringeeAudio {
-  NSString *eventName;
-}
+@interface RNStringeeAudio ()
 
-@synthesize bridge = _bridge;
+@property (nonatomic, strong) NSMutableArray *events;
+
+@end
+
+@implementation RNStringeeAudio
 
 RCT_EXPORT_MODULE();
+
++ (BOOL)requiresMainQueueSetup {
+    return YES;
+}
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         _audioManager = [[RNStringeeAudioManager alloc] init];
+        _audioManager.delegate = self;
+        _events = [[NSMutableArray alloc] init];
     }
     return self;
 }
 
-// Required to specify supported events
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"StringeeAudioEvents"];
+    return @[@"onAudioDeviceChange"];
 }
 
-// Start the audio manager
+#pragma mark - React Native Methods
+
 RCT_EXPORT_METHOD(start:(RCTResponseSenderBlock)callback) {
-    [self.audioManager startAudioManagerWithCallback:callback eventEmitter:self];
+    [self.audioManager startAudioManager];
+    callback(@[@YES, @0, @"Audio manager started successfully"]);
 }
 
-// Stop the audio manager
 RCT_EXPORT_METHOD(stop:(RCTResponseSenderBlock)callback) {
-    [self.audioManager stopAudioManagerWithCallback:callback];
+    [self.audioManager stopAudioManager];
+    callback(@[@YES, @0, @"Audio manager stopped successfully"]);
 }
 
-// Select audio device
-RCT_EXPORT_METHOD(selectDevice:(NSDictionary *)deviceData callback:(RCTResponseSenderBlock)callback) {
-    [self.audioManager selectAudioDevice:deviceData callback:callback];
+RCT_EXPORT_METHOD(selectDevice:(NSDictionary *)device callback:(RCTResponseSenderBlock)callback) {
+    if (![device isKindOfClass:[NSDictionary class]]) {
+        callback(@[@NO, @-1, @"Invalid device parameter"]);
+        return;
+    }
+    
+    [self.audioManager selectAudioDevice:device];
+    callback(@[@YES, @0, @"Device selected successfully"]);
 }
 
-// Set native event name for emitting
-RCT_EXPORT_METHOD(setNativeEvent:(NSString *)eventName) {
-    self->eventName = eventName;
+RCT_EXPORT_METHOD(setNativeEvent:(NSString *)event) {
+    if (![self.events containsObject:event]) {
+        [self.events addObject:event];
+    }
 }
 
-// Remove native event
-RCT_EXPORT_METHOD(removeNativeEvent:(NSString *)eventName) {
-    // Implementation for removing event listener if needed
-    self->eventName = nil;
+RCT_EXPORT_METHOD(removeNativeEvent:(NSString *)event) {
+    [self.events removeObject:event];
 }
 
-// Send event to React Native
-- (void)sendEventToReactNative:(NSDictionary *)eventData {
-    if (eventName && [self.bridge isValid]) {
-        [self sendEventWithName:eventName body:@{@"data": eventData}];
+#pragma mark - RNStringeeAudioManagerDelegate
+
+- (void)audioManager:(RNStringeeAudioManager *)manager didUpdateAudioState:(NSDictionary *)audioState {
+    if ([self.events containsObject:@"onAudioDeviceChange"]) {
+        // Transform data to match JavaScript expectations
+        NSDictionary *transformedData = @{
+            @"selectedAudioDevice": audioState[@"device"] ?: [NSNull null],
+            @"availableAudioDevices": audioState[@"devices"] ?: @[]
+        };
+        
+        [self sendEventWithName:@"onAudioDeviceChange" body:@{@"data": transformedData}];
     }
 }
 

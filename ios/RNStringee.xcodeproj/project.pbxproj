@@ -17,8 +17,8 @@
 		51C19816254A6C4B006610F4 /* RNClientWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 51C19813254A6C4B006610F4 /* RNClientWrapper.m */; };
 		93FBBAFD2B0C94AA00B85365 /* RNCallWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FBBAF92B0C94AA00B85365 /* RNCallWrapper.m */; };
 		93FBBAFE2B0C94AA00B85365 /* RNCall2Wrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 93FBBAFC2B0C94AA00B85365 /* RNCall2Wrapper.m */; };
-		E5DD4FEE2E02C1F4008F00D5 /* RNStringeeAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = E5DD4FED2E02C1F4008F00D5 /* RNStringeeAudio.m */; };
-		E5DD4FF02E02C42A008F00D5 /* RNStringeeAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E5DD4FEF2E02C42A008F00D5 /* RNStringeeAudioManager.m */; };
+		E52CC6242E04F6EA0066D507 /* RNStringeeAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = E52CC6232E04F6EA0066D507 /* RNStringeeAudio.m */; };
+		E52CC6272E04F7810066D507 /* RNStringeeAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E52CC6262E04F7810066D507 /* RNStringeeAudioManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,10 +55,10 @@
 		93FBBAFA2B0C94AA00B85365 /* RNCallWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCallWrapper.h; sourceTree = "<group>"; };
 		93FBBAFB2B0C94AA00B85365 /* RNCall2Wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCall2Wrapper.h; sourceTree = "<group>"; };
 		93FBBAFC2B0C94AA00B85365 /* RNCall2Wrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCall2Wrapper.m; sourceTree = "<group>"; };
-		E5DD4FEC2E02C1BB008F00D5 /* RNStringeeAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNStringeeAudio.h; sourceTree = "<group>"; };
-		E5DD4FED2E02C1F4008F00D5 /* RNStringeeAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNStringeeAudio.m; sourceTree = "<group>"; };
-		E5DD4FEF2E02C42A008F00D5 /* RNStringeeAudioManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNStringeeAudioManager.m; sourceTree = "<group>"; };
-		E5DD4FF12E02C56B008F00D5 /* RNStringeeAudioManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNStringeeAudioManager.h; sourceTree = "<group>"; };
+		E52CC6222E04F6D70066D507 /* RNStringeeAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNStringeeAudio.h; sourceTree = "<group>"; };
+		E52CC6232E04F6EA0066D507 /* RNStringeeAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNStringeeAudio.m; sourceTree = "<group>"; };
+		E52CC6252E04F7120066D507 /* RNStringeeAudioManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNStringeeAudioManager.h; sourceTree = "<group>"; };
+		E52CC6262E04F7810066D507 /* RNStringeeAudioManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNStringeeAudioManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +83,10 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				E52CC6222E04F6D70066D507 /* RNStringeeAudio.h */,
+				E52CC6232E04F6EA0066D507 /* RNStringeeAudio.m */,
+				E52CC6252E04F7120066D507 /* RNStringeeAudioManager.h */,
+				E52CC6262E04F7810066D507 /* RNStringeeAudioManager.m */,
 				93FBBAFB2B0C94AA00B85365 /* RNCall2Wrapper.h */,
 				93FBBAFC2B0C94AA00B85365 /* RNCall2Wrapper.m */,
 				93FBBAFA2B0C94AA00B85365 /* RNCallWrapper.h */,
@@ -93,10 +97,6 @@
 				51C19813254A6C4B006610F4 /* RNClientWrapper.m */,
 				51540535208C66DE00914AE1 /* RNStringeeInstanceManager.h */,
 				51540542208C66DF00914AE1 /* RNStringeeInstanceManager.m */,
-				E5DD4FEC2E02C1BB008F00D5 /* RNStringeeAudio.h */,
-				E5DD4FED2E02C1F4008F00D5 /* RNStringeeAudio.m */,
-				E5DD4FF12E02C56B008F00D5 /* RNStringeeAudioManager.h */,
-				E5DD4FEF2E02C42A008F00D5 /* RNStringeeAudioManager.m */,
 				51540534208C66DE00914AE1 /* RNStringeeClient.h */,
 				51540538208C66DE00914AE1 /* RNStringeeClient.m */,
 				51540541208C66DF00914AE1 /* RNStringeeCall.h */,
@@ -169,9 +169,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				51540543208C66DF00914AE1 /* RNStringeeClient.m in Sources */,
-				E5DD4FF02E02C42A008F00D5 /* RNStringeeAudioManager.m in Sources */,
+				E52CC6272E04F7810066D507 /* RNStringeeAudioManager.m in Sources */,
 				51C19816254A6C4B006610F4 /* RNClientWrapper.m in Sources */,
-				E5DD4FEE2E02C1F4008F00D5 /* RNStringeeAudio.m in Sources */,
+				E52CC6242E04F6EA0066D507 /* RNStringeeAudio.m in Sources */,
 				93FBBAFE2B0C94AA00B85365 /* RNCall2Wrapper.m in Sources */,
 				51491994208EE2DA00EF9B47 /* RNStringeeVideoView.m in Sources */,
 				511CA582254803D200A697B9 /* RNStringeeCall2.m in Sources */,

@@ -7,7 +7,7 @@ import {
   normalCallbackHandle,
   stringeeAudioEvents,
 } from '../helpers/StringeeHelper';
-import {AudioDevice, StringeeAudioListener, StringeeError} from '../../index';
+import { AudioDevice, StringeeAudioListener, StringeeError } from '../../index';
 
 const RNStringeeAudio = NativeModules.RNStringeeAudio;
 
@@ -83,7 +83,7 @@ class StringeeAudioManager {
         if (status) {
           this.unregisterEvents();
           let emitterSubscription: EmitterSubscription =
-            this.eventEmitter.addListener(stringeeAudioEvents, ({data}) => {
+            this.eventEmitter.addListener(stringeeAudioEvents, ({ data }) => {
               if (data !== undefined) {
                 this._selectedAudioDevice = AudioDevice.fromJson(
                   data.selectedAudioDevice,
@@ -177,4 +177,4 @@ class StringeeAudioManager {
   }
 }
 
-export {StringeeAudioManager};
+export { StringeeAudioManager };

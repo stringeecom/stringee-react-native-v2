@@ -1,13 +1,27 @@
-#import <AVFoundation/AVFoundation.h>
-#import <React/RCTBridgeModule.h>
+//
+//  RNStringeeAudioManager.h
+//  RNStringee
+//
+//  Created by StringeeTeam on 6/20/25.
+//  Copyright © 2025 Stringee. All rights reserved.
+//
 
-@class RNStringeeAudio;
+#import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
+
+@protocol RNStringeeAudioManagerDelegate <NSObject>
+@optional
+- (void)audioManager:(id)manager didUpdateAudioState:(NSDictionary *)audioState;
+@end
 
 @interface RNStringeeAudioManager : NSObject
 
+@property (nonatomic, weak) id<RNStringeeAudioManagerDelegate> delegate;
+
 // Audio manager methods
-- (void)startAudioManagerWithCallback:(RCTResponseSenderBlock)callback eventEmitter:(RNStringeeAudio *)eventEmitter;
-- (void)stopAudioManagerWithCallback:(RCTResponseSenderBlock)callback;
-- (void)selectAudioDevice:(NSDictionary *)deviceData callback:(RCTResponseSenderBlock)callback;
+- (void)startAudioManager;
+- (void)stopAudioManager;
+- (void)selectAudioDevice:(NSDictionary *)deviceInfo;
+- (void)sendAudioStateUpdate;
 
 @end

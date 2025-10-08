@@ -43,8 +43,19 @@ Install `stringee-react-native-v2` by running:
 ##### Proguard
 Open up `android/app/proguard-rules.pro` and add following lines: 
 ```
--dontwarn org.webrtc.**
+# WebRTC
 -keep class org.webrtc.** { *; }
+-dontwarn org.webrtc.**
+-keepclassmembers class org.webrtc.** { *; }
+
+# JNI
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+-keep class org.jni_zero.** { *; }
+
+# Stringee
+-dontwarn com.stringee.**
 -keep class com.stringee.** { *; }
 ```
 
@@ -53,18 +64,35 @@ The Stringee Android SDK requires some permissions from your AndroidManifest
 1. Open up `android/app/src/main/AndroidManifest.xml`
 2. Add the following lines:
     ```
-    // for internet access
+    <!-- Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    // for audio access
+    <!-- Record -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Audio -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    // for camera access
+    <!-- Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
-    // for bluetooth 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <!-- Bluetooth -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" /> <!-- Require for android 12 or higher -->
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
+    <!-- Graphic -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="false" />
     ```
 
 ##### Dependencies
@@ -72,9 +100,9 @@ The Stringee Android SDK requires some permissions from your AndroidManifest
 2. Add the following lines:
     ```
     dependencies {
-    ...
-    implementation 'com.android.volley:volley:*.*.*'
-    ...
+        implementation 'com.stringee.sdk.android:stringee-android-sdk:2.1.5'
+        implementation 'io.github.webrtc-sdk:android:137.7151.03'
+        implementation 'com.android.volley:volley:1.2.1'
     }
     ```
 
@@ -102,3 +130,7 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 ### Version 1.0.4
 ##### Improve:
 - Improved photo quality taken on some iOS devices
+
+### Version 1.0.5
+##### Improve:
+- Upgrade android webrtc version

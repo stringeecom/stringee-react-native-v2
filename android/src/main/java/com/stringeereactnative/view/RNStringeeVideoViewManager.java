@@ -55,7 +55,6 @@ public class RNStringeeVideoViewManager extends ViewGroupManager<RNStringeeVideo
     }
 
     private void handleReceiveCommand(@NonNull RNStringeeVideoView root, String commandId, @Nullable ReadableArray args){
-        Log.d("Stringee", "receiveCommand : " + commandId);
         int commandIdInt = Integer.parseInt(commandId);
         if (args != null) {
             switch (commandIdInt) {

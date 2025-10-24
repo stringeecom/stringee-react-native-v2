@@ -134,3 +134,7 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 ### Version 1.0.5
 ##### Improve:
 - Upgrade android webrtc version
+
+### Version 1.0.6
+##### Fix bug:
+- Fix bug show video view in android

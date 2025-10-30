@@ -168,3 +168,9 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 ##### Improve
 
 - Upgrade iOS WebRTC version
+
+### Version 1.0.8
+
+##### Fix bug
+
+- Fix crash with video call on some iOS devices

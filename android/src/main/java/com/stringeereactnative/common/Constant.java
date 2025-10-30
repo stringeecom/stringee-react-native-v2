@@ -20,7 +20,7 @@ public class Constant {
     public static String KEY_IS_VIDEO_CALL = "isVideoCall";
     public static String KEY_CUSTOM_DATA_FROM_SERVER = "customDataFromYourServer";
     public static String KEY_CUSTOM_DATA = "customData";
-    public static String KEY_VIDEO_RESOLUTION = "isVideoCall";
+    public static String KEY_VIDEO_RESOLUTION = "videoResolution";
     public static String KEY_CODE = "code";
     public static String KEY_MESSAGE = "message";
     public static String KEY_OBJECT_TYPE = "objectType";

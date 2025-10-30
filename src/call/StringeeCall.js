@@ -34,7 +34,7 @@ class StringeeCall {
   to: string;
   toAlias: string;
   callType: CallType;
-  isVideoCall: boolean;
+  isVideoCall: boolean = false;
   videoResolution: VideoResolution = VideoResolution.normal;
   serial: number;
   uuid: string;

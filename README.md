@@ -174,3 +174,9 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 ##### Fix bug
 
 - Fix crash with video call on some iOS devices
+
+### Version 1.0.9
+
+##### Fix bug
+
+- Fix crash when capturing image eKyc in video call on some iOS devices

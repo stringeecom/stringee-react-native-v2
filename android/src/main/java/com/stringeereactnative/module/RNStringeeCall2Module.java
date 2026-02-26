@@ -9,7 +9,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.stringeereactnative.common.Constant;
 import com.stringeereactnative.common.StringeeManager;
 import com.stringeereactnative.wrapper.call.StringeeCall2Wrapper;
-import com.stringeereactnative.wrapper.call.StringeeCallWrapper;
 
 import org.json.JSONException;
 import org.json.JSONObject;

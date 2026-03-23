@@ -70,50 +70,50 @@ The Stringee Android SDK requires some permissions from your AndroidManifest
 1. Open up `android/app/src/main/AndroidManifest.xml`
 2. Add the following lines:
 
-    ```bash
-    <!-- Internet -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- Record -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- Audio -->
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <!-- Camera -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="true" />
-    <uses-feature
-        android:name="android.hardware.camera.autofocus"
-        android:required="false" />
-    <!-- Bluetooth -->
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" /> <!-- Require for android 12 or higher -->
-    <uses-feature
-        android:name="android.hardware.bluetooth"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.bluetooth_le"
-        android:required="false" />
-    <!-- Graphic -->
-    <uses-feature
-        android:glEsVersion="0x00020000"
-        android:required="false" />
-    ```
+   ```bash
+   <!-- Internet -->
+   <uses-permission android:name="android.permission.INTERNET" />
+   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+   <!-- Record -->
+   <uses-permission android:name="android.permission.RECORD_AUDIO" />
+   <!-- Audio -->
+   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+   <!-- Camera -->
+   <uses-permission android:name="android.permission.CAMERA" />
+   <uses-feature
+       android:name="android.hardware.camera"
+       android:required="true" />
+   <uses-feature
+       android:name="android.hardware.camera.autofocus"
+       android:required="false" />
+   <!-- Bluetooth -->
+   <uses-permission android:name="android.permission.BLUETOOTH" />
+   <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" /> <!-- Require for android 12 or higher -->
+   <uses-feature
+       android:name="android.hardware.bluetooth"
+       android:required="false" />
+   <uses-feature
+       android:name="android.hardware.bluetooth_le"
+       android:required="false" />
+   <!-- Graphic -->
+   <uses-feature
+       android:glEsVersion="0x00020000"
+       android:required="false" />
+   ```
 
 ##### Dependencies
 
 1. Open up `android/app/build.gradle`
 2. Add the following lines:
 
-    ```bash
-    dependencies {
-        implementation 'com.stringee.sdk.android:stringee-android-sdk:2.1.10'
-        implementation 'io.github.webrtc-sdk:android:137.7151.03'
-        implementation 'com.android.volley:volley:1.2.1'
-    }
-    ```
+   ```bash
+   dependencies {
+       implementation 'com.stringee.sdk.android:stringee-android-sdk:2.1.10'
+       implementation 'io.github.webrtc-sdk:android:137.7151.03'
+       implementation 'com.android.volley:volley:1.2.1'
+   }
+   ```
 
 ## Migrate to stringee-react-native-v2
 
@@ -187,10 +187,3 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 ##### Improve
 
 - Upgrade Stringee Android SDK to version 2.1.10
-- Update API usage to match new SDK: use `addConnectionListener`/`addChangeEventListener` instead of `setConnectionListener`/`setChangeEventListener`
-- Update `deleteMessages` and `revokeMessages` to use conversation-based API
-- Update message and conversation data mapping for new SDK structure
-
-##### Fix bug
-
-- Fix `removeNativeEvent` passing wrong parameter in StringeeCall

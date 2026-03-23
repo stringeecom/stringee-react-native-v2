@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.stringee.StringeeClient;
+import com.stringee.call.CallType;
 import com.stringee.call.StringeeCall;
 import com.stringee.call.StringeeCall2;
 import com.stringee.common.SocketAddress;
@@ -88,7 +89,7 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             data.putString(Constant.KEY_FROM_ALIAS, stringeeCall.getFromAlias());
             data.putString(Constant.KEY_TO, stringeeCall.getTo());
             data.putString(Constant.KEY_TO_ALIAS, stringeeCall.getToAlias());
-            data.putInt(Constant.KEY_CALL_TYPE, stringeeCall.isPhoneToAppCall() ? 3 : 1);
+            data.putInt(Constant.KEY_CALL_TYPE, stringeeCall.getCallType() == CallType.PHONE_TO_APP ? 3 : 1);
             data.putBoolean(Constant.KEY_IS_VIDEO_CALL, stringeeCall.isVideoCall());
             data.putString(Constant.KEY_CUSTOM_DATA_FROM_SERVER, stringeeCall.getCustomDataFromYourServer());
 
@@ -377,10 +378,10 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             stringeeClient.setStringeeXBaseUrl(stringeeXBaseUrl);
         }
         // Set listener
-        stringeeClient.setConnectionListener(this);
-        stringeeClient.setChangeEventListener(this);
-        stringeeClient.setLiveChatEventListener(this);
-        stringeeClient.setUserTypingEventListener(this);
+        stringeeClient.addConnectionListener(this);
+        stringeeClient.addChangeEventListener(this);
+        stringeeClient.addLiveChatEventListener(this);
+        stringeeClient.addUserTypingEventListener(this);
     }
 
     public void connect(final String accessToken) {
@@ -914,10 +915,20 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.deleteMessages(convId, messageIds, new StatusListener() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
             @Override
-            public void onSuccess() {
-                callback.invoke(true, 0, "Success");
+            public void onSuccess(Conversation conversation) {
+                conversation.deleteMessages(stringeeClient, messageIds, new StatusListener() {
+                    @Override
+                    public void onSuccess() {
+                        callback.invoke(true, 0, "Success");
+                    }
+
+                    @Override
+                    public void onError(StringeeError error) {
+                        callback.invoke(false, error.getCode(), error.getMessage());
+                    }
+                });
             }
 
             @Override
@@ -1708,16 +1719,33 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
             return;
         }
 
-        stringeeClient.revokeMessages(convId, msgArray, true, new StatusListener() {
+        stringeeClient.getConversationFromServer(convId, new CallbackListener<Conversation>() {
             @Override
-            public void onSuccess() {
-                callback.invoke(true, 0, "Success");
+            public void onSuccess(Conversation conversation) {
+                List<String> msgIds = new ArrayList<>();
+                for (int i = 0; i < msgArray.length(); i++) {
+                    try {
+                        msgIds.add(msgArray.getString(i));
+                    } catch (Exception ignored) {
+                    }
+                }
+                conversation.revokeMessages(stringeeClient, msgIds, true, new StatusListener() {
+                    @Override
+                    public void onSuccess() {
+                        callback.invoke(true, 0, "Success");
+                    }
+
+                    @Override
+                    public void onError(StringeeError stringeeError) {
+                        super.onError(stringeeError);
+                        callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
+                    }
+                });
             }
 
             @Override
-            public void onError(StringeeError stringeeError) {
-                super.onError(stringeeError);
-                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
+            public void onError(StringeeError error) {
+                callback.invoke(false, error.getCode(), error.getMessage());
             }
         });
     }

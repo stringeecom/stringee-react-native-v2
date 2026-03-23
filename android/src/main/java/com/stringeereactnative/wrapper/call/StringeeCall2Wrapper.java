@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.stringee.call.StringeeCall2;
+import com.stringee.call.VideoQuality;
 import com.stringee.common.StringeeAudioManager;
 import com.stringee.exception.StringeeError;
 import com.stringee.listener.StatusListener;
@@ -112,11 +113,6 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     @Override
-    public void onLocalStream(StringeeCall2 stringeeCall2) {
-
-    }
-
-    @Override
     public void onLocalTrackAdded(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
         videoTrackMap.put(stringeeVideoTrack.getLocalId(), stringeeVideoTrack);
         if (Utils.containsEvent(events, Constant.CALL2_ON_LOCAL_TRACK_ADDED)) {
@@ -131,11 +127,6 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
             eventData.putMap(Constant.KEY_DATA, data);
             Utils.sendEvent(reactContext, Constant.CALL2_ON_LOCAL_TRACK_ADDED, eventData);
         }
-    }
-
-    @Override
-    public void onRemoteStream(StringeeCall2 stringeeCall2) {
-
     }
 
     @Override
@@ -156,13 +147,8 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     }
 
     @Override
-    public void onVideoTrackAdded(StringeeVideoTrack stringeeVideoTrack) {
-
-    }
-
-    @Override
-    public void onVideoTrackRemoved(StringeeVideoTrack stringeeVideoTrack) {
-
+    public void onRemoteTrackRemoved(StringeeCall2 stringeeCall2, StringeeVideoTrack stringeeVideoTrack) {
+        videoTrackMap.remove(stringeeVideoTrack.getId());
     }
 
     @Override
@@ -254,9 +240,9 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
         }
         if (!Utils.isStringEmpty(resolution)) {
             if (resolution.equalsIgnoreCase("NORMAL")) {
-                stringeeCall2.setQuality(StringeeCall2.VideoQuality.QUALITY_480P);
+                stringeeCall2.setVideoQuality(VideoQuality.QUALITY_480P);
             } else if (resolution.equalsIgnoreCase("HD")) {
-                stringeeCall2.setQuality(StringeeCall2.VideoQuality.QUALITY_720P);
+                stringeeCall2.setVideoQuality(VideoQuality.QUALITY_720P);
             }
         }
 
@@ -304,9 +290,9 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
         if (!Utils.isStringEmpty(resolution)) {
             if (resolution.equalsIgnoreCase("NORMAL")) {
-                stringeeCall2.setQuality(StringeeCall2.VideoQuality.QUALITY_480P);
+                stringeeCall2.setVideoQuality(VideoQuality.QUALITY_480P);
             } else if (resolution.equalsIgnoreCase("HD")) {
-                stringeeCall2.setQuality(StringeeCall2.VideoQuality.QUALITY_720P);
+                stringeeCall2.setVideoQuality(VideoQuality.QUALITY_720P);
             }
         }
 

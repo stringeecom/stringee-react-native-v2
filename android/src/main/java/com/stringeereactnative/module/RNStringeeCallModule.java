@@ -203,7 +203,7 @@ public class RNStringeeCallModule extends ReactContextBaseJavaModule {
     public void removeNativeEvent(String uuid, String event) {
         StringeeCallWrapper callWrapper = StringeeManager.getInstance().getCallMap().get(uuid);
         if (callWrapper != null) {
-            callWrapper.removeNativeEvent(uuid);
+            callWrapper.removeNativeEvent(event);
         }
     }
 

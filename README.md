@@ -109,7 +109,7 @@ The Stringee Android SDK requires some permissions from your AndroidManifest
 
     ```bash
     dependencies {
-        implementation 'com.stringee.sdk.android:stringee-android-sdk:2.1.5'
+        implementation 'com.stringee.sdk.android:stringee-android-sdk:2.1.10'
         implementation 'io.github.webrtc-sdk:android:137.7151.03'
         implementation 'com.android.volley:volley:1.2.1'
     }
@@ -181,3 +181,16 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 
 - Fix crash when capturing image eKyc in video call on some iOS devices
 - Fix crash that occurs when starting audio on Android tablet devices
+
+### Version 1.0.10
+
+##### Improve
+
+- Upgrade Stringee Android SDK to version 2.1.10
+- Update API usage to match new SDK: use `addConnectionListener`/`addChangeEventListener` instead of `setConnectionListener`/`setChangeEventListener`
+- Update `deleteMessages` and `revokeMessages` to use conversation-based API
+- Update message and conversation data mapping for new SDK structure
+
+##### Fix bug
+
+- Fix `removeNativeEvent` passing wrong parameter in StringeeCall

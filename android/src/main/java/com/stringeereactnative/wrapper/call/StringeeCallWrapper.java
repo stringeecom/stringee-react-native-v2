@@ -6,8 +6,8 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.stringee.call.StringeeCall;
+import com.stringee.call.VideoQuality;
 import com.stringee.common.StringeeAudioManager;
-import com.stringee.common.StringeeConstant;
 import com.stringee.exception.StringeeError;
 import com.stringee.listener.StatusListener;
 import com.stringee.video.TextureViewRenderer;
@@ -233,9 +233,9 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
         }
         if (!Utils.isStringEmpty(resolution)) {
             if (resolution.equalsIgnoreCase("NORMAL")) {
-                stringeeCall.setQuality(StringeeConstant.QUALITY_NORMAL);
+                stringeeCall.setVideoQuality(VideoQuality.QUALITY_480P);
             } else if (resolution.equalsIgnoreCase("HD")) {
-                stringeeCall.setQuality(StringeeConstant.QUALITY_HD);
+                stringeeCall.setVideoQuality(VideoQuality.QUALITY_720P);
             }
         }
 

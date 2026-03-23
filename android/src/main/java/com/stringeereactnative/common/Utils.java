@@ -53,16 +53,24 @@ public class Utils {
         conversationMap.putBoolean("isDistinct", conversation.isDistinct());
         conversationMap.putBoolean("isGroup", conversation.isGroup());
         conversationMap.putDouble("updatedAt", conversation.getUpdateAt());
-        conversationMap.putString("lastMsgSender", conversation.getLastMsgSender());
+        Message lastMessage = conversation.getLastMessage();
+        if (lastMessage != null) {
+            conversationMap.putString("lastMsgSender", lastMessage.getSender() != null ? lastMessage.getSender().getUserId() : null);
+            conversationMap.putInt("lastMsgType", lastMessage.getType().getValue());
+            conversationMap.putString("lastMsgId", lastMessage.getId());
+            conversationMap.putInt("lastMsgState", lastMessage.getState().getValue());
+        } else {
+            conversationMap.putString("lastMsgSender", null);
+            conversationMap.putInt("lastMsgType", 0);
+            conversationMap.putString("lastMsgId", null);
+            conversationMap.putInt("lastMsgState", 0);
+        }
         conversationMap.putString("text", conversation.getText());
-        conversationMap.putInt("lastMsgType", conversation.getLastMsgType().getValue());
         conversationMap.putInt("unreadCount", conversation.getTotalUnread());
-        conversationMap.putString("lastMsgId", conversation.getLastMsgId());
         conversationMap.putString("creator", conversation.getCreator());
         conversationMap.putDouble("created", conversation.getCreateAt());
         conversationMap.putDouble("lastMsgSeq", conversation.getLastMsgSeqReceived());
         conversationMap.putDouble("lastMsgCreatedAt", conversation.getLastTimeNewMsg());
-        conversationMap.putInt("lastMsgState", conversation.getLastMsgState().getValue());
         if (conversation.getLastMsg() != null) {
             try {
                 Bundle bundle = jsonToBundle(conversation.getLastMsg());
@@ -166,7 +174,7 @@ public class Utils {
                 break;
         }
         messageMap.putMap("content", contentMap);
-        messageMap.putString("sender", message.getSenderId());
+        messageMap.putString("sender", message.getSender() != null ? message.getSender().getUserId() : null);
         return messageMap;
     }
 

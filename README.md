@@ -119,6 +119,11 @@ The Stringee Android SDK requires some permissions from your AndroidManifest
 
 To migrate an existing app to stringee-react-native-v2, follow [Migrate to stringee-react-native-v2](https://github.com/stringeecom/stringee-react-native-v2/blob/master/MIGRATEGUIDE.md).
 
+## Documentation
+
+- [API Reference](./docs/api-reference.md) — public classes, listeners, enums, and helper objects.
+- [Architecture](./docs/architecture.md) — internal architecture and data flow between JS and native, intended for SDK maintainers.
+
 ## Version
 
 ### Version 1.0.0

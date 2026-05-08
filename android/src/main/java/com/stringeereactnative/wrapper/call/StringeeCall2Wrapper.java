@@ -52,7 +52,10 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
     @Override
     public void onSignalingStateChange(StringeeCall2 stringeeCall2, StringeeCall2.SignalingState signalingState, String reason, int sipCode, String sipReason) {
         if (signalingState == StringeeCall2.SignalingState.CALLING) {
-            makeCallCallback.invoke(true, 0, "Success", stringeeCall2.getCallId(), stringeeCall2.getCustomDataFromYourServer());
+            if (makeCallCallback != null) {
+                makeCallCallback.invoke(true, 0, "Success", stringeeCall2.getCallId(), stringeeCall2.getCustomDataFromYourServer());
+                makeCallCallback = null;
+            }
         }
 
         if (Utils.containsEvent(events, Constant.CALL2_ON_SIGNALING_STATE_CHANGE)) {
@@ -74,7 +77,10 @@ public class StringeeCall2Wrapper implements StringeeAudioManager.AudioManagerEv
 
     @Override
     public void onError(StringeeCall2 stringeeCall2, int code, String desc) {
-        makeCallCallback.invoke(false, code, desc, stringeeCall2.getCallId(), stringeeCall2.getCustomDataFromYourServer());
+        if (makeCallCallback != null) {
+            makeCallCallback.invoke(false, code, desc, stringeeCall2.getCallId(), stringeeCall2.getCustomDataFromYourServer());
+            makeCallCallback = null;
+        }
     }
 
     @Override

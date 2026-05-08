@@ -50,7 +50,10 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
     @Override
     public void onSignalingStateChange(StringeeCall stringeeCall, StringeeCall.SignalingState signalingState, String reason, int sipCode, String sipReason) {
         if (signalingState == StringeeCall.SignalingState.CALLING) {
-            makeCallCallback.invoke(true, 0, "Success", stringeeCall.getCallId(), stringeeCall.getCustomDataFromYourServer());
+            if (makeCallCallback != null) {
+                makeCallCallback.invoke(true, 0, "Success", stringeeCall.getCallId(), stringeeCall.getCustomDataFromYourServer());
+                makeCallCallback = null;
+            }
         }
 
         if (Utils.containsEvent(events, Constant.CALL_ON_SIGNALING_STATE_CHANGE)) {
@@ -72,7 +75,10 @@ public class StringeeCallWrapper implements StringeeCall.StringeeCallListener, S
 
     @Override
     public void onError(StringeeCall stringeeCall, int code, String desc) {
-        makeCallCallback.invoke(false, code, desc, stringeeCall.getCallId(), stringeeCall.getCustomDataFromYourServer());
+        if (makeCallCallback != null) {
+            makeCallCallback.invoke(false, code, desc, stringeeCall.getCallId(), stringeeCall.getCustomDataFromYourServer());
+            makeCallCallback = null;
+        }
     }
 
     @Override

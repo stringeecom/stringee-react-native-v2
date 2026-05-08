@@ -187,3 +187,9 @@ To migrate an existing app to stringee-react-native-v2, follow [Migrate to strin
 ##### Improve
 
 - Upgrade Stringee Android SDK to version 2.1.10
+
+### Version 1.0.11
+
+##### Fix bug
+
+- Fix crash on Android when answering an incoming call

@@ -2,7 +2,7 @@ import {
   RNStringeeClient,
   normalCallbackHandle,
 } from '../helpers/StringeeHelper';
-import {StringeeClient} from '../../index';
+import type {StringeeClient} from '../StringeeClient';
 
 class ChatRequest {
   // Request info

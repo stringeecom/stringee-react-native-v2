@@ -1,5 +1,5 @@
-import {TrackType, StringeeRoomUser} from '../../index';
-import {getTrackType} from '../helpers/StringeeHelper';
+import {getTrackType, TrackType} from '../helpers/StringeeHelper';
+import {StringeeRoomUser} from './StringeeRoomUser';
 
 class StringeeVideoTrack {
   localId: string;

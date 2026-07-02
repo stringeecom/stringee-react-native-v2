@@ -14,14 +14,12 @@ import {
   isIOS,
   normalCallbackHandle,
   stringeeCallEvents,
-} from '../helpers/StringeeHelper';
-import {
   CallType,
-  StringeeCallListener,
-  StringeeClient,
   VideoResolution,
-  StringeeError,
-} from '../../index';
+} from '../helpers/StringeeHelper';
+import {StringeeError} from '../helpers/StringeeError';
+import type {StringeeCallListener} from '../listener/StringeeCallListener';
+import type {StringeeClient} from '../StringeeClient';
 
 const RNStringeeCall = NativeModules.RNStringeeCall;
 

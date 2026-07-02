@@ -7,8 +7,8 @@ import {
   View,
 } from 'react-native';
 import React, {Component} from 'react';
-import {StringeeVideoScalingType, StringeeVideoTrack} from '../index';
-import {isIOS} from './helpers/StringeeHelper';
+import {StringeeVideoScalingType, isIOS} from './helpers/StringeeHelper';
+import type {StringeeVideoTrack} from './video/StringeeVideoTrack';
 
 class StringeeVideoView extends Component {
   uuid: string;

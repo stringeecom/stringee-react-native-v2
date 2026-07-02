@@ -3,9 +3,9 @@ import {
   MediaState,
   MediaType,
   SignalingState,
-  StringeeCall2,
-  StringeeVideoTrack,
-} from '../../index';
+} from '../helpers/StringeeHelper';
+import type {StringeeCall2} from '../call/StringeeCall2';
+import type {StringeeVideoTrack} from '../video/StringeeVideoTrack';
 
 class StringeeCall2Listener {
   /**

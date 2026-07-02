@@ -1,11 +1,11 @@
 import {
   ChangeType,
-  ChatRequest,
   ObjectType,
-  StringeeCall,
-  StringeeCall2,
-  StringeeClient,
-} from '../../index';
+} from '../helpers/StringeeHelper';
+import type {ChatRequest} from '../chat/ChatRequest';
+import type {StringeeCall} from '../call/StringeeCall';
+import type {StringeeCall2} from '../call/StringeeCall2';
+import type {StringeeClient} from '../StringeeClient';
 
 class StringeeClientListener {
   /**

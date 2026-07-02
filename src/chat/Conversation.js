@@ -2,14 +2,12 @@ import {
   RNStringeeClient,
   normalCallbackHandle,
 } from '../helpers/StringeeHelper';
-import {
-  ConversationInfo,
-  Message,
-  NewMessageInfo,
-  StringeeClient,
-  User,
-  StringeeError,
-} from '../../index';
+import {Message} from './Message';
+import {User} from './User';
+import type {ConversationInfo} from '../helpers/ConversationInfo';
+import {StringeeError} from '../helpers/StringeeError';
+import type {NewMessageInfo} from '../helpers/NewMessageInfo';
+import type {StringeeClient} from '../StringeeClient';
 
 class Conversation {
   id: string;

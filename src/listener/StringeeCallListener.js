@@ -2,8 +2,8 @@ import {
   AudioDevice,
   MediaState,
   SignalingState,
-  StringeeCall,
-} from '../../index';
+} from '../helpers/StringeeHelper';
+import type {StringeeCall} from '../call/StringeeCall';
 
 class StringeeCallListener {
   /**

@@ -1,28 +1,26 @@
 import {EmitterSubscription, NativeEventEmitter, Platform} from 'react-native';
 import {
   CallType,
+  ChangeType,
   clientEvents,
+  ObjectType,
   RNStringeeClient,
   stringeeClientEvents,
   isIOS,
   normalCallbackHandle,
 } from './helpers/StringeeHelper';
-import {
-  ChangeType,
-  ChatRequest,
-  Conversation,
-  ConversationOption,
-  Message,
-  ObjectType,
-  StringeeCall,
-  StringeeCall2,
-  StringeeClientListener,
-  StringeeServerAddress,
-  User,
-  UserInfo,
-  LiveChatTicketParam,
-  StringeeError,
-} from '../index';
+import {StringeeCall} from './call/StringeeCall';
+import {StringeeCall2} from './call/StringeeCall2';
+import {ChatRequest} from './chat/ChatRequest';
+import {Conversation} from './chat/Conversation';
+import {Message} from './chat/Message';
+import {User} from './chat/User';
+import {ConversationOption} from './helpers/ConversationOption';
+import {LiveChatTicketParam} from './helpers/LiveChatTicketParam';
+import {StringeeError} from './helpers/StringeeError';
+import {StringeeServerAddress} from './helpers/StringeeServerAddress';
+import {UserInfo} from './helpers/UserInfo';
+import type {StringeeClientListener} from './listener/StringeeClientListener';
 
 class StringeeClient {
   userId: string;

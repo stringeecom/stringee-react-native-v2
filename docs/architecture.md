@@ -11,7 +11,7 @@ This document describes how `stringee-react-native-v2` is organised across its J
                           │  imports
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  Public JS API  (src/*.js)                                  │
+│  Public TS API  (src/*.ts / src/*.tsx)                      │
 │  StringeeClient · StringeeCall · StringeeCall2 ·            │
 │  StringeeVideoView · listeners · helpers · enums            │
 └─────────────────────────────────────────────────────────────┘
@@ -39,11 +39,11 @@ This document describes how `stringee-react-native-v2` is organised across its J
 
 The same shape exists on iOS — only the file names and language differ.
 
-## JavaScript layer
+## TypeScript layer
 
 The JS layer is a thin façade over the bridge. It is responsible for:
 
-1. **Generating a `uuid`** when a JS object is constructed (see `StringeeClient.js`, `StringeeCall.js`, `StringeeCall2.js`). The uuid is the handle that ties a JS instance to its native counterpart.
+1. **Generating a `uuid`** when a JS object is constructed (see `StringeeClient.ts`, `StringeeCall.ts`, `StringeeCall2.ts`). The uuid is the handle that ties a JS instance to its native counterpart.
 2. **Creating the native wrapper** by invoking `RNStringeeXxx.createWrapper(uuid, ...)` immediately in the constructor. This pre-registers the wrapper inside the native `StringeeManager` map so that subsequent method calls can find it.
 3. **Forwarding method calls** to the native module, always passing `this.uuid` as the first argument.
 4. **Bridging events back** to the user's listener via `NativeEventEmitter` subscriptions, filtered by `uuid` so that one global event stream can serve many concurrent instances.
@@ -51,7 +51,7 @@ The JS layer is a thin façade over the bridge. It is responsible for:
 
 ### Event routing
 
-`src/helpers/StringeeHelper.js` holds two important maps:
+`src/helpers/StringeeHelper.ts` holds two important maps:
 
 - `clientEvents`, `callEvents` — per-platform names of the events emitted by the native side (e.g. `didChangeSignalingState` on iOS, `onSignalingStateChange` on Android).
 - `stringeeClientEvents`, `stringeeCallEvents`, `stringeeCall2Events` — the canonical JS-side names exposed on the listener interfaces.
@@ -60,7 +60,7 @@ When a user calls `setListener(...)`, the JS class iterates the canonical list, 
 
 ### Public surface
 
-[`index.js`](../index.js) re-exports every class, listener, helper, and enum the SDK exposes. The package's `main` field in [`package.json`](../package.json) points to this file. Any new addition that should be visible to applications must be exported here.
+[`index.ts`](../index.ts) re-exports every class, listener, helper, enum, and public type the SDK exposes. The package's `main` and `react-native` fields in [`package.json`](../package.json) point to generated CommonJS under `lib/commonjs`; `types` points to the root declaration proxy, which re-exports the generated declarations. Any new addition that should be visible to applications must be exported from `index.ts`.
 
 ## Native layer (Android)
 
@@ -170,12 +170,12 @@ When exposing a new native capability:
 3. Add a `@ReactMethod` to the matching Android module that resolves the wrapper from `StringeeManager` and delegates.
 4. Implement the operation on the wrapper, using the per-method `Callback` pattern (no field-stored callbacks unless absolutely necessary).
 5. Add an iOS counterpart with the same method name. The JS layer is platform-agnostic.
-6. If the operation produces async events (not just a single-shot result), define an event name in `Constant.java`, add it to `callEvents` / `clientEvents` in `StringeeHelper.js` for both platforms, and surface it on the matching listener interface.
-7. Re-export anything new from [`index.js`](../index.js).
+6. If the operation produces async events (not just a single-shot result), define an event name in `Constant.java`, add it to `callEvents` / `clientEvents` in `StringeeHelper.ts` for both platforms, and surface it on the matching listener interface.
+7. Re-export anything new from [`index.ts`](../index.ts).
 
 ## Adding a new event
 
-1. Define the JS-side canonical name (e.g. `onSomethingHappened`) and add it to the appropriate `stringeeXxxEvents` array in [`StringeeHelper.js`](../src/helpers/StringeeHelper.js).
+1. Define the JS-side canonical name (e.g. `onSomethingHappened`) and add it to the appropriate `stringeeXxxEvents` array in [`StringeeHelper.ts`](../src/helpers/StringeeHelper.ts).
 2. Map it to the platform-specific native event names under `clientEvents` / `callEvents`.
 3. On Android, declare the event string in [`Constant.java`](../android/src/main/java/com/stringeereactnative/common/Constant.java) and emit it from the wrapper using `Utils.sendEvent(reactContext, eventName, data)`. Always include `uuid` in the payload.
 4. Add a typed callback property on the matching `*Listener` JS class so applications get IDE autocompletion.

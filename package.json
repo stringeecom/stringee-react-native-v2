@@ -1,11 +1,45 @@
 {
   "name": "stringee-react-native-v2",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "The Stringee communication platform makes it easy to embed high-quality interactive video, voice, SMS into webs and mobile apps.",
-  "main": "index.js",
+  "main": "lib/commonjs/index.js",
+  "react-native": "lib/commonjs/index.js",
+  "types": "index.d.ts",
   "homepage": "https://stringee.com",
+  "files": [
+    "android/build.gradle",
+    "android/gradle.properties",
+    "android/proguard-rules.pro",
+    "android/src",
+    "CHANGELOG.md",
+    "docs",
+    "ios",
+    "index.d.ts",
+    "lib",
+    "LICENSE",
+    "MIGRATEGUIDE.md",
+    "README.md",
+    "RNStringee.podspec"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "node scripts/clean.cjs",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:runtime": "node --test test/runtime/*.test.cjs",
+    "test:coverage": "npm run build && node --test --experimental-test-coverage --test-coverage-include='lib/commonjs/**/*.js' --test-coverage-lines=75 --test-coverage-branches=75 --test-coverage-functions=75 test/runtime/*.test.cjs",
+    "test:types": "tsc -p test/types/tsconfig.json --noEmit",
+    "test:package": "npm run build && node scripts/test-package.cjs",
+    "test:android": "cd android && bash gradlew assembleRelease compileReleaseJavaWithJavac",
+    "test:android:legacy": "cd android && bash gradlew -PreactNativeVersion=0.71.19 assembleRelease compileReleaseJavaWithJavac",
+    "test:podspec": "pod lib lint RNStringee.podspec --quick --allow-warnings",
+    "test:ios": "cd test/ios && pod install && xcodebuild -quiet -project Pods/Pods.xcodeproj -scheme RNStringee -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO build",
+    "example:install": "npm --prefix example install",
+    "example:start": "npm --prefix example start",
+    "example:android": "npm --prefix example run android",
+    "example:ios": "npm --prefix example run ios",
+    "example:typecheck": "npm --prefix example run typecheck",
+    "test": "npm run test:coverage && npm run test:types && node scripts/test-package.cjs",
+    "prepack": "npm run clean && npm test"
   },
   "keywords": [
     "stringee",
@@ -18,13 +52,15 @@
   ],
   "author": "Stringee <info@stringee.com>",
   "license": "MIT",
-  "dependencies": {
-    "underscore": "^1.13.6"
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-native": ">=0.60.0"
   },
   "devDependencies": {
-    "babel-preset-react-native": "4.0.0",
-    "react": "^16.2.0",
-    "react-native": "^0.51.0"
+    "@types/react": "^19.1.1",
+    "react": "^19.2.3",
+    "react-native": "0.84.0",
+    "typescript": "^5.9.3"
   },
   "repository": {
     "type": "git",

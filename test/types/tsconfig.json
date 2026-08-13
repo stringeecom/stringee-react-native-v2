@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": false,
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "paths": {
+      "stringee-react-native-v2": ["../../lib/commonjs"]
+    },
+    "rootDir": "../..",
+    "strict": true
+  },
+  "include": ["consumer.tsx"],
+  "exclude": []
+}

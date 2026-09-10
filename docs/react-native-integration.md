@@ -11,7 +11,7 @@ TypeScript React Native projects. The runnable reference is the
 | React Native | `>=0.60`; New Architecture is supported through bridge interop |
 | JavaScript | CommonJS is precompiled; applications do not need TypeScript |
 | TypeScript | Strict declarations are published from the package root |
-| Android | Stringee `2.1.13`, WebRTC `144.7559.09`, AndroidX enabled |
+| Android | Stringee `2.1.15`, WebRTC `150.7871.01`, AndroidX enabled |
 | iOS | Stringee `2.0.2`, deployment target iOS 13 or later |
 
 TurboModule and Fabric code generation are not implemented by this release. On
@@ -54,7 +54,7 @@ Expo Modules API.
 | EAS development, preview, or production build | Supported |
 | OTA update after a compatible native build exists | Supported for JS changes only |
 
-Version `1.1.0` does not ship a config plugin because one is not required for
+Version `1.1.1` does not ship a config plugin because one is not required for
 linking. In a CNG project, the host app must still declare native permissions and
 iOS usage descriptions in app config so they survive prebuild:
 
@@ -108,10 +108,8 @@ Android `assembleDebug`, iOS `pod install`, and the `RNStringee` simulator pod
 build all completed successfully. The fixture also type-checked and Metro
 bundled a screen that imports `StringeeClient` and renders `StringeeVideoView`.
 
-Direct changes to generated native files are discarded by a later
-`expo prebuild --clean`. Use `expo-build-properties` with
-`android.extraProguardRules`, or a local config plugin, to preserve the ProGuard
-rules when Android minification is enabled. A local plugin is also required for
+`expo prebuild --clean` replaces generated native files. Stringee's R8 rules are
+included; a local plugin is only required for
 optional manifest metadata that app config cannot express, such as
 `<uses-feature>` entries and `android:maxSdkVersion="30"` on the legacy Bluetooth
 permission.

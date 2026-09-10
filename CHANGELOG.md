@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1]
+
+- Upgrade Stringee Android SDK to `2.1.15`, WebRTC to `150.7871.01`, and consumer rules.
+
 ## [1.1.0]
 
 - Upgrade Stringee Android SDK to `2.1.13` and WebRTC to `144.7559.09`.

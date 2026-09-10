@@ -99,13 +99,9 @@ client still has to be compiled and installed. A Stringee config plugin is not
 required for native module registration; a config plugin is only needed to
 automate native configuration that cannot be represented in app config.
 
-Do not rely on direct edits to generated `AndroidManifest.xml`, `Info.plist`, or
-ProGuard files in a CNG project: `expo prebuild --clean` regenerates them. If the
-app enables Android minification, persist the rules from the Android section
-below with `expo-build-properties` (`android.extraProguardRules`) or a local Expo
-config plugin. A local config plugin is also needed if the app must preserve the
-optional `<uses-feature>` declarations or the `maxSdkVersion="30"` attribute on
-the legacy Bluetooth permission.
+Do not edit generated `AndroidManifest.xml` or `Info.plist` in a CNG project.
+A local config plugin is only needed for optional `<uses-feature>` declarations
+or the legacy Bluetooth permission's `maxSdkVersion="30"` attribute.
 
 See Expo's documentation for
 [development builds](https://docs.expo.dev/develop/development-builds/introduction/),
@@ -177,27 +173,10 @@ Add the required permissions and hardware declarations to
 Request camera, microphone, and any required Bluetooth permission at runtime on
 Android versions where they are dangerous permissions.
 
-If the application enables minification, add these rules to
-`android/app/proguard-rules.pro`:
+Stringee Android SDK `2.1.15` includes its required R8 rules. Do not add
+package-wide Stringee or WebRTC keep rules to the host application.
 
-```proguard
-# WebRTC
--keep class org.webrtc.** { *; }
--dontwarn org.webrtc.**
--keepclassmembers class org.webrtc.** { *; }
-
-# JNI
--keepclasseswithmembernames class * {
-    native <methods>;
-}
--keep class org.jni_zero.** { *; }
-
-# Stringee
--dontwarn com.stringee.**
--keep class com.stringee.** { *; }
-```
-
-The package resolves Stringee Android SDK `2.1.13` and WebRTC `144.7559.09`.
+The package resolves Stringee Android SDK `2.1.15` and WebRTC `150.7871.01`.
 Do not add separate Stringee, WebRTC, or Volley dependencies to the host app.
 
 ## JavaScript and TypeScript projects

@@ -1,39 +1,41 @@
-# stringee-react-native-v2 — Documentation
+# Stringee React Native SDK documentation
 
-This folder contains reference documentation for the Stringee React Native SDK.
+## Integration guides
 
-## Contents
+- [React Native integration](./react-native-integration.md) — installation,
+  native permissions, client lifecycle, calls, video rendering, JavaScript and
+  TypeScript compatibility, and New Architecture interoperability.
+- [API reference](./api-reference.md) — public classes, listeners, models,
+  helper objects, enum values, constructor options, and return types.
+- [Migration guide](../MIGRATEGUIDE.md) — migrate callback-based integrations
+  to the Promise-based V2 API.
+- [Local example](../example/README.md) — run the SDK locally on Android or iOS.
 
-- [API Reference](./api-reference.md) — public classes, listeners, enums, and helper objects exposed by the SDK. Read this if you are integrating the SDK into a React Native app.
-- [Architecture](./architecture.md) — internal architecture and data flow between JavaScript and native (Android / iOS). Read this if you are maintaining or extending the SDK itself.
+## Maintainer documentation
 
-## Quick links
+- [Architecture](./architecture.md) — TypeScript/native bridge structure and
+  event routing.
+- [Testing](./testing.md) — package, type, runtime, Android, and iOS validation.
+- [Changelog](../CHANGELOG.md) — concise user-facing release history.
 
-- [Installation guide](../README.md#getting-started)
-- [Migration guide](../MIGRATEGUIDE.md)
-- [Changelog](../README.md#version)
+## Package imports
 
-## Module entry point
+All public APIs are exported from `stringee-react-native-v2`:
 
-All public classes are re-exported from the package root, so applications import directly from `stringee-react-native-v2`:
-
-```js
+```ts
 import {
-  StringeeClient,
+  MediaState,
+  SignalingState,
   StringeeCall,
   StringeeCall2,
-  StringeeVideoView,
-  StringeeClientListener,
-  StringeeCallListener,
   StringeeCall2Listener,
-  // enums
-  SignalingState,
-  MediaState,
+  StringeeCallListener,
+  StringeeClient,
+  StringeeClientListener,
+  StringeeVideoView,
   VideoResolution,
-  // helpers
-  StringeeServerAddress,
-  ConversationOption,
 } from 'stringee-react-native-v2';
 ```
 
-The exhaustive export list is defined in [`index.js`](../index.js).
+Do not import application APIs from `src` or `lib/commonjs`. Those directories
+are implementation and build-output details rather than stable subpath exports.

@@ -29,6 +29,9 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+*.xcworkspace
+Pods/
+test/ios/PrivacyInfo.xcprivacy
       
 
 # Android/IntelliJ
@@ -45,3 +48,4 @@ buck-out/
 *.keystore
       
 yarn.lock
+lib/

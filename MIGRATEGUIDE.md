@@ -1,13 +1,17 @@
 # Migrate to stringee-react-native-v2
 
-In `stringee-react-native-v2`, class `StringeeClient`, `StringeeCall`, and `StringeeCall2` will no longer extend from `Component` and we move some chat function from `StringeeClient` to other class.
-Following this guide to migrate them from Component to the normal Class:
+In `stringee-react-native-v2`, `StringeeClient`, `StringeeCall`, and
+`StringeeCall2` are plain classes rather than React components. Some chat
+operations also moved from `StringeeClient` to the model that owns them.
+
+Follow this guide to migrate existing integrations. JavaScript and TypeScript
+applications use the same package-root imports.
 ### Convert callBack functions to Promise functions
 In `stringee-react-native-v2`, we convert all callBack functions to promise functions.
 If the function fails, you will get the `StringeeError`, which contains an error message and error code.
 
 E.g value return:
-```flow js
+```js
 // Old
 stringeeClient.getConversationById('conversationId',(status, code, message, conversation) => {
     if (status){
@@ -26,7 +30,7 @@ stringeeClient.getConversationById('conversationId')
 ```
 
 E.g non value return:
-```flow js
+```js
 // Old
 stringeeClient.unregisterPush('deviceToken',(status, code, message) => {
     if (status){
@@ -48,7 +52,7 @@ stringeeClient.unregisterPush('conversationId')
 
 - Create new StringeeClient:
 
-```flow js
+```js
 stringeeClient = new StringeeClient();
 
 // You can push your baseUrl, stringeeXBaseUrl, and list of serverAddress into parameters to create StringeeClient like this
@@ -59,23 +63,23 @@ stringeeClient = new StringeeClient({
 });
 ```
 
-- Listen event from StringeeClient by using method `registerEvents` and `StringeeClientListener`:
+- Listen for events from `StringeeClient` with `setListener` and `StringeeClientListener`:
 
-```flow js
+```js
 // Create new StringeeClientListener
 stringeeClientListener = new StringeeClientListener();
 // Declare which events you want to listen to like this
 stringeeClientListener.onConnect = (stringeeClient, userId)=>{};
 ...
 // Register to listen to StringeeClient events
-stringeeClient.registerEvents(stringeeClientListener);
+stringeeClient.setListener(stringeeClientListener);
 ```
 
 #### StringeeCall
 
 - Create new StringeeCall:
 
-```flow js
+```js
 stringeeCall = new StringeeCall({
    stringeeClient: stringeeClient, /// stringeeClient using to connect
    from: 'caller_userId', /// caller id
@@ -83,21 +87,21 @@ stringeeCall = new StringeeCall({
 });
 ```
 
-Listen event from StringeeCall by using method `registerEvents` and `StringeeCallListener`:
+Listen for events from `StringeeCall` with `setListener` and `StringeeCallListener`:
 
-```flow js
+```js
 // Create new StringeeCallListener
 stringeeCallListener = new StringeeCallListener();
 // Declare which events you want to listen to like this
 stringeeCallListener.onChangeSignalingState  = (stringeeCall, signalingState, reason, sipCode, sipReason) => {};
 ...
 // Register to listen to StringeeCall events
-stringeeCall.registerEvents(stringeeCallListener);
+stringeeCall.setListener(stringeeCallListener);
 ```
 
 - function `makeCall` no longer need to put parameters to make a call:
 
-```flow js
+```js
 stringeeCall.makeCall()
     .then(() => {
         console.log('makeCall success');
@@ -111,7 +115,7 @@ stringeeCall.makeCall()
 
 - Create new StringeeCall2:
 
-```flow js
+```js
 stringeeCall2 = new StringeeCall2({
    stringeeClient: stringeeClient, /// stringeeClient using to connect
    from: 'caller_userId', /// caller id
@@ -119,21 +123,21 @@ stringeeCall2 = new StringeeCall2({
 });
 ```
 
-Listen event from StringeeCall2 by using method `registerEvents` and `StringeeCall2Listener`:
+Listen for events from `StringeeCall2` with `setListener` and `StringeeCall2Listener`:
 
-```flow js
+```js
 // Create new StringeeCall2Listener
 stringeeCall2Listener = new StringeeCall2Listener();
 // Declare which events you want to listen to like this
 stringeeCall2Listener.onChangeSignalingState  = (stringeeCall2, signalingState, reason, sipCode, sipReason) => {};
 ...
 // Register to listen to StringeeCall2 events
-stringeeCall2.registerEvents(stringeeCall2Listener);
+stringeeCall2.setListener(stringeeCall2Listener);
 ```
 
 - function `makeCall` no longer needs to put parameters to make a call:
 
-```flow js
+```js
 stringeeCall2.makeCall()
     .then(() => {
         console.log('makeCall success');
@@ -150,4 +154,3 @@ See more details from these reference documents:
 - [Conversation](https://developer.stringee.com/docs/react-native-module/react-native-conversation)
 - [Message](https://developer.stringee.com/docs/react-native-module/react-native-message)
 - [ChatRequest](https://developer.stringee.com/docs/react-native-module/react-native-chatrequest)
-

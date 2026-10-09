@@ -49,3 +49,6 @@ buck-out/
       
 yarn.lock
 lib/
+
+# Serena MCP (local config + memories)
+.serena/

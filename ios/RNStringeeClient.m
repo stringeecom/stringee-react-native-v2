@@ -25,6 +25,7 @@ RCT_EXPORT_MODULE();
              didDisConnect,
              didFailWithError,
              requestAccessToken,
+             tokenWillExpire,
              incomingCall,
              incomingCall2,
              didReceiveCustomMessage,
@@ -102,6 +103,24 @@ RCT_EXPORT_METHOD(disconnect:(NSString *)uuid) {
     }
 
     wrapper.isConnecting = NO;
+}
+
+RCT_EXPORT_METHOD(updateToken:(NSString *)uuid token:(NSString *)token callback:(RCTResponseSenderBlock)callback) {
+    RNClientWrapper *wrapper = [RNStringeeInstanceManager.instance.clientWrappers objectForKey:uuid];
+    if (wrapper == nil) {
+        callback(@[@(NO), @(-1), @"Wrapper is not found"]);
+        return;
+    }
+
+    if (!wrapper.client) {
+        callback(@[@(NO), @(-1), @"StringeeClient is not initialized or connected."]);
+        return;
+    }
+
+    // Error codes come unchanged from the Stringee SDK (same codes on Android and iOS).
+    [wrapper.client updateToken:token completionHandler:^(BOOL status, int code, NSString *message) {
+        callback(@[@(status), @(code), message != nil ? message : @""]);
+    }];
 }
 
 RCT_EXPORT_METHOD(registerPushForDeviceToken:(NSString *)uuid deviceToken:(NSString *)deviceToken isProduction:(BOOL)isProduction isVoip:(BOOL)isVoip callback:(RCTResponseSenderBlock)callback) {

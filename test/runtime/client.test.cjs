@@ -83,6 +83,8 @@ test('StringeeClient forwards connection, push and live-chat operations', async 
   });
 
   client.connect('token');
+  await client.updateToken('new-token');
+  assert.deepEqual(harness.callsFor('RNStringeeClient', 'updateToken')[0].slice(0, 2), [client.uuid, 'new-token']);
   client.disconnect();
   await client.registerPush('device-token', false, true);
   await client.registerPushAndDeleteOthers('device-token', false, true, ['com.example.app']);
@@ -111,6 +113,12 @@ test('StringeeClient forwards connection, push and live-chat operations', async 
   ticket.phone = '0123';
   ticket.note = 'Call back';
   await client.createLiveChatTicket('widget', ticket);
+
+  harness.fail('RNStringeeClient', 'updateToken', -5, 'not requested');
+  await assert.rejects(
+    client.updateToken('rejected-token'),
+    error => error.name === 'updateToken' && error.code === -5 && error.message === 'not requested',
+  );
 
   harness.fail('RNStringeeClient', 'sendCustomMessage', 403, 'forbidden');
   await assert.rejects(
@@ -176,6 +184,29 @@ test('StringeeClient uses Android-specific push and local conversation signature
   assert.equal(harness.callsFor('RNStringeeClient', 'getLocalConversations')[0].length, 3);
 });
 
+test('StringeeClient maps the Android token renewal event and native error codes', async () => {
+  const harness = loadSdk({platform: 'android'});
+  const {sdk} = harness;
+  const client = new sdk.StringeeClient();
+  const listener = new sdk.StringeeClientListener();
+  const received = [];
+  listener.onTokenWillExpire = (eventClient, exp, expireInSeconds) =>
+    received.push([eventClient === client, exp, expireInSeconds]);
+  client.setListener(listener);
+
+  harness.emit('onTokenWillExpire', {uuid: 'another-client', data: {exp: 1, expireInSeconds: 1}});
+  harness.emit('onTokenWillExpire', {uuid: client.uuid, data: {exp: 1760000000, expireInSeconds: 59}});
+  assert.deepEqual(received, [[true, 1760000000, 59]]);
+
+  await client.updateToken('new-token');
+  harness.fail('RNStringeeClient', 'updateToken', -4, 'Update access token timed out.');
+  await assert.rejects(
+    client.updateToken('slow-token'),
+    error => error.name === 'updateToken' && error.code === -4,
+  );
+  client.unregisterEvents();
+});
+
 test('StringeeClient dispatches all connection, call and chat listener events', () => {
   const harness = loadSdk({platform: 'ios'});
   const {sdk} = harness;
@@ -187,6 +218,7 @@ test('StringeeClient dispatches all connection, call and chat listener events', 
   listener.onDisConnect = () => received.push(['disconnect']);
   listener.onFailWithError = (_client, code, message) => received.push(['fail', code, message]);
   listener.onRequestAccessToken = () => received.push(['token']);
+  listener.onTokenWillExpire = (_client, exp, expireInSeconds) => received.push(['token-will-expire', exp, expireInSeconds]);
   listener.onIncomingCall = (_client, call) => received.push(['call', call.callType, call.canAnswer]);
   listener.onIncomingCall2 = (_client, call) => received.push(['call2', call.callType, call.canAnswer]);
   listener.onCustomMessage = (_client, from, data) => received.push(['custom', from, data]);
@@ -206,6 +238,7 @@ test('StringeeClient dispatches all connection, call and chat listener events', 
   emit('didDisConnect', {});
   emit('didFailWithError', {code: 500, message: 'offline'});
   emit('requestAccessToken', {});
+  emit('tokenWillExpire', {exp: 1760000000, expireInSeconds: 60});
   emit('incomingCall', callPayload({callType: 2}));
   emit('incomingCall2', callPayload({callType: 3}));
   emit('didReceiveCustomMessage', {from: 'user-2', data: {hello: true}});
@@ -222,11 +255,12 @@ test('StringeeClient dispatches all connection, call and chat listener events', 
 
   assert.equal(client.userId, 'user-1');
   assert.equal(client.isConnected, false);
-  assert.equal(received.length, 16);
-  assert.deepEqual(received[4], ['call', 'appToPhone', true]);
-  assert.deepEqual(received[5], ['call2', 'phoneToApp', true]);
-  assert.deepEqual(received[7], ['object', 'conversation', 'Conversation', 'update']);
-  assert.deepEqual(received[8], ['object', 'message', 'Message', 'delete']);
+  assert.equal(received.length, 17);
+  assert.deepEqual(received[4], ['token-will-expire', 1760000000, 60]);
+  assert.deepEqual(received[5], ['call', 'appToPhone', true]);
+  assert.deepEqual(received[6], ['call2', 'phoneToApp', true]);
+  assert.deepEqual(received[8], ['object', 'conversation', 'Conversation', 'update']);
+  assert.deepEqual(received[9], ['object', 'message', 'Message', 'delete']);
 
   client.setListener(null);
   client.unregisterEvents();

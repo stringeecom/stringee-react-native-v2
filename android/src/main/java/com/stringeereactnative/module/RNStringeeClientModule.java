@@ -72,6 +72,17 @@ public class RNStringeeClientModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void updateToken(final String uuid, final String token, final Callback callback) {
+        StringeeClientWrapper clientWrapper = StringeeManager.getInstance().getClientMap().get(uuid);
+        if (clientWrapper == null) {
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
+            return;
+        }
+
+        clientWrapper.updateToken(token, callback);
+    }
+
+    @ReactMethod
     public void registerPushToken(final String uuid, final String token, final Callback callback) {
         StringeeClientWrapper clientWrapper = StringeeManager.getInstance().getClientMap().get(uuid);
         if (clientWrapper == null) {

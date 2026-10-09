@@ -14,6 +14,7 @@ type StringeeClientEvent =
   | 'onDisConnect'
   | 'onFailWithError'
   | 'onRequestAccessToken'
+  | 'onTokenWillExpire'
   | 'onIncomingCall'
   | 'onIncomingCallObject'
   | 'onIncomingCall2'
@@ -52,6 +53,7 @@ const clientEvents: PlatformEventMap<StringeeClientEvent> = {
     onDisConnect: 'didDisConnect',
     onFailWithError: 'didFailWithError',
     onRequestAccessToken: 'requestAccessToken',
+    onTokenWillExpire: 'tokenWillExpire',
     onIncomingCall: 'incomingCall',
     onIncomingCallObject: 'incomingCall',
     onIncomingCall2: 'incomingCall2',
@@ -71,6 +73,7 @@ const clientEvents: PlatformEventMap<StringeeClientEvent> = {
     onDisConnect: 'onConnectionDisconnected',
     onFailWithError: 'onConnectionError',
     onRequestAccessToken: 'onRequestNewToken',
+    onTokenWillExpire: 'onTokenWillExpire',
     onIncomingCall: 'onIncomingCall',
     onIncomingCallObject: 'onIncomingCall',
     onIncomingCall2: 'onIncomingCall2',
@@ -92,6 +95,7 @@ const stringeeClientEvents: StringeeClientEvent[] = [
   'onDisConnect',
   'onFailWithError',
   'onRequestAccessToken',
+  'onTokenWillExpire',
   'onIncomingCall',
   'onIncomingCall2',
   'onCustomMessage',

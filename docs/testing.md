@@ -50,5 +50,6 @@ npm run test:podspec
 ```
 
 Then smoke-test the local sample on physical Android and iOS devices using two
-short-lived user tokens: connect/disconnect, incoming/outgoing Call and Call2,
+short-lived user tokens: connect/disconnect, token renewal with
+`onTokenWillExpire`/`updateToken` and reconnect after expiry, incoming/outgoing Call and Call2,
 audio/video rendering, answer/reject/hangup, and custom messages.

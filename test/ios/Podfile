@@ -11,6 +11,8 @@ target 'RNStringeeValidation' do
   )
 
   pod 'RNStringee', :path => '../..'
+  # Stringee iOS SDK 2.2.0 is not published to the CocoaPods trunk.
+  pod 'Stringee', :podspec => 'https://raw.githubusercontent.com/stringeecom/Stringee-iOS-SDK/2.2.0/Stringee.podspec'
 end
 
 post_install do |installer|

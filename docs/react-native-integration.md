@@ -11,8 +11,8 @@ TypeScript React Native projects. The runnable reference is the
 | React Native | `>=0.60`; New Architecture is supported through bridge interop |
 | JavaScript | CommonJS is precompiled; applications do not need TypeScript |
 | TypeScript | Strict declarations are published from the package root |
-| Android | Stringee `2.1.15`, WebRTC `150.7871.01`, AndroidX enabled |
-| iOS | Stringee `2.0.2`, deployment target iOS 13 or later |
+| Android | Stringee `2.1.18`, WebRTC `150.7871.01`, AndroidX enabled |
+| iOS | Stringee `2.2.0`, WebRTC `137.0.0`, deployment target iOS 15 or later |
 
 TurboModule and Fabric code generation are not implemented by this release. On
 New Architecture applications the existing native module and view manager run
@@ -20,14 +20,27 @@ through React Native's interoperability layer.
 
 ## Install and link
 
-```bash
-npm install stringee-react-native-v2
-cd ios && pod install && cd ..
+Stringee iOS SDK `2.2.0` is not on the CocoaPods trunk, so the iOS `Podfile`
+must target iOS 15 and point CocoaPods at its podspec inside the app target:
+
+```ruby
+platform :ios, '15.0'
+
+target 'YourApp' do
+  # ...
+  pod 'Stringee', :podspec => 'https://raw.githubusercontent.com/stringeecom/Stringee-iOS-SDK/2.2.0/Stringee.podspec'
+end
 ```
 
-React Native autolinking discovers the Android package and iOS podspec. Do not
-manually add another Stringee or WebRTC dependency because duplicate versions can
-cause native symbol or class conflicts.
+```bash
+npm install stringee-react-native-v2
+cd ios && pod install --repo-update && cd ..
+```
+
+React Native autolinking discovers the Android package and iOS podspec. Apart
+from the `Stringee` podspec line above, do not manually add another Stringee or
+WebRTC dependency because duplicate versions can cause native symbol or class
+conflicts.
 
 ## Expo integration
 
@@ -54,8 +67,10 @@ Expo Modules API.
 | EAS development, preview, or production build | Supported |
 | OTA update after a compatible native build exists | Supported for JS changes only |
 
-Version `1.1.1` does not ship a config plugin because one is not required for
-linking. In a CNG project, the host app must still declare native permissions and
+Version `1.1.2` does not ship a config plugin because one is not required for
+linking. In a CNG project, add the Stringee iOS SDK `2.2.0` podspec through
+`expo-build-properties` (`ios.deploymentTarget: "15.0"` and an `ios.extraPods`
+entry with `name: "Stringee"` and the `podspec` URL above). In a CNG project, the host app must still declare native permissions and
 iOS usage descriptions in app config so they survive prebuild:
 
 ```json
@@ -176,6 +191,7 @@ const client = new StringeeClient();
 const listener = new StringeeClientListener();
 
 listener.onConnect = (_client, userId) => console.log('Connected', userId);
+listener.onTokenWillExpire = () => renewToken(); // calls client.updateToken(newToken)
 listener.onRequestAccessToken = () => refreshTokenAndReconnect();
 listener.onIncomingCall = (_client, call) => handleIncomingCall(call);
 
@@ -189,6 +205,14 @@ client.disconnect();
 
 Generate access tokens on a trusted server. Never embed a Stringee secret or a
 long-lived production token in application source.
+
+About 60 seconds before the token expires, `onTokenWillExpire(client, exp,
+expireInSeconds)` is invoked; pass a new token for the same user to
+`client.updateToken(token)` to keep the connection. Without renewal the server
+closes the connection at expiry, `onFailWithError` and `onRequestAccessToken`
+are invoked, and the app must call `connect(newToken)` on the same client. On
+iOS, an app that does not assign `onTokenWillExpire` receives
+`onRequestAccessToken` before expiry instead, as in previous versions.
 
 ## Calls and video
 

@@ -12,11 +12,13 @@ Pod::Spec.new do |s|
   s.homepage     = "https://stringee.com"
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author       = { "Stringee" => "info@stringee.com" }
-  s.platform     = :ios, "13.0"
+  s.platform     = :ios, "15.0"
   s.source       = { :git => "https://github.com/stringeecom/stringee-react-native-v2.git", :tag => s.version.to_s }
   s.source_files  = "ios/**/*.{h,m}"
   s.requires_arc = true
 
   s.dependency "React-Core", ">= 0.60.0"
-  s.dependency "Stringee", '2.0.2'
+  # Stringee iOS SDK 2.2.0 is not published to CocoaPods trunk. The host Podfile must add:
+  # pod 'Stringee', :podspec => 'https://raw.githubusercontent.com/stringeecom/Stringee-iOS-SDK/2.2.0/Stringee.podspec'
+  s.dependency "Stringee", '2.2.0'
 end

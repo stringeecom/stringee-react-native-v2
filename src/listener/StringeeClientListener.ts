@@ -43,6 +43,21 @@ class StringeeClientListener {
    */
   onRequestAccessToken?: (stringeeClient: StringeeClient) => void;
   /**
+   * Invoked about 60 seconds before the access token expires. Get a new token from
+   * your server and pass it to `StringeeClient.updateToken` to keep the connection
+   * open. Otherwise the server closes the connection when the token expires and
+   * `onRequestAccessToken` is invoked.
+   * @function onTokenWillExpire
+   * @param {StringeeClient} stringeeClient
+   * @param {number} exp Expiration time of the current token, in epoch seconds
+   * @param {number} expireInSeconds Seconds left before the token expires
+   */
+  onTokenWillExpire?: (
+    stringeeClient: StringeeClient,
+    exp: number,
+    expireInSeconds: number,
+  ) => void;
+  /**
    * Invoked when the client receives an incoming call.
    * @function onIncomingCall
    * @param {StringeeClient} stringeeClient

@@ -55,6 +55,7 @@ Public methods:
 | `setListener(listener)` | `void` | Replace the optional client event callbacks |
 | `unregisterEvents()` | `void` | Remove all JS/native event subscriptions |
 | `connect(token)` / `disconnect()` | `void` | Open or close the authenticated connection |
+| `updateToken(token)` | `Promise<void>` | Renew the access token of the open connection without reconnecting |
 | `registerPush(...)` | `Promise<void>` | Register an APNs/VoIP or FCM device token |
 | `registerPushAndDeleteOthers(...)` | `Promise<void>` | Register this token and remove matching app registrations |
 | `unregisterPush(deviceToken)` | `Promise<void>` | Remove a push token |
@@ -76,6 +77,20 @@ Public methods:
 | `updateUserInfo(userInfo)` | `Promise<void>` | Update the connected user's profile metadata |
 | `createLiveChatConversation(queueId)` | `Promise<Conversation>` | Open a live-chat conversation |
 | `createLiveChatTicket(widgetKey, params)` | `Promise<void>` | Submit an out-of-hours ticket |
+
+`updateToken(token)` is meant to be called from `onTokenWillExpire` with a new
+token for the same user and project. On success the native SDK keeps the new
+token for automatic reconnects; on failure the connection stays open until the
+current token expires. The rejected `StringeeError.code` comes unchanged from the
+native SDK; Android and iOS use the same codes:
+
+| Code | Meaning |
+|---|---|
+| `> 0` | Server error, for example `6` token expired, `10` bad signature, `17` user or project mismatch |
+| `-1` | Client not connected or not initialized |
+| `-2` | Empty token |
+| `-4` | No server reply within 10 seconds |
+| `-5` | The server has not requested renewal on this connection: call it only after `onTokenWillExpire` on the current connection |
 
 `StringeeClientOptions` is fully optional: `baseUrl`, `stringeeXBaseUrl`, and
 `serverAddresses`. Therefore both `new StringeeClient()` and a configured client
@@ -152,11 +167,20 @@ Listeners are plain JS objects whose properties are callback functions. Attach o
 
 Connection lifecycle, incoming calls, custom messages, and chat events:
 
-- `onConnect`, `onDisConnect`, `onFailWithError`, `onRequestAccessToken`
+- `onConnect`, `onDisConnect`, `onFailWithError`, `onRequestAccessToken`, `onTokenWillExpire`
 - `onIncomingCall`, `onIncomingCall2`
 - `onCustomMessage`, `onObjectChange`
 - `onReceiveChatRequest`, `onReceiveTransferChatRequest`, `onTimeoutAnswerChat`, `onTimeoutInQueue`, `onConversationEnded`
 - `onUserBeginTyping`, `onUserEndTyping`
+
+`onTokenWillExpire(client, exp, expireInSeconds)` is invoked about 60 seconds
+before the access token expires; `exp` is the expiry time in epoch seconds and
+`expireInSeconds` the seconds left. Renew with `client.updateToken(newToken)`.
+Without renewal the server disconnects at expiry, `onFailWithError` (code `6` on
+Android) and `onRequestAccessToken` are invoked, the SDK does not reconnect by
+itself, and `connect(newToken)` on the same client resumes the session. On iOS,
+when `onTokenWillExpire` is not assigned, `onRequestAccessToken` is invoked
+before expiry instead and `connect(newToken)` renews the token in place.
 
 ### StringeeCallListener
 

@@ -17,6 +17,9 @@ end
 target 'StringeeExample' do
   config = use_native_modules!
 
+  # Stringee iOS SDK 2.2.0 is not published to the CocoaPods trunk.
+  pod 'Stringee', :podspec => 'https://raw.githubusercontent.com/stringeecom/Stringee-iOS-SDK/2.2.0/Stringee.podspec'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.

@@ -95,6 +95,25 @@
     [RNStringeeInstanceManager.instance.rnClient sendEventWithName:requestAccessToken body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : stringeeClient.userId}}];
 }
 
+// Report tokenWillExpire: as implemented only while JS listens to onTokenWillExpire. Otherwise the
+// SDK keeps its previous behavior: it calls requestAccessToken: before expiry and
+// connectWithAccessToken: with the new token renews it on the current connection.
+- (BOOL)respondsToSelector:(SEL)aSelector {
+    if (aSelector == @selector(tokenWillExpire:exp:expireInSeconds:)) {
+        return [jsEvents containsObject:tokenWillExpire];
+    }
+    return [super respondsToSelector:aSelector];
+}
+
+- (void)tokenWillExpire:(StringeeClient *)stringeeClient exp:(long long)exp expireInSeconds:(int)expireInSeconds {
+    if ([jsEvents containsObject:tokenWillExpire]) {
+        [RNStringeeInstanceManager.instance.rnClient sendEventWithName:tokenWillExpire body: @{ @"uuid" : _identifier, @"data" : @{ @"exp" : @(exp), @"expireInSeconds" : @(expireInSeconds) }}];
+    } else {
+        // JS stopped listening after the SDK checked the delegate: fall back to requestAccessToken.
+        [self requestAccessToken:stringeeClient];
+    }
+}
+
 - (void)didConnect:(StringeeClient *)stringeeClient isReconnecting:(BOOL)isReconnecting {
     if ([jsEvents containsObject:didConnect]) {
         [RNStringeeInstanceManager.instance.rnClient sendEventWithName:didConnect body: @{ @"uuid" : _identifier, @"data" : @{ @"userId" : stringeeClient.userId, @"projectId" : stringeeClient.projectId, @"isReconnecting" : @(isReconnecting) } }];

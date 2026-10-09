@@ -41,6 +41,8 @@ public class Constant {
     public static String KEY_MEDIA_TYPE = "mediaType";
     public static String KEY_ENABLE = "enable";
     public static String KEY_VIDEO_TRACK = "videoTrack";
+    public static String KEY_EXP = "exp";
+    public static String KEY_EXPIRE_IN_SECONDS = "expireInSeconds";
 
     // Client events
     public static String CLIENT_ON_CONNECTED = "onConnectionConnected";
@@ -49,6 +51,7 @@ public class Constant {
     public static String CLIENT_ON_INCOMING_CALL2 = "onIncomingCall2";
     public static String CLIENT_ON_CONNECTION_ERROR = "onConnectionError";
     public static String CLIENT_ON_REQUEST_NEW_TOKEN = "onRequestNewToken";
+    public static String CLIENT_ON_TOKEN_WILL_EXPIRE = "onTokenWillExpire";
     public static String CLIENT_ON_CUSTOM_MESSAGE = "onCustomMessage";
     public static String CLIENT_ON_TOPIC_MESSAGE = "onTopicMessage";
     public static String CLIENT_ON_CHANGE = "onChangeEvent";

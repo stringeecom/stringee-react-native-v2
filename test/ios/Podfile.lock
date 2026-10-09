@@ -1785,12 +1785,12 @@ PODS:
     - React-utils (= 0.84.0)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.84.0)
-  - RNStringee (1.1.0):
+  - RNStringee (1.1.2):
     - React-Core (>= 0.60.0)
-    - Stringee (= 2.0.2)
-  - Stringee (2.0.2):
-    - WebRTC-SDK (= 137.7151.09)
-  - WebRTC-SDK (137.7151.09)
+    - Stringee (= 2.2.0)
+  - Stringee (2.2.0):
+    - WebRTC-lib (= 137.0.0)
+  - WebRTC-lib (137.0.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1868,12 +1868,12 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../../node_modules/react-native/ReactCommon`)
   - ReactNativeDependencies (from `../../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)
   - RNStringee (from `../..`)
+  - Stringee (from `https://raw.githubusercontent.com/stringeecom/Stringee-iOS-SDK/2.2.0/Stringee.podspec`)
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
-    - Stringee
-    - WebRTC-SDK
+    - WebRTC-lib
 
 EXTERNAL SOURCES:
   FBLazyVector:
@@ -2023,6 +2023,8 @@ EXTERNAL SOURCES:
     :podspec: "../../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
   RNStringee:
     :path: "../.."
+  Stringee:
+    :podspec: https://raw.githubusercontent.com/stringeecom/Stringee-iOS-SDK/2.2.0/Stringee.podspec
   Yoga:
     :path: "../../node_modules/react-native/ReactCommon/yoga"
 
@@ -2099,11 +2101,11 @@ SPEC CHECKSUMS:
   ReactCodegen: 294e2e2e99a82a39c521544e77a675467c21621e
   ReactCommon: 92b53b0bd7f7d86154dc9f512c1ea5dee717cc72
   ReactNativeDependencies: 86f5265d81e7da40d2e96aefa719ec6f787cfa8c
-  RNStringee: 6e5b57065eff9f9f1d29a2c189b12d6f28f2ec52
-  Stringee: d796154243e0c190fb48526526bbce4f13fb6bc0
-  WebRTC-SDK: 63428499c4f102f47daec9c7b88b5440788f2072
+  RNStringee: 585c7c94a387fd3917541ca3b6cc1b28592079d3
+  Stringee: e63b65230c544096f171903f2b3d17ea6a17ed61
+  WebRTC-lib: 8409875f2703d7fd08d7daa63e2f854ed49d8447
   Yoga: 772166513f9cd2d61a6251d0dacbbfaa5b537479
 
-PODFILE CHECKSUM: 4df0d930c7a4e2506a2be13bd8def08cde9e5e20
+PODFILE CHECKSUM: 2594f3ddf08a73ed89b7dec2614e2a45e5122e6d
 
 COCOAPODS: 1.16.2

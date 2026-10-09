@@ -191,6 +191,13 @@ function App(): React.JSX.Element {
       setStatus(`Connection error ${code}`);
       appendLog(`Connection error ${code}: ${message}`);
     };
+    listener.onTokenWillExpire = (_expiringClient, exp, expireInSeconds) => {
+      // This example has no token server. A real app gets a new token for the
+      // same user here and calls _expiringClient.updateToken(newToken).
+      appendLog(
+        `Access token expires in ${expireInSeconds}s (exp ${exp}); renew it with updateToken`,
+      );
+    };
     listener.onRequestAccessToken = () => {
       setStatus('Access token expired');
       appendLog('Access token expired; reconnect with a new token');

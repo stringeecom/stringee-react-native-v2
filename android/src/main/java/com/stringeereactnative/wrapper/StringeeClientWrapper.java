@@ -156,6 +156,22 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
     }
 
     @Override
+    public void onTokenWillExpire(StringeeClient stringeeClient, long exp, int expireInSeconds) {
+        if (Utils.containsEvent(events, Constant.CLIENT_ON_TOKEN_WILL_EXPIRE)) {
+            // Data
+            WritableMap data = Arguments.createMap();
+            data.putDouble(Constant.KEY_EXP, exp);
+            data.putInt(Constant.KEY_EXPIRE_IN_SECONDS, expireInSeconds);
+
+            // Event data
+            WritableMap eventData = Arguments.createMap();
+            eventData.putString(Constant.KEY_UUID, uuid);
+            eventData.putMap(Constant.KEY_DATA, data);
+            Utils.sendEvent(reactContext, Constant.CLIENT_ON_TOKEN_WILL_EXPIRE, eventData);
+        }
+    }
+
+    @Override
     public void onCustomMessage(String from, JSONObject jsonObject) {
         if (Utils.containsEvent(events, Constant.CLIENT_ON_CUSTOM_MESSAGE)) {
             // Data
@@ -407,6 +423,25 @@ public class StringeeClientWrapper implements StringeeConnectionListener, Change
         if (stringeeClient != null) {
             stringeeClient.disconnect();
         }
+    }
+
+    public void updateToken(final String token, final Callback callback) {
+        if (stringeeClient == null) {
+            callback.invoke(false, -1, Constant.MESSAGE_STRINGEE_CLIENT_NOT_INITIALIZED);
+            return;
+        }
+
+        stringeeClient.updateToken(token, new StatusListener() {
+            @Override
+            public void onSuccess() {
+                callback.invoke(true, 0, "Success");
+            }
+
+            @Override
+            public void onError(StringeeError stringeeError) {
+                callback.invoke(false, stringeeError.getCode(), stringeeError.getMessage());
+            }
+        });
     }
 
     public void registerPushToken(final String token, final Callback callback) {

@@ -42,10 +42,6 @@ const listener = new StringeeClientListener();
 listener.onConnect = (connectedClient, userId) => {
   connectedClient.userId = userId;
 };
-listener.onTokenWillExpire = (expiringClient, exp: number, expireInSeconds: number) => {
-  const renewal: Promise<void> = expiringClient.updateToken(`${exp}-${expireInSeconds}`);
-  return renewal;
-};
 client.setListener(listener);
 client.setListener({
   onIncomingCall: (_connectedClient, incomingCall) => incomingCall.answer(),

@@ -21,7 +21,6 @@ static NSString *didConnect               = @"didConnect";
 static NSString *didDisConnect            = @"didDisConnect";
 static NSString *didFailWithError         = @"didFailWithError";
 static NSString *requestAccessToken       = @"requestAccessToken";
-static NSString *tokenWillExpire          = @"tokenWillExpire";
 
 // Call 1-1
 static NSString *incomingCall               = @"incomingCall";

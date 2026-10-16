@@ -3,6 +3,19 @@
 This file lists SDK API changes and observable feature behavior. Documentation,
 tests, build tooling, and internal-only refactors are omitted.
 
+## [1.1.3]
+
+### Changed
+
+- Reverted Stringee iOS SDK to 2.0.2 (resolved from the CocoaPods trunk); the
+  iOS deployment target is 13.0 again and no extra Podfile entry is needed.
+- Stringee Android SDK stays at 2.1.18.
+
+### Removed
+
+- `onTokenWillExpire` and `StringeeClient.updateToken` added in 1.1.2. The
+  connection keeps the 1.1.1 behavior around token expiry.
+
 ## [1.1.2]
 
 ### Added
